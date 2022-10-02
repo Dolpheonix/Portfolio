@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "quickstartEditor Editor Win64 Development (quickstart)",
+            "intelliSenseMode": "msvc-x64",
+            "compileCommands": "C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_quickstart.json",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        },
+        {
+            "name": "Win32",
+            "intelliSenseMode": "msvc-x64",
+            "compileCommands": "C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default.json",
+            "cStandard": "c17",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}

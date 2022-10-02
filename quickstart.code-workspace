@@ -1,0 +1,24 @@
+{
+	"folders": [
+		{
+			"name": "quickstart",
+			"path": "."
+		},
+		{
+			"name": "UE4",
+			"path": "D:\\EpicStore\\UE_4.27"
+		}
+	],
+	"settings": {
+		"typescript.tsc.autoDetect": "off",
+		"files.associations": {
+			"iostream": "cpp"
+		}
+	},
+	"extensions": {
+		"recommendations": [
+			"ms-vscode.cpptools",
+			"ms-dotnettools.csharp"
+		]
+	}
+}

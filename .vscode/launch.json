@@ -1,0 +1,128 @@
+{
+	"version": "0.2.0",
+	"configurations": [
+		{
+			"name": "quickstart (Debug)",
+			"request": "launch",
+			"preLaunchTask": "quickstart Win64 Debug Build",
+			"program": "C:\\Users\\jclal\\unreal\\quickstart\\Binaries\\Win64\\UE4-Win64-Debug.exe",
+			"args": [
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstart (DebugGame)",
+			"request": "launch",
+			"preLaunchTask": "quickstart Win64 DebugGame Build",
+			"program": "C:\\Users\\jclal\\unreal\\quickstart\\Binaries\\Win64\\UE4-Win64-DebugGame.exe",
+			"args": [
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstart (Development)",
+			"request": "launch",
+			"preLaunchTask": "quickstart Win64 Development Build",
+			"program": "C:\\Users\\jclal\\unreal\\quickstart\\Binaries\\Win64\\UE4.exe",
+			"args": [
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstart (Shipping)",
+			"request": "launch",
+			"preLaunchTask": "quickstart Win64 Shipping Build",
+			"program": "C:\\Users\\jclal\\unreal\\quickstart\\Binaries\\Win64\\UE4-Win64-Shipping.exe",
+			"args": [
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstart (Test)",
+			"request": "launch",
+			"preLaunchTask": "quickstart Win64 Test Build",
+			"program": "C:\\Users\\jclal\\unreal\\quickstart\\Binaries\\Win64\\UE4-Win64-Test.exe",
+			"args": [
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstartEditor (Debug)",
+			"request": "launch",
+			"preLaunchTask": "quickstartEditor Win64 Debug Build",
+			"program": "D:\\EpicStore\\UE_4.27\\Engine\\Binaries\\Win64\\UE4Editor-Win64-Debug.exe",
+			"args": [
+				"C:\\Users\\jclal\\unreal\\quickstart\\quickstart.uproject"
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstartEditor (DebugGame)",
+			"request": "launch",
+			"preLaunchTask": "quickstartEditor Win64 DebugGame Build",
+			"program": "D:\\EpicStore\\UE_4.27\\Engine\\Binaries\\Win64\\UE4Editor-Win64-DebugGame.exe",
+			"args": [
+				"C:\\Users\\jclal\\unreal\\quickstart\\quickstart.uproject"
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "quickstartEditor (Development)",
+			"request": "launch",
+			"preLaunchTask": "quickstartEditor Win64 Development Build",
+			"program": "D:\\EpicStore\\UE_4.27\\Engine\\Binaries\\Win64\\UE4Editor.exe",
+			"args": [
+				"C:\\Users\\jclal\\unreal\\quickstart\\quickstart.uproject"
+			],
+			"cwd": "D:\\EpicStore\\UE_4.27",
+			"stopAtEntry": false,
+			"externalConsole": true,
+			"type": "cppvsdbg",
+			"visualizerFile": "D:\\EpicStore\\UE_4.27\\Engine\\Extras\\VisualStudioDebugging\\UE4.natvis"
+		},
+		{
+			"name": "Generate Project Files",
+			"type": "clr",
+			"request": "launch",
+			"program": "D:\\EpicStore\\UE_4.27\\Engine\\Binaries\\DotNET\\UnrealBuildTool.exe",
+			"console": "externalTerminal",
+			"args": [
+				"-projectfiles",
+				"-vscode",
+				"-project=C:\\Users\\jclal\\unreal\\quickstart\\quickstart.uproject",
+				"-game",
+				"-engine"
+			],
+			"internalConsoleOptions": "openOnSessionStart",
+			"cwd": "D:\\EpicStore\\UE_4.27"
+		}
+	]
+}

@@ -1,0 +1,117 @@
+[
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\CameraDirector.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\CameraDirector.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\CollidingPawn.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\CollidingPawn.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Countdown.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Countdown.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Door.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Door.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Fire.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\Fire.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\FloatingActor.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\FloatingActor.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\MainCharacter.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\MainCharacter.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\MyPawnMovementComponent.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\MyPawnMovementComponent.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\quickstart.Build.cs",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\quickstart.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\quickstart.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\quickstartGameModeBase.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\quickstartGameModeBase.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\UMGPlayerController.cpp",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	},
+	{
+		"file": "C:\\\\Users\\\\jclal\\\\unreal\\\\quickstart\\\\Source\\\\quickstart\\\\UMGPlayerController.h",
+		"command": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2019\\Community\\VC\\Tools\\MSVC\\14.29.30133\\bin\\HostX64\\x64\\cl.exe @\"C:\\Users\\jclal\\unreal\\quickstart\\.vscode\\compileCommands_Default\\quickstart.210.rsp\"",
+		"directory": "D:\\EpicStore\\UE_4.27\\Engine\\Source"
+	}
+]
