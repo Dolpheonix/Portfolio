@@ -40,7 +40,6 @@ void AInteractable::Tick(float DeltaTime)
 	if (!bWait && FVector::Dist(playerLoc, InteractPoint) < 200.0f && FVector::DotProduct(playerLook, Ray) > 0.8f)
 	{
 		bInteractable = true;
-		Player->bInteractable = true;
 
 		if (Player->bInteracted)
 		{
@@ -50,9 +49,10 @@ void AInteractable::Tick(float DeltaTime)
 	else
 	{
 		bInteractable = false;
-		//Player->bInteractable = false;
 	}
 }
+
+// 모든 object에서 실시간으로 interactable 여부를 검사 ---> 이 중에 하나라도 interactable이면 player는 interactable 상태여야 함
 
 void AInteractable::Interact()
 {

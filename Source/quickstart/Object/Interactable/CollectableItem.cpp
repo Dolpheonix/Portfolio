@@ -5,7 +5,6 @@
 
 ACollectableItem::ACollectableItem()
 {
-	//RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	MeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	MeshComponent->SetupAttachment(RootComponent);
 
@@ -47,10 +46,13 @@ void ACollectableItem::Interact()
 	if (isWeapon)
 	{
 		Player->Armory[(uint8)WeaponType] = true;
+		Player->RefreshArmory();
+		Player->GetWeapon((uint8)WeaponType);
 	}
 	else
 	{
 		Player->Inventory[(uint8)ItemType] = true;
+		Player->RefreshInventory();
 	}
 	Destroy();
 }

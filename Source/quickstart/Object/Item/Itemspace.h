@@ -4,7 +4,7 @@
 #include "UObject/ObjectMacros.h"
 
 UENUM(BlueprintType)
-enum class EinventorySpace : uint8
+enum class EInventorySpace : uint8
 {
 	noItem,
 	Apple,

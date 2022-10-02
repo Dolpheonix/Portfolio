@@ -7,6 +7,7 @@
 #include "../Object/Item/FPSProjectile.h"
 #include "../Object/Item/Throwable.h"
 #include "../Object/Item/Itemspace.h"
+#include "../Utils/MathUtil.h"
 #include "LadderInfo.h"
 #include <Engine/Classes/Camera/CameraComponent.h>
 #include <Engine/Classes/Components/AudioComponent.h>
@@ -98,6 +99,18 @@ public:
 	UFUNCTION()
 	void Fire();
 
+	UFUNCTION()
+	void RefreshInventory();
+
+	UFUNCTION()
+	void RefreshArmory();
+
+	UFUNCTION()
+	void GetWeapon(int weaponIndex);
+
+	UFUNCTION()
+	void Equip();
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	UCameraComponent* Camera;
 
@@ -137,7 +150,11 @@ public:
 	TArray<bool> Armory;
 	// Equipped Weapon
 	UPROPERTY(BlueprintReadOnly)
-	int WeaponIndex=0;
+	int Weapon_Now=0;
+	UPROPERTY(BlueprintReadOnly)
+	int Weapon_Before=0;
+	UPROPERTY(BlueprintReadOnly)
+	int Weapon_After=0;
 	UPROPERTY(BlueprintReadWrite)
 	bool ArmoryDirty;
 
@@ -146,7 +163,11 @@ public:
 	TArray<bool> Inventory;
 	// Equipped Item
 	UPROPERTY(BlueprintReadOnly)
-	int ItemIndex=0;
+	int Item_Now=0;
+	UPROPERTY(BlueprintReadOnly)
+	int Item_Before=0;
+	UPROPERTY(BlueprintReadOnly)
+	int Item_After=0;
 	// Can Use Item (특정 지역에서만 사용이 가능한 item)
 	UPROPERTY(BlueprintReadWrite)
 	TArray<bool> Usable;
@@ -154,7 +175,7 @@ public:
 	bool InventoryDirty;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UStaticMeshComponent* WeaponComponent;
+	UStaticMeshComponent* RifleComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FLadderInfo LadderInfo;

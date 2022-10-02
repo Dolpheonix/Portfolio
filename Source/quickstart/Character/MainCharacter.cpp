@@ -19,7 +19,7 @@ AMainCharacter::AMainCharacter()
 		GetMesh()->SetAnimationMode(EAnimationMode::AnimationBlueprint);
 	}
 
-	WeaponComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
+	RifleComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Weapon"));
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("FirstPersonCamera"));
 	Camera->SetupAttachment(RootComponent);
@@ -53,7 +53,7 @@ AMainCharacter::AMainCharacter()
 	}
 
 	// Item
-	for (int i = 0; i < static_cast<int>(EinventorySpace::End); i++)
+	for (int i = 0; i < static_cast<int>(EInventorySpace::End); i++)
 	{
 		Inventory.Add(false);
 		Usable.Add(false);
@@ -70,8 +70,8 @@ void AMainCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	FAttachmentTransformRules rule = {EAttachmentRule::KeepRelative, true};
-	WeaponComponent->AttachToComponent(GetMesh(), rule, TEXT("hand_r_socket"));
+	InventoryDirty = true;
+	ArmoryDirty = true;
 }
 
 // Called every frame
@@ -248,39 +248,134 @@ void AMainCharacter::unInteract()
 
 void AMainCharacter::RollInventory()
 {
-	int cache = ItemIndex;
-
-	ItemIndex = (ItemIndex + 1) % static_cast<int>(EinventorySpace::End);
-	while (!Inventory[ItemIndex])
+	int before = Item_Now;
+	Item_Now = MathUtil::CircularPlus(before, static_cast<int>(EInventorySpace::End));
+	while (!Inventory[Item_Now])
 	{
-		ItemIndex = (ItemIndex + 1) % static_cast<int>(EinventorySpace::End);
+		Item_Now = MathUtil::CircularPlus(Item_Now, static_cast<int>(EInventorySpace::End));
 	}
 
-	if (cache != ItemIndex)
+	if (before != Item_Now)
 	{
 		InventoryDirty = true;
+		Item_Before = before;
+
+		int after = Item_Now;
+		after = MathUtil::CircularPlus(Item_Now, static_cast<int>(EInventorySpace::End));
+		while (!Inventory[after])
+		{
+			after = MathUtil::CircularPlus(after, static_cast<int>(EInventorySpace::End));
+		}
+
+		Item_After = after;
 	}
 }
 
 void AMainCharacter::RollArmory()
 {
-	int cache = WeaponIndex;
+	int before = Weapon_Now;
 
-	WeaponIndex = (WeaponIndex + 1) % static_cast<int>(EArmorySpace::End);
-	while (!Armory[WeaponIndex])
+	Weapon_Now = MathUtil::CircularPlus(before, static_cast<int>(EArmorySpace::End));
+	while (!Armory[Weapon_Now])
 	{
-		WeaponIndex = (WeaponIndex + 1) % static_cast<int>(EArmorySpace::End);
+		Weapon_Now = MathUtil::CircularPlus(Weapon_Now, static_cast<int>(EArmorySpace::End));
 	}
 
-	if (cache != WeaponIndex)
+	if (before != Weapon_Now)
 	{
 		ArmoryDirty = true;
+		Weapon_Before = before;
+
+		int after = Weapon_Now;
+		after = MathUtil::CircularPlus(Weapon_Now, static_cast<int>(EArmorySpace::End));
+		while (!Armory[after])
+		{
+			after = MathUtil::CircularPlus(after, static_cast<int>(EArmorySpace::End));
+		}
+
+		Weapon_After = after;
+
+		Equip();
+	}
+}
+
+void AMainCharacter::RefreshInventory()
+{
+	int	before = MathUtil::CircularMinus(Item_Now, static_cast<int>(EInventorySpace::End));
+	while (!Inventory[before])
+	{
+		before = MathUtil::CircularMinus(before, static_cast<int>(EInventorySpace::End));
+	}
+
+	int	after = MathUtil::CircularPlus(Item_Now, static_cast<int>(EInventorySpace::End));
+	while (!Inventory[after])
+	{
+		after = MathUtil::CircularPlus(after, static_cast<int>(EInventorySpace::End));
+	}
+
+	if (before != Item_Before || after != Item_After)
+	{
+		Item_Before = before;
+		Item_After = after;
+
+		InventoryDirty = true;
+	}
+}
+
+void AMainCharacter::RefreshArmory()
+{
+	int	before = MathUtil::CircularMinus(Weapon_Now, static_cast<int>(EArmorySpace::End));
+	while (!Armory[before])
+	{
+		before = MathUtil::CircularMinus(before, static_cast<int>(EArmorySpace::End));
+	}
+
+	int	after = MathUtil::CircularPlus(Weapon_Now, static_cast<int>(EArmorySpace::End));
+	while (!Armory[after])
+	{
+		after = MathUtil::CircularPlus(after, static_cast<int>(EArmorySpace::End));
+	}
+
+	if (before != Weapon_Before || after != Weapon_After)
+	{
+		Weapon_Before = before;
+		Weapon_After = after;
+
+		ArmoryDirty = true;
+	}
+}
+
+void AMainCharacter::GetWeapon(int weaponIndex)
+{
+	switch (weaponIndex)
+	{
+	case 1:
+		UStaticMesh * rifle = Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, TEXT("/Game/ShootingGame/Asset/Rifle/Rifle.Rifle")));
+		if (rifle)
+		{
+			RifleComponent->SetStaticMesh(rifle);
+			FAttachmentTransformRules rule = { EAttachmentRule::SnapToTarget, true };
+			RifleComponent->AttachToComponent(GetMesh(), rule, TEXT("spine_03_Rifle"));
+		}
+	}
+}
+
+void AMainCharacter::Equip()
+{
+	switch (Weapon_Now)
+	{
+	case 0:
+		RifleComponent->AttachToComponent(GetMesh(), { EAttachmentRule::SnapToTarget, true }, TEXT("spine_03_Rifle"));
+		break;
+	case 1:
+		RifleComponent->AttachToComponent(GetMesh(), { EAttachmentRule::SnapToTarget, true }, TEXT("hand_r_Rifle"));
+		break;	
 	}
 }
 
 void AMainCharacter::Use()
 {
-	switch (ItemIndex)
+	switch (Item_Now)
 	{
 	case 0: // no item
 		NoItem();
@@ -297,7 +392,7 @@ void AMainCharacter::Use()
 void AMainCharacter::Attack()
 {
 	bAttacking = true;
-	switch (WeaponIndex)
+	switch (Weapon_Now)
 	{
 	case 0: // fist
 		Fist();

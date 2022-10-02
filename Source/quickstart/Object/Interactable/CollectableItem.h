@@ -30,7 +30,7 @@ public:
 	EArmorySpace WeaponType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Type")
-	EinventorySpace ItemType;
+	EInventorySpace ItemType;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* MeshComponent;
