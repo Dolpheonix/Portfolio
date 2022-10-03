@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
-#include "../Object/Item/FPSProjectile.h"
+#include "../Object/Item/Bullet.h"
 #include "../Object/Item/Throwable.h"
 #include "../Object/Item/Itemspace.h"
 #include "../Utils/MathUtil.h"
@@ -120,7 +120,7 @@ public:
 
 	// Projectile actor 스폰을 위한 클래스 타입 변수
 	UPROPERTY(EditDefaultsOnly, Category = Projectile)
-	TSubclassOf<AFPSProjectile> ProjectileClass;
+	TSubclassOf<ABullet> ProjectileClass;
 
 	// Audio Component
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Audio")

@@ -27,7 +27,7 @@ void AMainCharacter::Fire()
 			FActorSpawnParameters SpawnParams;
 			SpawnParams.Owner = this;
 			SpawnParams.Instigator = GetInstigator(); // instigator : spawn을 trigger한 주체
-			AFPSProjectile* Projectile = World->SpawnActor<AFPSProjectile>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams); // world에 actor를 스폰
+			ABullet* Projectile = World->SpawnActor<ABullet>(ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParams); // world에 actor를 스폰
 			if (Projectile)
 			{
 				FVector LaunchDirection = MuzzleRotation.Vector(); // 총구 방향
