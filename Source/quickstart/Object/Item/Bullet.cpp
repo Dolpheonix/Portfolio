@@ -2,6 +2,7 @@
 
 
 #include "Bullet.h"
+#include "../../Character/Character_Root.h"
 
 // Sets default values
 ABullet::ABullet()
@@ -13,7 +14,7 @@ ABullet::ABullet()
 	CollisionComponent = CreateDefaultSubobject<USphereComponent>(TEXT("SphereComponent"));
 	CollisionComponent->SetCollisionProfileName(TEXT("Projectile"));
 	CollisionComponent->OnComponentHit.AddDynamic(this, &ABullet::OnHit); // component에 hit event가 발생했을 때, OnHit function을 호출하도록 binding
-	CollisionComponent->InitSphereRadius(15.0f);
+	CollisionComponent->InitSphereRadius(3.3f);
 	RootComponent = CollisionComponent;
 
 	// 발사체 mesh
@@ -69,6 +70,15 @@ void ABullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrim
 	{
 		OtherComponent->AddImpulseAtLocation(ProjectileMovementComponent->Velocity * 100.0f, Hit.ImpactPoint);
 	}
+
+	auto HitCharacter = Cast<ACharacter_Root>(OtherActor);
+	if (HitCharacter)
+	{
+		HitCharacter->bHurt = true;
+		HitCharacter->HP--;
+	}
+
+	Destroy();
 }
 
 // projectile의 velocity를 결정

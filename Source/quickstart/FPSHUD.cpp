@@ -4,7 +4,7 @@
 #include "FPSHUD.h"
 #include "Engine/Canvas.h"
 #include <Kismet/GameplayStatics.h>
-#include "Character/MainCharacter.h"
+#include "Character/Main/MainCharacter.h"
 
 AFPSHUD::AFPSHUD()
 {

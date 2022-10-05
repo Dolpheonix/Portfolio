@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "../../Character/MainCharacter.h"
+#include "../../Character/Main/MainCharacter.h"
 #include "Interactable.generated.h"
 
 UCLASS(Abstract)

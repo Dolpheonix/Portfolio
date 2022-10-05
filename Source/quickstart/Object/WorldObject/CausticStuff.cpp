@@ -2,7 +2,7 @@
 
 
 #include "CausticStuff.h"
-#include "../../Character/MainCharacter.h"
+#include "../../Character/Main/MainCharacter.h"
 #include <Kismet/GameplayStatics.h>
 
 // Sets default values
