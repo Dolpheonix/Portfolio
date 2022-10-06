@@ -87,7 +87,7 @@ void AMainCharacter::Tick(float DeltaTime)
 		Camera->PostProcessSettings.bOverride_SceneColorTint = true;
 		DisableInput(UGameplayStatics::GetPlayerController(this, 0));
 	}
-	// 1.5ÃÊ°£ ºÓÀº ÇÊÅÍ¸¦ ¾º¿î´Ù.
+	// Hurt time µ¿¾È ºÓÀº ÇÊÅÍ¸¦ ¾º¿î´Ù.
 	if (hurtFrameStep >= 0)
 	{
 		if (hurtFrameStep < 35)

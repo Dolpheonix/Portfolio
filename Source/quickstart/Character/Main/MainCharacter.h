@@ -134,7 +134,6 @@ public:
 	bool bInteractable = false;
 
 	UPROPERTY(BlueprintReadOnly)
-	int hurtFrameStep = -1; // hurt effect 시작
 	float elapsedTime = 0.0f; // 경과 시간
 
 	// Player's Equipment

@@ -2,6 +2,8 @@
 
 
 #include "Giant.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 AGiant::AGiant()
@@ -33,6 +35,22 @@ void AGiant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bHurt && hurtFrameStep < 0)
+	{
+		hurtFrameStep = 0;
+	}
+	else if (hurtFrameStep >= 0)
+	{
+		if (hurtFrameStep < 35)
+		{
+			hurtFrameStep++;
+		}
+		else
+		{
+			hurtFrameStep = -1;
+			bHurt = false;
+		}
+	}
 }
 
 // Called to bind functionality to input
@@ -40,5 +58,10 @@ void AGiant::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void AGiant::OnHurt()
+{
+	
 }
 
