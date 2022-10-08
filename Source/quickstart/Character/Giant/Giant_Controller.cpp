@@ -14,7 +14,7 @@ AGiant_Controller::AGiant_Controller()
 
 	BehaviorTree = CreateDefaultSubobject<UBehaviorTree>(TEXT("Behavior Tree"));
 
-	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/ShootingGame/Character/Giant/BP_Giant_BT.BP_Giant_BT"));
+	static ConstructorHelpers::FObjectFinder<UBehaviorTree> BTFinder(TEXT("/Game/ShootingGame/Character/Giant/BehaviorTree/BP_Giant_BT.BP_Giant_BT"));
 	if (BTFinder.Succeeded())
 	{
 		BehaviorTree = BTFinder.Object;

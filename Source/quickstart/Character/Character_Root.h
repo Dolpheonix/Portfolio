@@ -34,6 +34,9 @@ public:
 	UPROPERTY(BlueprintReadWrite, Category = "Interaction")
 	bool bHurt = false;
 
+	UPROPERTY(BlueprintReadWrite, Category = "Attack")
+	bool bAttacking = false;
+
 	// hurt event가 발생하면 경직시간이 필요하므로, hurt animation의 지속시간만큼 경직을 준다.
 	int hurtFrameStep = -1;
 };

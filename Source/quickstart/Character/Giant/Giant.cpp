@@ -60,8 +60,8 @@ void AGiant::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
-void AGiant::OnHurt()
+void AGiant::Attack(int elapsedFrame)
 {
-	
+	// spawn rock ---> fire in direction
 }
 
