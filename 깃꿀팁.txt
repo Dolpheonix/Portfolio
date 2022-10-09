@@ -1,0 +1,1 @@
+git reset HEAD^ : 헤드의 커밋만 제거하고, 커밋의 change 내용 자체는 유지 (commit을 누르기 전 상태로 돌아감)
