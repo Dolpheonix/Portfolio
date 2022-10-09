@@ -176,7 +176,4 @@ public:
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bWalking;
-
-	UPROPERTY(BlueprintReadOnly)
-	bool bAttacking;
 };
