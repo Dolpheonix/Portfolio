@@ -19,3 +19,16 @@ int MathUtil::CircularPlus(int now, int length)
 	}
 	return temp;
 }
+
+float MathUtil::AngleBetweenTwoVectors_2D(FVector& A, FVector& B)
+{
+	float cosine = FVector::DotProduct(A, B);
+	FVector cross = FVector::CrossProduct(A, B);
+	float sine = cross.Z;
+
+	float tangent = sine / cosine;
+
+	float angle = FMath::Atan2(sine, cosine);
+
+	return angle;
+}

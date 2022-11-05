@@ -21,6 +21,8 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+	virtual void Tick(float DeltaTime) override;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackBoardKey")
 	FName EnemyKey;
@@ -28,6 +30,8 @@ public:
 	FName OriginLocKey;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackBoardKey")
 	FName OriginYawKey;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BlackBoardKey")
+	FName HurtKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BehaviorTree")
 	UBehaviorTree* BehaviorTree;

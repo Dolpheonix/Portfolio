@@ -35,7 +35,7 @@ ACausticStuff::ACausticStuff()
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovementComponent"));
 	ProjectileMovementComponent->SetUpdatedComponent(RootComponent);
 	ProjectileMovementComponent->InitialSpeed = 0.0f;
-	ProjectileMovementComponent->MaxSpeed = 1000.0f;
+	ProjectileMovementComponent->MaxSpeed = 0.0f;
 	ProjectileMovementComponent->bRotationFollowsVelocity = true;
 	ProjectileMovementComponent->bShouldBounce = true;
 	ProjectileMovementComponent->Bounciness = 0.2f;
@@ -52,6 +52,7 @@ void ACausticStuff::BeginPlay()
 	{
 		ProjectileMovementComponent->ProjectileGravityScale = 0.0f;
 	}
+	ProjectileMovementComponent->Velocity = FVector(0.f, 0.f, 0.f);
 }
 
 // Called every frame
@@ -77,12 +78,18 @@ void ACausticStuff::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
 		Destroy();
 	}
 	// 다른 Actor와 충돌했을 때 : 충돌한 actor 제거
+	else if(OtherActor == GetOwner()) {
+	}
 	else {
-		OtherActor->Destroy();
 	}
 }
 
 void ACausticStuff::ApplyGravity()
 {
 	ProjectileMovementComponent->ProjectileGravityScale = 1.f;
+}
+
+void ACausticStuff::Throw(const FVector& direction, float speed)
+{
+	ProjectileMovementComponent->Velocity = direction * speed;
 }

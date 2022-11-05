@@ -42,4 +42,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyGravity();
+
+	UFUNCTION(BlueprintCallable)
+	void Throw(const FVector& direction, float speed);
 };

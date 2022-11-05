@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "../Character_Root.h"
 #include "Giant_Controller.h"
+#include <Engine/Classes/Components/SphereComponent.h>
 #include "Giant.generated.h"
 
 UCLASS()
@@ -29,4 +30,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void Attack(int elapsedFrame);
+
+	USphereComponent* RockCollision;
+	UStaticMeshComponent* Rock;
 };
