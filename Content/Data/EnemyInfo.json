@@ -1,0 +1,21 @@
+{
+    "EnemyInfoList" : 
+    [
+        {
+            "Index"     : 0,
+            "Name"      : "Tutorial Shooter",
+            "Hp"        : 100,
+            "Damage"    : 15,
+            "Class"     : "Shooter",
+            "Labels"    : [0,1]
+        },
+        {
+            "Index"     : 0,
+            "Name"      : "Tutorial Monster",
+            "Hp"        : 150,
+            "Damage"    : 30,
+            "Class"     : "Monster",
+            "Labels"    : [0,2]
+        }
+    ]
+}

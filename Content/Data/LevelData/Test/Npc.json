@@ -1,0 +1,137 @@
+{
+    "NpcList" : 
+    [
+        {
+            "Index" : 0,
+            "Name" : "TestMan",
+            "Dialogues" : 
+            [
+                {
+                    "Index" : 0,
+                    "Speaker" : "TestMan",
+                    "Text" : "Test Dialogue 1",
+                    "Responses" : 
+                    [
+                        {
+                            "Text" : "End Dialogue",
+                            "Events" : 
+                            [
+                                {
+                                    "Type" : "End"
+                                }
+                            ]
+                        },
+                        {
+                            "Text" : "Go On",
+                            "Events" : []
+                        },
+                        {
+                            "Text" : "Open Shop",
+                            "Events" : 
+                            [
+                                {
+                                    "Type" : "OpenShop"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Index" : 1,
+                    "Speaker" : "TestMan",
+                    "Text" : "Test Dialogue 2",
+                    "Responses" : 
+                    [
+                        {
+                            "Text" : "Go On",
+                            "Events" : []
+                        },
+                        {
+                            "Text" : "Commit Quest 0",
+                            "Events" : 
+                            [
+                                {
+                                    "Type" : "CommitQuest",
+                                    "QuestIndex" : 0
+                                },
+                                {
+                                    "Type" : "SetBookmark",
+                                    "BookmarkIndex" : 3
+                                },
+                                {
+                                    "Type" : "End"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Index" : 2,
+                    "Speaker" : "TestMan",
+                    "Text" : "Test Dialogue 3",
+                    "Responses" : 
+                    [
+                        {
+                            "Text" : "End Dialogue",
+                            "Events" :
+                            [
+                                {
+                                    "Type" : "End"
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "Index" : 3,
+                    "Speaker" : "TestMan",
+                    "Text" : "Test Dialogue 4",
+                    "Responses" : 
+                    [
+                        {
+                            "Text" : "End Dialogue",
+                            "Events" : 
+                            [
+                                {
+                                    "Type" : "End"
+                                }
+                            ]
+                        },
+                        {
+                            "Text" : "Complete Quest 0",
+                            "Events" : 
+                            [
+                                {
+                                    "Type" : "CompleteQuest",
+                                    "QuestIndex" : 0
+                                },
+                                {
+                                    "Type" : "End"
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ],
+            "ShopItems" : 
+            {
+                "Cloth" : [],
+                "Weapon" :
+                [
+                    {
+                        "Index" : 0,
+                        "Num" : 10
+                    }
+                ],
+                "Item" : 
+                [
+                    {
+                        "Index" : 1,
+                        "Num" : 10
+                    }
+                ]
+            },
+            "RewardItems" : []
+        }
+    ]
+}

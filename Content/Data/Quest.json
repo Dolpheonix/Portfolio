@@ -1,0 +1,21 @@
+{
+    "QuestList" : 
+    [
+        {
+            "Name" : "Quest 0",
+            "Explanation" : "Test Quest",
+            "Type" : "Serial",
+            "SubQuests" : 
+            [
+                {
+                    "Type" : "Arrival",
+                    "Explanation" : "Arrive to shining location",
+                    "MapIndex" : 0,
+                    "Destination" : [2000,2500,150],
+                    "FX" : ""
+                }
+            ],
+            "Rewards" : [] 
+        }
+    ]
+}

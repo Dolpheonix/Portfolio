@@ -1,0 +1,13 @@
+{
+    "LevelInfoList" : 
+    [
+        {
+            "Index" : 0,
+            "Name" : "Test"
+        },
+        {
+            "Index" : 1,
+            "Name" : "Test_Enemy"
+        }
+    ]
+}
