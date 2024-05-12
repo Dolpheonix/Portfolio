@@ -1,9 +1,9 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
+
+#include <thread>
 
 #include "../Common/Item.h"
 #include "../Common/Quest.h"
@@ -12,10 +12,12 @@
 
 #include "CustomGameInstance.generated.h"
 
+constexpr int MAX_CHATTING_TO_SHOW = 20;
 constexpr int MAX_SAVE_SLOT = 10;
 constexpr int MAX_QUEST_COMMIT = 10;
 
 class APlayerCharacter;
+class ChattingClient;
 
 /*
 	UCustomGameInstance : 기본 게임 인스턴스
@@ -69,6 +71,10 @@ public:
 	void SetPlayerInfo(const PlayerInfo& info);
 	PlayerInfo GetPlayerInfo() const;
 	PlayerInfo GetSaveData(int slotIndex) const;
+	const TArray<FString>& GetSavedChattings() const;
+
+	void SendChatMessage(const char* chat);
+	void HandleChatMessage(const char* chat);
 
 private:
 	TArray<ItemInfo> mItemInfoList;
@@ -78,6 +84,10 @@ private:
 	TArray<FString> mLevelList;
 
 	PlayerInfo mTempPlayerInfo; // 맵 이동 시 플레이어 정보를 임시로 저장하는 용도
+
+	ChattingClient* mChattingClient;
+	std::thread mChattingThread;
+	TArray<FString> mSavedChattings;
 
 	bool bLoaded;
 	bool bIntro;

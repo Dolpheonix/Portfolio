@@ -20,6 +20,13 @@
 #define EPSILON_ZERO 0.000003
 
 constexpr float HURT_FREEZE_TIME = 1.0f;
+constexpr float CAMERA_LOC_X = -150.f;
+constexpr float CAMERA_LOC_Y = 0.f;
+constexpr float CAMERA_LOC_Z = 88.f;
+constexpr float CAMERA_ROT_PITCH = -20.f;
+constexpr float CAMERA_ROT_YAW = 0.f;
+constexpr float CAMERA_ROT_ROLL = 0.f;
+constexpr float SHOT_ANIM_TIME = 0.7f;
 
 static_assert(static_cast<uint8>(EPlayerActionMode::Count) == 3);
 static_assert(static_cast<uint8>(EPlayerMovementMode::Count) == 5);
@@ -44,8 +51,8 @@ APlayerCharacter::APlayerCharacter() : testVal(0.0f),
 	GetMesh()->SetupAttachment(RootComponent);
 
 	mCameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("ThirdCamera"));
-	mCameraComponent->SetRelativeLocation(FVector(-150.0f, 0.0f, 88.0f));
-	mCameraComponent->SetRelativeRotation(FRotator(-20.0f, 0.0f, 0.0f));
+	mCameraComponent->SetRelativeLocation(FVector(CAMERA_LOC_X, CAMERA_LOC_Y, CAMERA_LOC_Z));
+	mCameraComponent->SetRelativeRotation(FRotator(CAMERA_ROT_PITCH, CAMERA_ROT_YAW, CAMERA_ROT_ROLL));
 	mCameraComponent->bUsePawnControlRotation = true;
 	mCameraComponent->SetupAttachment(RootComponent);
 
@@ -119,7 +126,6 @@ void APlayerCharacter::Tick(float DeltaTime)
 	}
 
 	UpdateMovement();
-	UpdateAction();
 	UpdateNotifyInteraction();
 	UpdateAnimationMode();
 }
@@ -156,10 +162,14 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	PlayerInputComponent->BindAction("Equip", IE_Pressed, this, &APlayerCharacter::ChangeEquipment);
 
 	PlayerInputComponent->BindAction("Attack", IE_Pressed, this, &APlayerCharacter::Attack);
+	PlayerInputComponent->BindAction("Subattack", IE_Pressed, this, &APlayerCharacter::Subattack);
+	PlayerInputComponent->BindAction("CancleSubattack", IE_Released, this, &APlayerCharacter::CancleSubattack);
 
 	PlayerInputComponent->BindAction("OpenInventory", IE_Pressed, this, &APlayerCharacter::OpenInventory);
 	PlayerInputComponent->BindAction("OpenMenu", IE_Pressed, this, &APlayerCharacter::OpenMenu);
 	PlayerInputComponent->BindAction("OpenQuest", IE_Pressed, this, &APlayerCharacter::OpenQuestTable);
+
+	PlayerInputComponent->BindAction("ShowChattingBox", IE_Pressed, this, &APlayerCharacter::ShowChattingBox);
 }
 
 void APlayerCharacter::OnHurt()
@@ -271,7 +281,46 @@ void APlayerCharacter::Attack()
 	}
 
 	mActionMode = EPlayerActionMode::Attack;
+
+	if(mWeaponType == EWeaponType::Rifle)
+	{
+		GetWorldTimerManager().SetTimer(mAttackAnimationTimer, this, &APlayerCharacter::EndAction, 0.5f, false, SHOT_ANIM_TIME);
+	}
+
 	mWeapon->Attack();
+}
+
+void APlayerCharacter::Subattack()
+{
+	switch (mWeaponType)
+	{
+	case EWeaponType::Fist:
+		break;
+	case EWeaponType::Rifle:
+	{
+		const FVector& muzzleLocation = mWeapon->GetSocketLocation(TEXT("Muzzle"));
+		mCameraComponent->SetWorldLocation(muzzleLocation);
+		break;
+	}
+	default:
+		break;
+	}
+}
+
+void APlayerCharacter::CancleSubattack()
+{
+	switch (mWeaponType)
+	{
+	case EWeaponType::Fist:
+		break;
+	case EWeaponType::Rifle:
+	{
+		mCameraComponent->SetRelativeLocation(FVector(CAMERA_LOC_X, CAMERA_LOC_Y, CAMERA_LOC_Z));
+		break;
+	}
+	default:
+		break;
+	}
 }
 
 void APlayerCharacter::OpenInventory()
@@ -293,6 +342,13 @@ void APlayerCharacter::OpenQuestTable()
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
 	check(controller);
 	controller->OpenQuestTable(this);
+}
+
+void APlayerCharacter::ShowChattingBox()
+{
+	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+	check(controller);
+	controller->OpenChattingBox();
 }
 
 void APlayerCharacter::ChangeWeapon()
@@ -434,6 +490,12 @@ void APlayerCharacter::UnInteract()
 {
 	mActionMode = EPlayerActionMode::Idle;
 	bInteracting = false;
+}
+
+void APlayerCharacter::EndAction()
+{
+	GetWorldTimerManager().ClearTimer(mAttackAnimationTimer);
+	mActionMode = EPlayerActionMode::Idle;
 }
 
 void APlayerCharacter::CommitQuest(int index)
@@ -701,39 +763,6 @@ void APlayerCharacter::UpdateMovement()
 		{
 			mMovementMode = EPlayerMovementMode::Idle;
 		}
-	}
-}
-
-void APlayerCharacter::UpdateAction()
-{
-	switch (mActionMode)
-	{
-	case EPlayerActionMode::Idle:
-		// Attack, Interaction로의 변경은 입력 함수에서 이루어짐
-		break;
-	case EPlayerActionMode::Attack:
-		// Attack 애니메이션이 끝나면 Idle로 변경
-	{
-		switch (mWeaponType)
-		{
-		case EWeaponType::Rifle:
-		{
-			const float animRatio = GetMesh()->GetAnimInstance()->GetInstanceAssetPlayerTimeFraction(18);
-			if (animRatio >= 1.0f)
-			{
-				mActionMode = EPlayerActionMode::Idle;
-			}
-		}
-		default:
-			break;
-		}
-		break;
-	}
-	case EPlayerActionMode::Interact:
-		// Interaction -> Idle로의 변경은 UnInteract 함수에서 이루어짐
-		break;
-	default:
-		break;
 	}
 }
 

@@ -5,11 +5,12 @@
 #include "../Character/NpcCharacter.h"
 #include "../Base/Func.h"
 #include "../Base/LoadHelper.h"
+#include "../Network/ChattingClient.h"
 #include "CustomController.h"
 
 UCustomGameInstance::UCustomGameInstance() : UGameInstance(), bLoaded(false), bIntro(false)
 {
-
+	mSavedChattings.SetNum(MAX_CHATTING_TO_SHOW);
 }
 
 void UCustomGameInstance::Init()
@@ -20,6 +21,16 @@ void UCustomGameInstance::Init()
 		FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UCustomGameInstance::OnMapLoaded);
 		LoadGameData();	// 게임 데이터 로드
 		
+		mChattingClient = new ChattingClient;
+		check(mChattingClient);
+
+		if (mChattingClient->Init(this) == SOCKET_ERROR)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("Can't init Chatting Client"));
+		}
+
+		mChattingThread = thread(&ChattingClient::Run, mChattingClient);
+
 		bLoaded = true;
 	}
 
@@ -34,6 +45,9 @@ void UCustomGameInstance::Init()
 
 void UCustomGameInstance::Shutdown()
 {
+	mChattingClient->SetRunning(false);
+	mChattingThread.join();
+
 	UGameInstance::Shutdown();
 }
 
@@ -273,6 +287,10 @@ void UCustomGameInstance::LoadGame(int slotIndex)
 
 	bIntro = false;
 
+	// Send to Server
+	const char* msg = TCHAR_TO_ANSI(*ls->mPlayerName);
+	mChattingClient->SetName(msg);
+
 	UGameplayStatics::OpenLevel(this, FName(mLevelList[mTempPlayerInfo.CurrentMap]));
 }
 
@@ -385,4 +403,28 @@ PlayerInfo UCustomGameInstance::GetSaveData(int slotIndex) const
 	res.SlotIndex = ls->mSlotIndex;
 
 	return res;
+}
+
+const TArray<FString>& UCustomGameInstance::GetSavedChattings() const
+{
+	return mSavedChattings;
+}
+
+void UCustomGameInstance::SendChatMessage(const char* chat)
+{
+	mChattingClient->SendChatting(chat);
+}
+
+void UCustomGameInstance::HandleChatMessage(const char* chat)
+{
+	for (int i = MAX_CHATTING_TO_SHOW - 1; i > 0; --i)
+	{
+		mSavedChattings[i] = mSavedChattings[i - 1];
+	}
+
+	mSavedChattings[0] = chat;
+
+	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+	check(controller);
+	controller->UpdateChatting();
 }

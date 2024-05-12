@@ -49,7 +49,10 @@ public:
 	void CloseShop(TObjectPtr<APlayerCharacter> player);
 	void OpenQuestTable(TObjectPtr<APlayerCharacter> player);
 	void CloseQuestTable(TObjectPtr<APlayerCharacter> player);
+	void OpenChattingBox();
+	void CloseChattingBox();
 
+	void UpdateChatting();
 	void UpdateHealthBar();
 	void UpdateWeaponImage();
 

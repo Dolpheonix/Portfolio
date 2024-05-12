@@ -108,6 +108,8 @@ void ACustomController::CloseMenu(TObjectPtr<APlayerCharacter> player, bool open
 
 void ACustomController::OpenHUD(TObjectPtr<APlayerCharacter> player)
 {
+	SetInputMode(FInputModeGameOnly());
+
 	mHUDWidget->AddToViewport();
 	mHUDWidget->Open(player);
 }
@@ -199,6 +201,31 @@ void ACustomController::CloseQuestTable(TObjectPtr<APlayerCharacter> player)
 	SetShowMouseCursor(false);
 
 	OpenHUD(player);
+}
+
+void ACustomController::OpenChattingBox()
+{
+	SetInputMode(FInputModeUIOnly());
+	SetShowMouseCursor(true);
+
+	mHUDWidget->SetChattingBoxVisibility(true);
+	mHUDWidget->UpdateChatting();
+}
+
+void ACustomController::CloseChattingBox()
+{
+	SetInputMode(FInputModeGameOnly());
+	SetShowMouseCursor(false);
+
+	mHUDWidget->SetChattingBoxVisibility(false);
+}
+
+void ACustomController::UpdateChatting()
+{
+	if (mHUDWidget->IsInViewport() == true)
+	{
+		mHUDWidget->UpdateChatting();
+	}
 }
 
 void ACustomController::UpdateHealthBar()

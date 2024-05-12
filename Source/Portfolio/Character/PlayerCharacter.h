@@ -96,12 +96,18 @@ public:
 	void ChangeEquipment();
 	// 공격 (마우스 좌클릭)
 	void Attack();
+	// 공격 보조 (마우스 우클릭 누름)
+	void Subattack();
+	// 공격 보조 해제 (마우스 우클릭 뗌)
+	void CancleSubattack();
 	// 인벤토리 ui 열기 (I 키 누름)
 	void OpenInventory();
 	// 메뉴 창 열기 (Esc 키 누름)
 	void OpenMenu();
 	// 퀘스트 창 열기
 	void OpenQuestTable();
+	// 채팅창 열기 (엔터 키 누름)
+	void ShowChattingBox();
 
 	// mCurrentWeaponIndex의 무기로 변경(장착 상태로)	
 	void ChangeWeapon();
@@ -115,6 +121,8 @@ public:
 	void Interact();
 	// 상호 작용 해제
 	void UnInteract();
+	// 공격 애니메이션이 끝나면 호출됨
+	void EndAction();
 
 	// 퀘스트 등록
 	void CommitQuest(int index);
@@ -138,8 +146,6 @@ public:
 	void UpdateHurtTimer(float deltaTime);
 	// 현재 캐릭터의 이동 상황에 따라 Movment 모드를 결정
 	void UpdateMovement();
-	// 현재 캐릭터의 Action 모드를 결정
-	void UpdateAction();
 	// 가장 가까운 상호작용 오브젝트와 상호작용 가능함을 알림
 	void UpdateNotifyInteraction();
 	// Animation Bp 상에서 어떤 스테이트 머신을 사용할 지 결정
@@ -235,6 +241,7 @@ protected:
 	TArray<FQuestStatus> mQuestTable;
 
 // ETC
+	FTimerHandle mAttackAnimationTimer;
 
 	UPROPERTY(ReplicatedUsing=OnRep_Notify)
 	float testVal;
