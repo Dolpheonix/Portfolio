@@ -28,17 +28,11 @@ protected:
 	void OnClicked_BackToGame();
 
 	UFUNCTION()
-	void OnClicked_SaveGame();
-
-	UFUNCTION()
 	void OnClicked_ExitGame();
 
 protected:
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UButton> mBackToGameButton;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mSaveGameButton;
 
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UButton> mExitGameButton;

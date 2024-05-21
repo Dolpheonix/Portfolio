@@ -2,6 +2,7 @@
 
 #include "ChattingServer.h"
 #include <iostream>
+#include <google/protobuf/port_def.inc>
 #include <assert.h>
 
 #define PACKET_SIZE 1024
@@ -37,7 +38,7 @@ int ChattingServer::BindToAddress()
 	mServerAddress.sin_port = htons(4444);
 	mServerAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
-	return bind(mServerSocket, (SOCKADDR*)&mServerAddress, sizeof(mServerAddress));
+	return ::bind(mServerSocket, (SOCKADDR*)&mServerAddress, sizeof(mServerAddress));
 }
 
 int ChattingServer::ListenToClient()
@@ -174,7 +175,7 @@ unsigned int __stdcall HandleClient(void* data)
 	return 0;
 }
 
-int main()
+int main(int argc, char argv[])
 {
 	// Init Server Class
 	ChattingServer* server = new ChattingServer;

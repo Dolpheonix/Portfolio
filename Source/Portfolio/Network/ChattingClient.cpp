@@ -21,12 +21,6 @@ int ChattingClient::Init(TObjectPtr<UCustomGameInstance> gi)
 {
 	check(gi);
 
-	WSADATA wsa;
-
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
-		return 1;
-	}
-
 	mSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 	if (mSocket == INVALID_SOCKET)
 	{
@@ -80,8 +74,6 @@ void ChattingClient::Run()
 	}
 
 	closesocket(mSocket);
-
-	WSACleanup();
 }
 
 int ChattingClient::SendChatting(const char* msg)

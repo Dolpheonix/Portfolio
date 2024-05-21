@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ProtoObject/SaveObject.pb.h"
 #include "GameFramework/SaveGame.h"
 #include "../Common/Item.h"
 #include "../Common/Quest.h"
@@ -24,6 +25,10 @@ struct PlayerInfo
 	TArray<FQuestStatus> QuestTable;	// 현재 퀘스트 진행도
 
 	int SlotIndex;						// 세이브 슬롯 번호
+
+public:
+	void ConvertFromProto(const SaveObject::PlayerInfo& info);
+	void ConvertToProto(SaveObject::PlayerInfo& info);
 };
 
 UCLASS()

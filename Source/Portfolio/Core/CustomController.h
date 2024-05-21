@@ -55,6 +55,9 @@ public:
 	void UpdateChatting();
 	void UpdateHealthBar();
 	void UpdateWeaponImage();
+	void NotifyLoginFailed(bool isRegister);
+	void NotifyRegisterSucceeded();
+	void NotifyNicknameDuplicated();
 
 	// Getter
 	TObjectPtr<UAIPerceptionComponent> GetPerceptionComponent();

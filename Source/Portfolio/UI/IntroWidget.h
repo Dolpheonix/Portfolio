@@ -23,66 +23,32 @@ class PORTFOLIO_API UIntroWidget : public UUserWidget
 
 protected:
 	UFUNCTION()
-	void OnClicked_Back();
-
+	void OnClicked_Login();
 	UFUNCTION()
-	void OnClicked_OpenNewGameMenu();
+	void OnClicked_Register();
 	UFUNCTION()
-	void OnClicked_OpenLoadGameMenu();
+	void OnClicked_Submit();
 
-	UFUNCTION()
-	void OnClicked_StartNewGame();
-
-	UFUNCTION()
-	void OnClicked_SelectSaveSlot(int index);
-	UFUNCTION()
-	void OnClicked_LoadGame();
-
-	enum class EIntroWidgetType : uint8
-	{
-		Main,
-		NewGame,
-		LoadGame,
-		Count,
-	};
-
-	void SwitchMenu(EIntroWidgetType type);
-	void ShowPopup(FName notifyText);
+public:
+	// 로그인 실패를 알리는 팝업창을 띄움
+	void NotifyLoginFailed(bool isRegister);
+	// 회원가입 성공을 알림. 닉네임 설정 창으로 전환
+	void NotifyRegisterSucceeded();
+	// 닉네임이 중복됨을 알리는 팝업창을 띄움
+	void NotifyNicknameDuplicated();
 
 protected:
-	// Widget Switcher
-	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UWidgetSwitcher> mWidgetSwitcher;
 
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mBackButton;
+	// Login Session
+	TObjectPtr<UEditableTextBox> mIdText;
+	TObjectPtr<UEditableTextBox> mPwText;
+	TObjectPtr<UButton> mLoginButton;
+	TObjectPtr<UButton> mRegisterButton;
 
-	// Main Menu
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mNewGameButton;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mLoadGameButton;
-
-	// New Game Menu
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UEditableTextBox> mNewNameText;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mNewButton;
-
-	// Load Game Menu
-	UPROPERTY(BlueprintReadWrite)
-	TArray<TObjectPtr<UTextButton>> mSlotButtons;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UTextBlock> mSlotNameText;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UTextBlock> mSlotInfoText;
-
-	UPROPERTY(BlueprintReadWrite)
-	TObjectPtr<UButton> mLoadButton;
+	// Set Nickname Session
+	TObjectPtr<UEditableTextBox> mNicknameText;
+	TObjectPtr<UButton> mSubmitButton;
 
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<UNotifyPopup> NotifyPopupClass;

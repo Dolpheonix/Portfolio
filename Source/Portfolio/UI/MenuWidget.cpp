@@ -16,7 +16,6 @@ void UMenuWidget::NativePreConstruct()
 	if (IsDesignTime() == false)
 	{
 		mBackToGameButton = Cast<UButton>(GetWidgetFromName(TEXT("Btn_BackToGame")));
-		mSaveGameButton = Cast<UButton>(GetWidgetFromName(TEXT("Btn_SaveGame")));
 		mExitGameButton = Cast<UButton>(GetWidgetFromName(TEXT("Btn_ExitGame")));
 	}
 }
@@ -26,13 +25,11 @@ void UMenuWidget::NativeConstruct()
 	Super::NativeConstruct();
 
 	check(mBackToGameButton);
-	check(mSaveGameButton);
 	check(mExitGameButton);
 
 	if (bBound == false)
 	{
 		mBackToGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnClicked_BackToGame);
-		mSaveGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnClicked_SaveGame);
 		mExitGameButton->OnClicked.AddDynamic(this, &UMenuWidget::OnClicked_ExitGame);
 
 		bBound = true;
@@ -57,14 +54,6 @@ void UMenuWidget::OnClicked_BackToGame()
 	check(pc);
 
 	pc->CloseMenu(mOwnerPlayer, false);
-}
-
-void UMenuWidget::OnClicked_SaveGame()
-{
-	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
-	check(gi);
-
-	gi->SaveGame(mOwnerPlayer);
 }
 
 void UMenuWidget::OnClicked_ExitGame()

@@ -238,6 +238,30 @@ void ACustomController::UpdateWeaponImage()
 	mHUDWidget->UpdateWeaponImage();
 }
 
+void ACustomController::NotifyLoginFailed(bool isRegister)
+{
+	if (mIntroWidget->IsInViewport() == true)
+	{
+		mIntroWidget->NotifyLoginFailed(isRegister);
+	}
+}
+
+void ACustomController::NotifyRegisterSucceeded()
+{
+	if (mIntroWidget->IsInViewport() == true)
+	{
+		mIntroWidget->NotifyRegisterSucceeded();
+	}
+}
+
+void ACustomController::NotifyNicknameDuplicated()
+{
+	if (mIntroWidget->IsInViewport() == true)
+	{
+		mIntroWidget->NotifyNicknameDuplicated();
+	}
+}
+
 TObjectPtr<UAIPerceptionComponent> ACustomController::GetPerceptionComponent()
 {
 	return mPerceptionComponent;

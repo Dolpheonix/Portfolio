@@ -6,6 +6,7 @@
 #include "../Base/Func.h"
 #include "../Base/LoadHelper.h"
 #include "../Network/ChattingClient.h"
+#include "../Network/MainClient.h"
 #include "CustomController.h"
 
 UCustomGameInstance::UCustomGameInstance() : UGameInstance(), bLoaded(false), bIntro(false)
@@ -21,6 +22,23 @@ void UCustomGameInstance::Init()
 		FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UCustomGameInstance::OnMapLoaded);
 		LoadGameData();	// 게임 데이터 로드
 		
+		WSADATA wsa;
+		if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("Can't start WSA"));
+		}
+
+		// 게임 서버와 연결
+		mMainClient = new MainClient;
+		check(mMainClient);
+		if (mMainClient->Init(this) == SOCKET_ERROR)
+		{
+			UE_LOG(LogTemp, Fatal, TEXT("Can't init Main Client"));
+		}
+
+		mMainClientThread = thread(&MainClient::Run, mMainClient);
+
+		// 채팅 서버와 연결
 		mChattingClient = new ChattingClient;
 		check(mChattingClient);
 
@@ -45,8 +63,20 @@ void UCustomGameInstance::Init()
 
 void UCustomGameInstance::Shutdown()
 {
+	mMainClient->SetRunning(false);
 	mChattingClient->SetRunning(false);
+
+
+	// Save before Shutdown
+	if (bIntro == false)
+	{
+		mMainClient->SaveGame(mTempPlayerInfo);
+	}
+
+	mMainClientThread.join();
 	mChattingThread.join();
+
+	WSACleanup();
 
 	UGameInstance::Shutdown();
 }
@@ -173,125 +203,6 @@ void UCustomGameInstance::LoadEnemyList(UWorld* world)
 			spawnedEnemy->SpawnDefaultController();
 		}
 	}
-}
-
-int UCustomGameInstance::CreateSaveFile(FString playerName)
-{
-	// 세이브 파일명 리스트 불러오기
-	USaveSlot* ls = Cast<USaveSlot>(UGameplayStatics::LoadGameFromSlot("SaveSlot", 0));
-
-	if (!ls)
-	{
-		// 리스트 파일이 없다면 새로 만듦
-		ls = Cast<USaveSlot>(UGameplayStatics::CreateSaveGameObject(USaveSlot::StaticClass()));
-	}
-	else if (ls->mSlotNameList.Num() == MAX_SAVE_SLOT)
-	{
-		// 슬롯이 꽉참
-		return -1;
-	}
-
-	const int emptySlot = ls->mSlotNameList.Num();
-	ls->mSlotNameList.Add(FName(playerName));
-
-	// 리스트 업데이트
-	UGameplayStatics::SaveGameToSlot(ls, "SaveSlot", 0);
-
-	// 세이브 파일 새로 생성
-	UPlayerSaveObject* si = Cast<UPlayerSaveObject>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveObject::StaticClass()));
-	check(si);
-
-	// 기본값 지정
-	si->mPlayerName = playerName;
-	si->mCurrentLevel = 0;
-	si->mCurrentMap = 0;
-	si->mCurrentLocation = FVector(0.f, 0.f, -100.f);
-	si->mCurrentGold = 0;
-
-	si->mQuestTable.SetNum(mQuestInfoList.Num());
-	for (int i = 0; i < mQuestInfoList.Num(); ++i)
-	{
-		si->mQuestTable[i].Type = mQuestInfoList[i].Type;
-		si->mQuestTable[i].CurrProgress = EQuestProgressType::Available;	//TODO : 퀘스트 등록 가능/불가능 조건
-		si->mQuestTable[i].SubStatus.SetNum(mQuestInfoList[i].SubQuests.Num());
-		for (int j = 0; j < mQuestInfoList[i].SubQuests.Num(); ++j)
-		{
-			si->mQuestTable[i].SubStatus[j].bStarted = false;
-			si->mQuestTable[i].SubStatus[j].bCompleted = false;
-			si->mQuestTable[i].SubStatus[j].Type = mQuestInfoList[i].SubQuests[j].Type;
-			si->mQuestTable[i].SubStatus[j].CurrAmount = 0;
-		}
-	}
-
-	si->mSlotIndex = emptySlot;
-
-	// 빈 슬롯 인덱스에 파일 저장
-	UGameplayStatics::SaveGameToSlot(si, playerName, emptySlot);
-
-	return emptySlot;
-}
-
-void UCustomGameInstance::SaveGame(TObjectPtr<APlayerCharacter> player)
-{
-	check(player);
-
-	USaveSlot* saveSlot = Cast<USaveSlot>(UGameplayStatics::LoadGameFromSlot("SaveSlot", 0));
-	check(saveSlot);
-
-	const int slotIndex = player->GetSlotIndex();
-
-	check(slotIndex < saveSlot->mSlotNameList.Num());
-
-	const FString playerName = saveSlot->mSlotNameList[slotIndex].ToString();
-
-	UPlayerSaveObject* so = Cast<UPlayerSaveObject>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveObject::StaticClass()));
-
-	so->mPlayerName = player->mDisplayName;
-	so->mCurrentLevel = player->GetCurrentLevel();
-	so->mCurrentGold = player->GetCurrentGold();
-	so->mCurrentMap = player->GetCurrentMapIndex();
-	so->mCurrentLocation = player->GetActorLocation();
-	so->mInventory = player->GetInventory_cpy();
-	so->mQuestTable = player->GetQuestTable_cpy();
-	so->mSlotIndex = player->GetSlotIndex();
-
-	UGameplayStatics::SaveGameToSlot(so, player->mDisplayName, slotIndex);
-}
-
-void UCustomGameInstance::LoadGame(int slotIndex)
-{
-	USaveSlot* saveSlot = Cast<USaveSlot>(UGameplayStatics::LoadGameFromSlot("SaveSlot", 0));
-	check(saveSlot);
-
-	check(slotIndex < saveSlot->mSlotNameList.Num());
-
-	const FString playerName = saveSlot->mSlotNameList[slotIndex].ToString();
-
-	UPlayerSaveObject* ls = Cast<UPlayerSaveObject>(UGameplayStatics::CreateSaveGameObject(UPlayerSaveObject::StaticClass()));
-	ls = Cast<UPlayerSaveObject>(UGameplayStatics::LoadGameFromSlot(playerName, slotIndex));
-
-	check(ls);
-
-	mTempPlayerInfo.PlayerName = ls->mPlayerName;
-	mTempPlayerInfo.CurrentLevel = ls->mCurrentLevel;
-	mTempPlayerInfo.CurrentMap = ls->mCurrentMap;
-	mTempPlayerInfo.CurrentLocation = ls->mCurrentLocation;
-	mTempPlayerInfo.CurrentGold = ls->mCurrentGold;
-	mTempPlayerInfo.QuestTable = ls->mQuestTable;
-	mTempPlayerInfo.Inventory = ls->mInventory;
-	mTempPlayerInfo.SlotIndex = ls->mSlotIndex;
-
-	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
-	check(controller);
-	controller->CloseIntro();
-
-	bIntro = false;
-
-	// Send to Server
-	const char* msg = TCHAR_TO_ANSI(*ls->mPlayerName);
-	mChattingClient->SetName(msg);
-
-	UGameplayStatics::OpenLevel(this, FName(mLevelList[mTempPlayerInfo.CurrentMap]));
 }
 
 bool UCustomGameInstance::IsLoaded()
@@ -427,4 +338,67 @@ void UCustomGameInstance::HandleChatMessage(const char* chat)
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
 	check(controller);
 	controller->UpdateChatting();
+}
+
+void UCustomGameInstance::SendLoginInfo(const char* id, const char* pw, bool isRegister)
+{
+	mMainClient->SendLoginInfo(id, pw, isRegister);
+}
+
+void UCustomGameInstance::SendNickname(const char* nickname)
+{
+	mMainClient->SendNickname(nickname);
+}
+
+void UCustomGameInstance::HandleLoginResult(PlayerInfo received, bool isRegister)
+{
+	if (received.CurrentMap == 10000)
+	{
+		TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+		check(controller);
+		controller->NotifyLoginFailed(isRegister);
+	}
+	else if (isRegister == true)
+	{
+		mTempPlayerInfo = received;
+
+		TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+		check(controller);
+		controller->NotifyRegisterSucceeded();
+	}
+	else 
+	{
+		mTempPlayerInfo = received;
+		StartGame();
+	}
+}
+
+void UCustomGameInstance::HandleNicknameResult(const char* nickname, bool isSubmitted)
+{
+	if (isSubmitted == true)
+	{
+		mTempPlayerInfo.PlayerName = nickname;
+		StartGame();
+	}
+	else
+	{
+		TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+		check(controller);
+		controller->NotifyNicknameDuplicated();
+	}
+}
+
+void UCustomGameInstance::StartGame()
+{
+	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
+	check(controller);
+	controller->CloseIntro();
+
+	bIntro = false;
+
+	// Send to Server
+	const char* msg = TCHAR_TO_ANSI(*mTempPlayerInfo.PlayerName);
+	mChattingClient->SetName(msg);
+
+	UGameplayStatics::OpenLevel(this, FName(mLevelList[mTempPlayerInfo.CurrentMap]));
 }

@@ -2,9 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Engine/GameInstance.h"
-
 #include <thread>
-
 #include "../Common/Item.h"
 #include "../Common/Quest.h"
 #include "../Common/Enemy.h"
@@ -18,6 +16,7 @@ constexpr int MAX_QUEST_COMMIT = 10;
 
 class APlayerCharacter;
 class ChattingClient;
+class MainClient;
 
 /*
 	UCustomGameInstance : 기본 게임 인스턴스
@@ -49,11 +48,6 @@ public:
 	// Enemy 데이터 로드/스폰
 	void LoadEnemyList(UWorld* world);
 
-	// Save/Load
-	int CreateSaveFile(FString playerName);
-	void SaveGame(TObjectPtr<APlayerCharacter> player);
-	void LoadGame(int slotIndex);
-
 	// Getter/Setter
 	bool IsLoaded();
 	void SetIsIntro(bool b);
@@ -73,8 +67,16 @@ public:
 	PlayerInfo GetSaveData(int slotIndex) const;
 	const TArray<FString>& GetSavedChattings() const;
 
+	// Chatting Handler
 	void SendChatMessage(const char* chat);
 	void HandleChatMessage(const char* chat);
+
+	// Login Handler
+	void SendLoginInfo(const char* id, const char* pw, bool isRegister);
+	void SendNickname(const char* nickname);
+	void HandleLoginResult(PlayerInfo received, bool isRegister);
+	void HandleNicknameResult(const char* nickname, bool isSubmitted);
+	void StartGame();
 
 private:
 	TArray<ItemInfo> mItemInfoList;
@@ -88,6 +90,9 @@ private:
 	ChattingClient* mChattingClient;
 	std::thread mChattingThread;
 	TArray<FString> mSavedChattings;
+
+	MainClient* mMainClient;
+	std::thread mMainClientThread;
 
 	bool bLoaded;
 	bool bIntro;

@@ -107,6 +107,28 @@ void APlayerCharacter::BeginPlay()
 	}
 }
 
+void APlayerCharacter::EndPlay(const EEndPlayReason::Type type)
+{
+	if ((type == EEndPlayReason::LevelTransition) || (type == EEndPlayReason::Quit))
+	{
+		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
+		check(gi);
+
+		PlayerInfo saveInfo;
+		saveInfo.PlayerName = mDisplayName;
+		saveInfo.CurrentLevel = mCurrentLevel;
+		saveInfo.CurrentGold = mCurrentGold;
+		saveInfo.CurrentMap = mCurrentMap;
+		saveInfo.QuestTable = mQuestTable;
+		saveInfo.Inventory = mInventory;
+		saveInfo.CurrentLocation = GetActorLocation();
+		
+		gi->SetPlayerInfo(saveInfo);
+	}
+
+	Super::EndPlay(type);
+}
+
 void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
