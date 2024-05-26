@@ -48,8 +48,6 @@ void ChattingClient::Run()
 		}
 	}
 
-	UE_LOG(LogTemp, Log, TEXT("FROM CHATTING THREAD"));
-
 	u_long nonblock = 1;
 	ioctlsocket(mSocket, FIONBIO, &nonblock);
 

@@ -67,7 +67,7 @@ void UCustomGameInstance::Shutdown()
 	mChattingClient->SetRunning(false);
 
 
-	// Save before Shutdown
+	// 종료 직전의 게임 데이터를 저장
 	if (bIntro == false)
 	{
 		mMainClient->SaveGame(mTempPlayerInfo);

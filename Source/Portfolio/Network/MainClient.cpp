@@ -52,7 +52,7 @@ void MainClient::Run()
 	}
 
 	u_long nonblock = 1;
-	ioctlsocket(mSocket, FIONBIO, &nonblock);
+	ioctlsocket(mSocket, FIONBIO, &nonblock);	// 논블록 소켓으로 지정해, Running 상태를 항상 확인해 게임 종료 시에 스레드가 정상 종료됩니다.
 
 	char recvBuffer[PACKET_SIZE] = {};
 
@@ -67,23 +67,24 @@ void MainClient::Run()
 		}
 		else
 		{
+			// 수신 데이터 확인
 			string recvString = &recvBuffer[2];
-			AsyncTask(ENamedThreads::GameThread, [this, recvString]()
+			AsyncTask(ENamedThreads::GameThread, [this, recvString]()	// 게임 인스턴스에 접근하기 때문에, 언리얼 GameThread에서 실행되어야 합니다.
 			{
-				string header = recvString.substr(0, 2);
-				if (header == "l_")
+				string header = recvString.substr(0, 2);	// 메시지 종류 확인
+				if (header == "l_")			// 로그인 결과
 				{
 					HandleLoginResult(recvString.c_str(), false);
 				}
-				else if (header == "r_")
+				else if (header == "r_")	// 회원가입 결과
 				{
 					HandleLoginResult(recvString.c_str(), true);
 				}
-				else if (header == "n_")
+				else if (header == "n_")	// 닉네임 설정 성공
 				{
 					HandleSubmitResult(recvString.c_str(), true);
 				}
-				else if (header == "f_")
+				else if (header == "f_")	// 닉네임 설정 실패
 				{
 					HandleSubmitResult(nullptr, false);
 				}
@@ -105,16 +106,17 @@ int MainClient::SendLoginInfo(const char* id, const char* pw, bool isRegister)
 	sendInfo.set_password(pw);
 
 	string sendStr = isRegister ? "r_" : "l_";
-	sendStr += sendInfo.SerializeAsString();
 
+	// 직렬화 및 전송
+	sendStr += sendInfo.SerializeAsString();
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }
 
 int MainClient::SendNickname(const char* nickname)
 {
 	string sendStr = "n_";
-	sendStr += nickname;
 
+	sendStr += nickname;
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }
 
@@ -128,15 +130,15 @@ int MainClient::HandleLoginResult(const char* result, bool isRegister)
 	}
 
 	PlayerInfo info;
-	info.ConvertFromProto(recvInfo);
-	mGameInstance->HandleLoginResult(info, isRegister);
+	info.ConvertFromProto(recvInfo);	// Proto 구조체에서 Unreal 구조체로 변환
+	mGameInstance->HandleLoginResult(info, isRegister);	// 게임 인스턴스에서 결과 처리
 
 	return 0;
 }
 
 int MainClient::HandleSubmitResult(const char* result, bool isSucceeded)
 {
-	mGameInstance->HandleNicknameResult(result, isSucceeded);
+	mGameInstance->HandleNicknameResult(result, isSucceeded);	// 게임 인스턴스에서 결과 처리
 
 	return 0;
 }
@@ -147,8 +149,9 @@ int MainClient::SaveGame(PlayerInfo toSave)
 	toSave.ConvertToProto(sendInfo);
 
 	string sendStr = "s_";
-	sendStr += sendInfo.SerializeAsString();
 
+	// 직렬화 및 전송
+	sendStr += sendInfo.SerializeAsString();
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }
 

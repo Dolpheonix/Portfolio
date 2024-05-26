@@ -36,6 +36,7 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	// 각 UI가 뷰포트에 추가/해제될 때 호출해 부가적인 처리
 	void OpenIntro();
 	void CloseIntro();
 	void OpenMenu(TObjectPtr<APlayerCharacter> player);
@@ -52,12 +53,13 @@ public:
 	void OpenChattingBox();
 	void CloseChattingBox();
 
-	void UpdateChatting();
-	void UpdateHealthBar();
-	void UpdateWeaponImage();
-	void NotifyLoginFailed(bool isRegister);
-	void NotifyRegisterSucceeded();
-	void NotifyNicknameDuplicated();
+	// UI 외부에서 발생한 이벤트를 UI에 적용하기 위한 메서드
+	void UpdateChatting();						// 서버로부터 전달된 채팅을 UI에 적용
+	void UpdateHealthBar();						// HUD의 체력 바 업데이트
+	void UpdateWeaponImage();					// 퀵슬롯 변경 시 이미지 업데이트
+	void NotifyLoginFailed(bool isRegister);	// 로그인/회원가입 실패 시 알립창 팝업
+	void NotifyRegisterSucceeded();				// 회원가입 성공 시 닉네임 설정창으로 변경
+	void NotifyNicknameDuplicated();			// 닉네임 중복 시 알림창 팝업
 
 	// Getter
 	TObjectPtr<UAIPerceptionComponent> GetPerceptionComponent();

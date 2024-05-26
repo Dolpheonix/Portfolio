@@ -7,8 +7,6 @@
 
 #define PACKET_SIZE 1024
 
-unsigned int __stdcall HandleClient(void* data);
-
 GameServer* GameServer::mSingleton = nullptr;
 
 GameServer::GameServer()
@@ -25,12 +23,13 @@ int GameServer::InitServerSocket()
 		return SOCKET_ERROR;
 	}
 
+	// DB와 연결
 	MYSQL* conn = new MYSQL();
 
 	mysql_init(conn);
 
 	mSQLDriver = sql::mysql::get_mysql_driver_instance();
-	mSQLConnection.reset(mSQLDriver->connect("tcp://127.0.0.1:3306", "root", "redapple67#"));
+	mSQLConnection.reset(mSQLDriver->connect("tcp://127.0.0.1:3306", "root", "PASSWORD"));
 	mSQLConnection->setSchema("portfolio");
 
 	return 0;
@@ -40,7 +39,7 @@ int GameServer::BindToAddress()
 {
 	mServerAddress = {};
 	mServerAddress.sin_family = AF_INET;
-	mServerAddress.sin_port = htons(5555);
+	mServerAddress.sin_port = htons(5555);	// 5555번 포트 사용
 	mServerAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	return ::bind(mServerSocket, (SOCKADDR*)&mServerAddress, sizeof(mServerAddress));
@@ -53,14 +52,15 @@ int GameServer::ListenToClient()
 
 void GameServer::Run()
 {
-	mListenThread = thread(&GameServer::AcceptClient, this);
+	mListenThread = thread(&GameServer::AcceptClient, this);	// Accept 관리용 스레드 실행
 
+	// 서버 명령어 처리
 	char msg[PACKET_SIZE] = {0};
 	while (true)
 	{
 		ZeroMemory(&msg, PACKET_SIZE);
 		cin >> msg;
-		if ((string)msg == "list")
+		if ((string)msg == "list")	// 연결된 클라이언트 목록 출력
 		{
 			cout << "Connected Client List" << endl;
 			for (GameServerClient c : mClients)
@@ -70,11 +70,11 @@ void GameServer::Run()
 		}
 	}
 
+	// 스레드 종료 시 소켓 종료
 	mListenThread.join();
-	for (HANDLE h : mhThreads)
+	for (thread& t : mThreads)
 	{
-		WaitForSingleObject(h, INFINITE);
-		CloseHandle(h);
+		t.join();
 	}
 
 	closesocket(mServerSocket);
@@ -102,10 +102,197 @@ void GameServer::AcceptClient()
 		GameServerClient* client = new GameServerClient;
 		client->Socket = client_socket;
 		client->Address = clientAddr;
-		
-		mhThreads.push_back((HANDLE)_beginthreadex(NULL, 0, HandleClient, client, 0, NULL));
+
+		mThreads.push_back(thread(&GameServer::HandleClient, this, client));
 		mClients.push_back(*client);
 	}
+}
+
+void GameServer::HandleClient(GameServerClient* clientInfo)
+{
+	SOCKET socket_client = clientInfo->Socket;
+	SOCKADDR_IN addr_client = clientInfo->Address;
+
+	char recvBuffer[PACKET_SIZE];
+	int recvSize;
+
+	unique_ptr<sql::PreparedStatement> pstmt = nullptr;
+	unique_ptr<sql::ResultSet> sqlres = nullptr;
+
+	do
+	{
+		ZeroMemory(&recvBuffer, PACKET_SIZE);
+		recvSize = recv(socket_client, recvBuffer, sizeof(recvBuffer), 0);
+
+		string recvStr = recvBuffer;
+		string header = recvStr.substr(0, 2);
+
+		if (recvSize <= 0)
+		{
+			continue;
+		}
+
+		if (header == "r_")	// 가입 시도
+		{
+			LoginObject::LoginInfo li;
+
+			if (!li.ParseFromString(&recvBuffer[2]))
+			{
+				//TODO : 클라이언트에 비정상 입력 알림
+				continue;
+			}
+
+			const string id = li.id();
+			const string pw = li.password();
+
+			cout << "Register asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
+
+			// 회원가입 SP 실행
+			pstmt.reset(mSQLConnection->prepareStatement("CALL TryRegister(?, ?)"));
+			pstmt->setString(0, id);
+			pstmt->setString(1, pw);
+
+			sqlres.reset(pstmt->executeQuery());
+
+			SaveObject::PlayerInfo sendInfo = {};
+
+			if (sqlres->next())
+			{
+				int userIdx = sqlres->getInt("userIdx");
+				if (userIdx < 0)	// 회원가입 실패
+				{
+					sendInfo.set_map(10000);	// 클라이언트에 실패를 알리는 플래그 역할
+					// 직렬화 및 전송
+					const string sendStr = "r_" + sendInfo.SerializeAsString();	
+					send(socket_client, sendStr.c_str(), sendStr.length(), 0);
+
+					continue;
+				}
+
+				clientInfo->userIdx = userIdx;
+			}
+
+			// 기본 세이브 데이터 생성
+			GameServer::MakeDefaultPlayerInfo(sendInfo);
+			// DB에 생성된 정보를 저장
+			SavePlayerInfo(sendInfo, clientInfo->userIdx);
+
+			// 직렬화 및 전송
+			const string sendStr = "r_" + sendInfo.SerializeAsString();
+			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
+		}
+		else if (header == "n_") // 회원가입 후, 닉네임 설정
+		{
+			const string nickname = &recvBuffer[2];
+
+			if (SetNickname(nickname.c_str(), clientInfo->userIdx))
+			{
+				// 닉네임 설정이 성공함. 설정된 닉네임을 클라이언트에 다시 전달
+				const string sendStr = "n_" + nickname;
+				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
+			}
+			else
+			{
+				// 닉네임 설정이 실패했음을 클라이언트에 알림
+				const string sendStr = "f_FAILED";
+				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
+			}
+		}
+		else if (header == "l_")	// 로그인 시도
+		{
+			LoginObject::LoginInfo li;
+
+			if (!li.ParseFromString(&recvBuffer[2]))
+			{
+				//TODO : 클라이언트에 비정상 입력 알림
+				continue;
+			}
+
+			const string id = li.id();
+			const string pw = li.password();
+
+			cout << "Login asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
+
+			// 로그인 SP 실행
+			pstmt.reset(mSQLConnection->prepareStatement("CALL TryLogin(?, ?)"));
+			pstmt->setString(0, id);
+			pstmt->setString(1, pw);
+
+			sqlres.reset(pstmt->executeQuery());
+
+			SaveObject::PlayerInfo sendInfo = {};
+
+			if (sqlres->next())
+			{
+				int userIdx = sqlres->getInt("userIdx");
+				if (userIdx < 0)
+				{
+					// 로그인 실패
+					cout << "Client " << inet_ntoa(addr_client.sin_addr) << " : Login Failed" << endl;
+					sendInfo.set_map(10000);
+				}
+				else
+				{
+					cout << "Client " << inet_ntoa(addr_client.sin_addr) << "'s userIdx : " << userIdx << endl;
+					clientInfo->userIdx = userIdx;
+
+					// userIdx를 통해 각 테이블의 저장 데이터를 fetch해옴
+					if (pstmt->getMoreResults())
+					{
+						//from TABLE PlayerInfo
+						sqlres.reset(pstmt->getResultSet());
+
+						GameServer::MakePlayerInfoFromResultSet(sqlres.get(), sendInfo);
+					}
+
+					if (pstmt->getMoreResults())
+					{
+						//from TABLE Inventory
+						sqlres.reset(pstmt->getResultSet());
+
+						SaveObject::Inventory inventory;
+						GameServer::MakeInventoryFromResultSet(sqlres.get(), sendInfo);
+					}
+
+					if (pstmt->getMoreResults())
+					{
+						//from TABLE QuestStatus
+						sqlres.reset(pstmt->getResultSet());
+
+						GameServer::MakeQuestStatusFromResultSet(sqlres.get(), sendInfo);
+					}
+				}
+			}
+
+			// 직렬화 및 전송
+			const string sendStr = "l_" + sendInfo.SerializeAsString();
+			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
+		}
+		else if (header == "s_")	// 현재 상태 저장
+		{
+			SaveObject::PlayerInfo pi;
+
+			if (!pi.ParseFromString(&recvBuffer[2]))
+			{
+				//TODO : 클라이언트에 비정상 입력 알림
+				continue;
+			}
+
+			SavePlayerInfo(pi, clientInfo->userIdx);
+		}
+	} while (recvSize > 0);
+
+	for (size_t i = 0; i < mClients.size(); ++i)
+	{
+		if (mClients[i].Socket == socket_client)
+		{
+			cout << "Client Disconnected : " << inet_ntoa(addr_client.sin_addr) << "(port " << ntohs(addr_client.sin_port) << ") : " << endl;
+			mClients.erase(mClients.begin() + i);
+			break;
+		}
+	}
+
+	closesocket(socket_client);
 }
 
 void GameServer::MakePlayerInfoFromResultSet(sql::ResultSet* set, SaveObject::PlayerInfo& outPlayerInfo)
@@ -380,200 +567,11 @@ bool GameServer::SetNickname(const char* nickname, int userIdx)
 	}
 }
 
-unsigned int __stdcall HandleClient(void* data)
-{
-	GameServerClient* clientInfo = static_cast<GameServerClient*>(data);
-	SOCKET socket_client = clientInfo->Socket;
-	SOCKADDR_IN addr_client = clientInfo->Address;
-
-	auto server = GameServer::mSingleton;
-	char recvBuffer[PACKET_SIZE];
-	int recvSize;
-
-	unique_ptr<sql::PreparedStatement> pstmt = nullptr;
-	unique_ptr<sql::ResultSet> sqlres = nullptr;
-
-	do
-	{
-		ZeroMemory(&recvBuffer, PACKET_SIZE);
-		recvSize = recv(socket_client, recvBuffer, sizeof(recvBuffer), 0);
-
-		string recvStr = recvBuffer;
-		string header = recvStr.substr(0, 2);
-
-		if (recvSize <= 0)
-		{
-			continue;
-		}
-
-		if (header == "r_")	// 가입 시도
-		{
-			//TODO : DB TABLE에 추가 및 생성된 정보 전송
-			LoginObject::LoginInfo li;
-			
-			if(!li.ParseFromString(&recvBuffer[2]))
-			{
-				//TODO : 클라이언트에 비정상 입력 알림
-				continue;	
-			}
-
-			const string id = li.id();
-			const string pw = li.password();
-
-			cout << "Register asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
-
-			pstmt.reset(server->mSQLConnection->prepareStatement("CALL TryRegister(?, ?)"));
-			pstmt->setString(0, id);
-			pstmt->setString(1, pw);
-
-			sqlres.reset(pstmt->executeQuery());
-
-			SaveObject::PlayerInfo sendInfo = {};
-
-			if (sqlres->next())
-			{
-				int userIdx = sqlres->getInt("userIdx");
-				if (userIdx < 0)	// 로그인 불가
-				{
-					sendInfo.set_map(10000);
-
-					const string sendStr = "r_" + sendInfo.SerializeAsString();
-					send(socket_client, sendStr.c_str(), sendStr.length(), 0);
-
-					continue;
-				}
-				
-				clientInfo->userIdx = userIdx;
-			}
-
-			GameServer::MakeDefaultPlayerInfo(sendInfo);
-			
-			// DB에 생성된 정보를 저장
-			server->SavePlayerInfo(sendInfo, clientInfo->userIdx);
-			
-			// 생성된 정보를 클라이언트에 전송
-			const string sendStr = "r_" + sendInfo.SerializeAsString();
-			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
-		}
-		else if (header == "n_") // 가입 후, 닉네임 설정
-		{
-			const string nickname = &recvBuffer[2];
-			
-			if (server->SetNickname(nickname.c_str(), clientInfo->userIdx))
-			{
-				// 닉네임 설정이 성공함. 설정된 닉네임을 클라이언트에 다시 전달
-				const string sendStr = "n_" + nickname;
-				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
-			}
-			else
-			{
-				// 닉네임 설정이 실패했음을 클라이언트에 알림
-				const string sendStr = "f_FAILED";
-				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
-			}
-		}
-		else if(header == "l_")	// 로그인 시도
-		{
-			LoginObject::LoginInfo li;
-
-			if (!li.ParseFromString(&recvBuffer[2]))
-			{
-				//TODO : 클라이언트에 비정상 입력 알림
-				continue;
-			}
-
-			const string id = li.id();
-			const string pw = li.password();
-
-			cout << "Login asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
-
-			pstmt.reset(server->mSQLConnection->prepareStatement("CALL TryLogin(?, ?)"));
-			pstmt->setString(0, id);
-			pstmt->setString(1, pw);
-
-			sqlres.reset(pstmt->executeQuery());
-
-			SaveObject::PlayerInfo sendInfo = {};
-
-			if (sqlres->next())
-			{
-				int userIdx = sqlres->getInt("userIdx");
-				if (userIdx < 0)
-				{
-					cout << "Client " << inet_ntoa(addr_client.sin_addr) << " : Login Failed" << endl;
-					sendInfo.set_map(10000);
-				}
-				else
-				{
-					cout << "Client " << inet_ntoa(addr_client.sin_addr) << "'s userIdx : " << userIdx << endl;
-					clientInfo->userIdx = userIdx;
-
-					if (pstmt->getMoreResults())
-					{
-						//from TABLE PlayerInfo
-						sqlres.reset(pstmt->getResultSet());
-
-						GameServer::MakePlayerInfoFromResultSet(sqlres.get(), sendInfo);
-					}
-
-					if (pstmt->getMoreResults())
-					{
-						//from TABLE Inventory
-						sqlres.reset(pstmt->getResultSet());
-
-						SaveObject::Inventory inventory;
-						GameServer::MakeInventoryFromResultSet(sqlres.get(), sendInfo);
-					}
-
-					if (pstmt->getMoreResults())
-					{
-						//from TABLE QuestStatus
-						sqlres.reset(pstmt->getResultSet());
-						
-						GameServer::MakeQuestStatusFromResultSet(sqlres.get(), sendInfo);
-					}
-				}
-			}
-
-			const string sendStr = "l_" + sendInfo.SerializeAsString();
-
-			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
-		}
-		else if (header == "s_")	// 현재 상태 저장
-		{
-			//TODO : DB TABLE에 정보 저장
-			SaveObject::PlayerInfo pi;
-
-			if (!pi.ParseFromString(&recvBuffer[2]))
-			{
-				//TODO : 클라이언트에 비정상 입력 알림
-				continue;
-			}
-
-			server->SavePlayerInfo(pi, clientInfo->userIdx);
-		}
-	} while(recvSize > 0);
-
-	for (size_t i = 0; i < server->mClients.size(); ++i)
-	{
-		if (server->mClients[i].Socket == socket_client)
-		{
-			cout << "Client Disconnected : " << inet_ntoa(addr_client.sin_addr) << "(port " << ntohs(addr_client.sin_port) << ") : " << endl;
-			server->mClients.erase(server->mClients.begin() + i);
-			break;
-		}
-	}
-
-	closesocket(socket_client);
-	_endthreadex(0);
-
-	return 0;
-}
-
 int main(int argc, char argv[])
 {
 	GameServer* server = new GameServer;
 
+	// WSA 초기화
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		cout << "WSAStartup failed" << endl;
