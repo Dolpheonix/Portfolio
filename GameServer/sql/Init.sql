@@ -4,7 +4,7 @@ create TABLE UserInfo
 (
 	id VARCHAR(100) NOT NULL,
     pw VARCHAR(100) NOT NULL,
-    userIdx INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+    userIdx INT NOT NULL AUTO_INCREMENT PRIMARY KEYCreateDefaultInfoTryLogin
 );
 create TABLE PlayerInfo
 (

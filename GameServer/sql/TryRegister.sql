@@ -8,12 +8,12 @@ BEGIN
     FROM userinfo
     WHERE id = ID;
     
-    IF userIndex = NULL THEN
+    IF ISNULL(userIndex) THEN
 		INSERT INTO userinfo(id, pw)
         VALUES (ID, PW);
         
         SELECT LAST_INSERT_ID() AS userIdx;
 	ELSE
-		SELECT -1 AS userIdx;
+		SELECT userIndex AS userIdx;
 	END IF;
 END
