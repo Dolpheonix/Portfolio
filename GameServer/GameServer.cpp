@@ -148,8 +148,8 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 
 			// ȸ������ SP ����
 			pstmt.reset(mSQLConnection->prepareStatement("CALL TryRegister(?, ?)"));
-			pstmt->setString(0, id);
-			pstmt->setString(1, pw);
+			pstmt->setString(1, id);
+			pstmt->setString(2, pw);
 
 			sqlres.reset(pstmt->executeQuery());
 
@@ -214,8 +214,8 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 
 			// �α��� SP ����
 			pstmt.reset(mSQLConnection->prepareStatement("CALL TryLogin(?, ?)"));
-			pstmt->setString(0, id);
-			pstmt->setString(1, pw);
+			pstmt->setString(1, id);
+			pstmt->setString(2, pw);
 
 			sqlres.reset(pstmt->executeQuery());
 
@@ -458,14 +458,14 @@ void GameServer::MakeDefaultPlayerInfo(SaveObject::PlayerInfo& outPlayerInfo)
 void GameServer::SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int userIdx)
 {
 	unique_ptr<sql::PreparedStatement> pstmt(mSQLConnection->prepareStatement("CALL SavePlayerInfo(?, ?, ?, ?, ?, ?, ?, ?)"));
-	pstmt->setInt(0, userIdx);
-	pstmt->setString(1, playerInfo.name());
-	pstmt->setUInt(2, playerInfo.level());
-	pstmt->setUInt(3, playerInfo.map());
-	pstmt->setDouble(4, playerInfo.loc_x());
-	pstmt->setDouble(5, playerInfo.loc_y());
-	pstmt->setDouble(6, playerInfo.loc_z());
-	pstmt->setUInt64(7, playerInfo.gold());
+	pstmt->setInt(1, userIdx);
+	pstmt->setString(2, playerInfo.name());
+	pstmt->setUInt(3, playerInfo.level());
+	pstmt->setUInt(4, playerInfo.map());
+	pstmt->setDouble(5, playerInfo.loc_x());
+	pstmt->setDouble(6, playerInfo.loc_y());
+	pstmt->setDouble(7, playerInfo.loc_z());
+	pstmt->setUInt64(8, playerInfo.gold());
 
 	pstmt->executeQuery();
 
@@ -477,15 +477,15 @@ void GameServer::SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int us
 		{
 			const auto& item = typeInventory.items(j);
 			pstmt.reset(mSQLConnection->prepareStatement("CALL SaveInventory(?, ?, ?, ?, ?)"));
-			pstmt->setInt(0, userIdx);
+			pstmt->setInt(1, userIdx);
 
 			switch (j)
 			{
 			case 0:
-				pstmt->setString(1, "CLOTH");
+				pstmt->setString(2, "CLOTH");
 				break;
 			case 1:
-				pstmt->setString(1, "WEAPON");
+				pstmt->setString(2, "WEAPON");
 				break;
 			case 2:
 				pstmt->setString(2, "ITEM");
@@ -494,9 +494,9 @@ void GameServer::SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int us
 				continue;
 			}
 
-			pstmt->setUInt(2, j);
-			pstmt->setUInt64(3, item.index());
-			pstmt->setUInt64(4, item.num());
+			pstmt->setUInt(3, j);
+			pstmt->setUInt64(4, item.index());
+			pstmt->setUInt64(5, item.num());
 
 			pstmt->executeQuery();
 		}
@@ -511,37 +511,37 @@ void GameServer::SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int us
 		{
 			const auto& sqs = qs.substatus(j);
 			pstmt.reset(mSQLConnection->prepareStatement("CALL SaveQueststatus(?, ?, ?, ?, ?, ?, ?, ?, ?)"));
-			pstmt->setInt(0, userIdx);
-			pstmt->setInt(1, qs.index());
+			pstmt->setInt(1, userIdx);
+			pstmt->setInt(2, qs.index());
 			
 			SaveObject::QuestStatus_QuestProgressType progress = qs.progresstype();
 			switch (progress)
 			{
 			case SaveObject::QuestStatus_QuestProgressType_UNAVAILABLE:
-				pstmt->setString(2, "Unavailable");
+				pstmt->setString(3, "Unavailable");
 				break;
 			case SaveObject::QuestStatus_QuestProgressType_AVAILABLE:
-				pstmt->setString(2, "Available");
+				pstmt->setString(3, "Available");
 				break;
 			case SaveObject::QuestStatus_QuestProgressType_INPROGRESS:
-				pstmt->setString(2, "InProgress");
+				pstmt->setString(3, "InProgress");
 				break;
 			case SaveObject::QuestStatus_QuestProgressType_COMPLETABLE:
-				pstmt->setString(2, "Completable");
+				pstmt->setString(3, "Completable");
 				break;
 			case SaveObject::QuestStatus_QuestProgressType_COMPLETED:
-				pstmt->setString(2, "Completed");
+				pstmt->setString(3, "Completed");
 				break;
 			default:
 				continue;
 			}
 
-			pstmt->setInt(3, j);
-			pstmt->setInt(4, qs.currphase());
-			pstmt->setInt(5, qs.completed());
-			pstmt->setBoolean(6, sqs.bstarted());
-			pstmt->setBoolean(7, sqs.bcompleted());
-			pstmt->setInt(8, sqs.curramount());
+			pstmt->setInt(4, j);
+			pstmt->setInt(5, qs.currphase());
+			pstmt->setInt(6, qs.completed());
+			pstmt->setBoolean(7, sqs.bstarted());
+			pstmt->setBoolean(8, sqs.bcompleted());
+			pstmt->setInt(9, sqs.curramount());
 
 			pstmt->executeQuery();
 		}
@@ -551,8 +551,8 @@ void GameServer::SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int us
 bool GameServer::SetNickname(const char* nickname, int userIdx)
 {
 	unique_ptr<sql::PreparedStatement> pstmt(mSQLConnection->prepareStatement("CALL SetNickname(?, ?)"));
-	pstmt->setInt(0, userIdx);
-	pstmt->setString(1, nickname);
+	pstmt->setInt(1, userIdx);
+	pstmt->setString(2, nickname);
 
 	auto result = pstmt->executeQuery();
 
