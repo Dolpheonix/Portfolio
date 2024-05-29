@@ -12,6 +12,9 @@ GameServer* GameServer::mSingleton = nullptr;
 GameServer::GameServer()
 {
 	assert(mSingleton == nullptr);
+
+	mSQLDriver = nullptr;
+	mSQLConnection = nullptr;
 	mSingleton = this;
 }
 
@@ -23,13 +26,9 @@ int GameServer::InitServerSocket()
 		return SOCKET_ERROR;
 	}
 
-	// DB¿Í ¿¬°á
-	MYSQL* conn = new MYSQL();
-
-	mysql_init(conn);
-
+	// DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	mSQLDriver = sql::mysql::get_mysql_driver_instance();
-	mSQLConnection.reset(mSQLDriver->connect("tcp://127.0.0.1:3306", "root", "PASSWORD"));
+	mSQLConnection.reset(mSQLDriver->connect("tcp://127.0.0.1:3306", "root", "redapple67#"));
 	mSQLConnection->setSchema("portfolio");
 
 	return 0;
@@ -39,7 +38,7 @@ int GameServer::BindToAddress()
 {
 	mServerAddress = {};
 	mServerAddress.sin_family = AF_INET;
-	mServerAddress.sin_port = htons(5555);	// 5555¹ø Æ÷Æ® »ç¿ë
+	mServerAddress.sin_port = htons(5555);	// 5555ï¿½ï¿½ ï¿½ï¿½Æ® ï¿½ï¿½ï¿½
 	mServerAddress.sin_addr.s_addr = htonl(INADDR_ANY);
 
 	return ::bind(mServerSocket, (SOCKADDR*)&mServerAddress, sizeof(mServerAddress));
@@ -52,15 +51,15 @@ int GameServer::ListenToClient()
 
 void GameServer::Run()
 {
-	mListenThread = thread(&GameServer::AcceptClient, this);	// Accept °ü¸®¿ë ½º·¹µå ½ÇÇà
+	mListenThread = thread(&GameServer::AcceptClient, this);	// Accept ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 
-	// ¼­¹ö ¸í·É¾î Ã³¸®
+	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½É¾ï¿½ Ã³ï¿½ï¿½
 	char msg[PACKET_SIZE] = {0};
 	while (true)
 	{
 		ZeroMemory(&msg, PACKET_SIZE);
 		cin >> msg;
-		if ((string)msg == "list")	// ¿¬°áµÈ Å¬¶óÀÌ¾ðÆ® ¸ñ·Ï Ãâ·Â
+		if ((string)msg == "list")	// ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ® ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½
 		{
 			cout << "Connected Client List" << endl;
 			for (GameServerClient c : mClients)
@@ -70,7 +69,7 @@ void GameServer::Run()
 		}
 	}
 
-	// ½º·¹µå Á¾·á ½Ã ¼ÒÄÏ Á¾·á
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 	mListenThread.join();
 	for (thread& t : mThreads)
 	{
@@ -132,13 +131,13 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 			continue;
 		}
 
-		if (header == "r_")	// °¡ÀÔ ½Ãµµ
+		if (header == "r_")	// ï¿½ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
 		{
 			LoginObject::LoginInfo li;
 
 			if (!li.ParseFromString(&recvBuffer[2]))
 			{
-				//TODO : Å¬¶óÀÌ¾ðÆ®¿¡ ºñÁ¤»ó ÀÔ·Â ¾Ë¸²
+				//TODO : Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ë¸ï¿½
 				continue;
 			}
 
@@ -147,7 +146,7 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 
 			cout << "Register asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
 
-			// È¸¿ø°¡ÀÔ SP ½ÇÇà
+			// È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ SP ï¿½ï¿½ï¿½ï¿½
 			pstmt.reset(mSQLConnection->prepareStatement("CALL TryRegister(?, ?)"));
 			pstmt->setString(0, id);
 			pstmt->setString(1, pw);
@@ -159,10 +158,10 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 			if (sqlres->next())
 			{
 				int userIdx = sqlres->getInt("userIdx");
-				if (userIdx < 0)	// È¸¿ø°¡ÀÔ ½ÇÆÐ
+				if (userIdx < 0)	// È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				{
-					sendInfo.set_map(10000);	// Å¬¶óÀÌ¾ðÆ®¿¡ ½ÇÆÐ¸¦ ¾Ë¸®´Â ÇÃ·¡±× ¿ªÇÒ
-					// Á÷·ÄÈ­ ¹× Àü¼Û
+					sendInfo.set_map(10000);	// Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½Ð¸ï¿½ ï¿½Ë¸ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+					// ï¿½ï¿½ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					const string sendStr = "r_" + sendInfo.SerializeAsString();	
 					send(socket_client, sendStr.c_str(), sendStr.length(), 0);
 
@@ -172,39 +171,39 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 				clientInfo->userIdx = userIdx;
 			}
 
-			// ±âº» ¼¼ÀÌºê µ¥ÀÌÅÍ »ý¼º
+			// ï¿½âº» ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			GameServer::MakeDefaultPlayerInfo(sendInfo);
-			// DB¿¡ »ý¼ºµÈ Á¤º¸¸¦ ÀúÀå
+			// DBï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			SavePlayerInfo(sendInfo, clientInfo->userIdx);
 
-			// Á÷·ÄÈ­ ¹× Àü¼Û
+			// ï¿½ï¿½ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			const string sendStr = "r_" + sendInfo.SerializeAsString();
 			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
 		}
-		else if (header == "n_") // È¸¿ø°¡ÀÔ ÈÄ, ´Ð³×ÀÓ ¼³Á¤
+		else if (header == "n_") // È¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½, ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		{
 			const string nickname = &recvBuffer[2];
 
 			if (SetNickname(nickname.c_str(), clientInfo->userIdx))
 			{
-				// ´Ð³×ÀÓ ¼³Á¤ÀÌ ¼º°øÇÔ. ¼³Á¤µÈ ´Ð³×ÀÓÀ» Å¬¶óÀÌ¾ðÆ®¿¡ ´Ù½Ã Àü´Þ
+				// ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½. ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ð³ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½Ù½ï¿½ ï¿½ï¿½ï¿½ï¿½
 				const string sendStr = "n_" + nickname;
 				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
 			}
 			else
 			{
-				// ´Ð³×ÀÓ ¼³Á¤ÀÌ ½ÇÆÐÇßÀ½À» Å¬¶óÀÌ¾ðÆ®¿¡ ¾Ë¸²
+				// ï¿½Ð³ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½Ë¸ï¿½
 				const string sendStr = "f_FAILED";
 				send(socket_client, sendStr.c_str(), sendStr.length(), 0);
 			}
 		}
-		else if (header == "l_")	// ·Î±×ÀÎ ½Ãµµ
+		else if (header == "l_")	// ï¿½Î±ï¿½ï¿½ï¿½ ï¿½Ãµï¿½
 		{
 			LoginObject::LoginInfo li;
 
 			if (!li.ParseFromString(&recvBuffer[2]))
 			{
-				//TODO : Å¬¶óÀÌ¾ðÆ®¿¡ ºñÁ¤»ó ÀÔ·Â ¾Ë¸²
+				//TODO : Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ë¸ï¿½
 				continue;
 			}
 
@@ -213,7 +212,7 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 
 			cout << "Login asked from Client " << inet_ntoa(addr_client.sin_addr) << endl;
 
-			// ·Î±×ÀÎ SP ½ÇÇà
+			// ï¿½Î±ï¿½ï¿½ï¿½ SP ï¿½ï¿½ï¿½ï¿½
 			pstmt.reset(mSQLConnection->prepareStatement("CALL TryLogin(?, ?)"));
 			pstmt->setString(0, id);
 			pstmt->setString(1, pw);
@@ -227,7 +226,7 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 				int userIdx = sqlres->getInt("userIdx");
 				if (userIdx < 0)
 				{
-					// ·Î±×ÀÎ ½ÇÆÐ
+					// ï¿½Î±ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 					cout << "Client " << inet_ntoa(addr_client.sin_addr) << " : Login Failed" << endl;
 					sendInfo.set_map(10000);
 				}
@@ -236,7 +235,7 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 					cout << "Client " << inet_ntoa(addr_client.sin_addr) << "'s userIdx : " << userIdx << endl;
 					clientInfo->userIdx = userIdx;
 
-					// userIdx¸¦ ÅëÇØ °¢ Å×ÀÌºíÀÇ ÀúÀå µ¥ÀÌÅÍ¸¦ fetchÇØ¿È
+					// userIdxï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½Ìºï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Í¸ï¿½ fetchï¿½Ø¿ï¿½
 					if (pstmt->getMoreResults())
 					{
 						//from TABLE PlayerInfo
@@ -264,17 +263,17 @@ void GameServer::HandleClient(GameServerClient* clientInfo)
 				}
 			}
 
-			// Á÷·ÄÈ­ ¹× Àü¼Û
+			// ï¿½ï¿½ï¿½ï¿½È­ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 			const string sendStr = "l_" + sendInfo.SerializeAsString();
 			send(socket_client, sendStr.c_str(), sendStr.length(), 0);
 		}
-		else if (header == "s_")	// ÇöÀç »óÅÂ ÀúÀå
+		else if (header == "s_")	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		{
 			SaveObject::PlayerInfo pi;
 
 			if (!pi.ParseFromString(&recvBuffer[2]))
 			{
-				//TODO : Å¬¶óÀÌ¾ðÆ®¿¡ ºñÁ¤»ó ÀÔ·Â ¾Ë¸²
+				//TODO : Å¬ï¿½ï¿½ï¿½Ì¾ï¿½Æ®ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ô·ï¿½ ï¿½Ë¸ï¿½
 				continue;
 			}
 
@@ -425,7 +424,7 @@ void GameServer::MakeDefaultPlayerInfo(SaveObject::PlayerInfo& outPlayerInfo)
 		qs->set_type((val["QuestList"][i]["Type"].asString() == "Serial") ? SaveObject::QuestStatus_QuestType_SERIAL : SaveObject::QuestStatus_QuestType_PARALLEL);
 		qs->set_currphase(0);
 		qs->set_completed(0);
-		qs->set_progresstype(SaveObject::QuestStatus_QuestProgressType_AVAILABLE);	//TODO : Äù½ºÆ® ¼öÁÖ Á¶°Ç ±â´ÉÀÌ ±¸ÇöµÇÁö ¾ÊÀ½
+		qs->set_progresstype(SaveObject::QuestStatus_QuestProgressType_AVAILABLE);	//TODO : ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
 		
 		for (int j = 0; j < val["QuestList"][i]["SubQuests"].size(); ++j)
 		{
@@ -571,7 +570,7 @@ int main(int argc, char argv[])
 {
 	GameServer* server = new GameServer;
 
-	// WSA ÃÊ±âÈ­
+	// WSA ï¿½Ê±ï¿½È­
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0) {
 		cout << "WSAStartup failed" << endl;
