@@ -5,26 +5,26 @@
 #include <string>
 #include <vector>
 #include <mysql.h>
-#include <ProtoObject/SaveObject.pb.h>
-#include <ProtoObject/LoginObject.pb.h>
+#include "ProtoObject/SaveObject.pb.h"
+#include "ProtoObject/LoginObject.pb.h"
 #include <mysql/jdbc.h>
 
 #pragma comment(lib, "ws2_32.lib")
 
 /*
-	GameServer	: Å¬¶óÀÌ¾ğÆ®, DB¿Í ·Î±×ÀÎ Á¤º¸, ÇÃ·¹ÀÌ µ¥ÀÌÅÍ µîÀ» ÁÖ°í ¹Ş´Â ¿ªÇÒÀ» ÇÕ´Ï´Ù.
-	- Protobuf	: ¼­¹ö/Å¬¶óÀÌ¾ğÆ® °£ µ¿ÀÏ ±¸Á¶Ã¼¸¦ »ç¿ëÇÏ±â À§ÇØ Protobuf ¹æ½ÄÀ» »ç¿ëÇß½À´Ï´Ù.
-	- DB		: MYSQLÀ» »ç¿ëÇß½À´Ï´Ù.
+	GameServer	: í´ë¼ì´ì–¸íŠ¸, DBì™€ ë¡œê·¸ì¸ ì •ë³´, í”Œë ˆì´ ë°ì´í„° ë“±ì„ ì£¼ê³  ë°›ëŠ” ì—­í• ì„ í•©ë‹ˆë‹¤.
+	- Protobuf	: ì„œë²„/í´ë¼ì´ì–¸íŠ¸ ê°„ ë™ì¼ êµ¬ì¡°ì²´ë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•´ Protobuf ë°©ì‹ì„ ì‚¬ìš©í–ˆìŠµë‹ˆë‹¤.
+	- DB		: MYSQLì„ ì‚¬ìš©í–ˆìŠµë‹ˆë‹¤.
 */
 
 using namespace std;
 
-// Á¢¼ÓÇÑ Å¬¶óÀÌ¾ğÆ® Á¤º¸
+// ì ‘ì†í•œ í´ë¼ì´ì–¸íŠ¸ ì •ë³´
 struct GameServerClient
 {
-	SOCKET Socket;			// Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏ
-	SOCKADDR_IN Address;	// Å¬¶óÀÌ¾ğÆ®ÀÇ ÁÖ¼Ò
-	int userIdx;			// DB¿¡ ÀúÀåµÈ À¯ÀúÀÇ °íÀ¯ ÀÎµ¦½º. ·Î±×ÀÎ ÈÄ¿¡ ¹İÈ¯µÇ°í, ¼¼ÀÌºê ½Ã¿¡ »ç¿ë.
+	SOCKET Socket;			// í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“
+	SOCKADDR_IN Address;	// í´ë¼ì´ì–¸íŠ¸ì˜ ì£¼ì†Œ
+	int userIdx;			// DBì— ì €ì¥ëœ ìœ ì €ì˜ ê³ ìœ  ì¸ë±ìŠ¤. ë¡œê·¸ì¸ í›„ì— ë°˜í™˜ë˜ê³ , ì„¸ì´ë¸Œ ì‹œì— ì‚¬ìš©.
 };
 
 class GameServer
@@ -33,32 +33,33 @@ public:
 	GameServer();
 
 public:
-	int InitServerSocket();	// ¼­¹öÀÇ ¼ÒÄÏÀ» ÃÊ±âÈ­
-	int BindToAddress();	// ¼ÒÄÏ¿¡ ÁÖ¼Ò°ªÀ» ¹ÙÀÎµù
+	int InitServerSocket();	// ì„œë²„ì˜ ì†Œì¼“ì„ ì´ˆê¸°í™”
+	int BindToAddress();	// ì†Œì¼“ì— ì£¼ì†Œê°’ì„ ë°”ì¸ë”©
 	int ListenToClient();	
-	void Run();				// ¼­¹ö ¸í·É¾î Ã³¸® 
+	void Run();				// ì„œë²„ ëª…ë ¹ì–´ ì²˜ë¦¬ 
 
-	void AcceptClient();	// Å¬¶óÀÌ¾ğÆ® Accept Ã³¸®
-	void HandleClient(GameServerClient* client);	// Å¬¶óÀÌ¾ğÆ® ¼Û/¼ö½Å Ã³¸®
+	void AcceptClient();	// í´ë¼ì´ì–¸íŠ¸ Accept ì²˜ë¦¬
+	void HandleClient(GameServerClient* client);	// í´ë¼ì´ì–¸íŠ¸ ì†¡/ìˆ˜ì‹  ì²˜ë¦¬
 
 	// DB Method
 	static void MakePlayerInfoFromResultSet(sql::ResultSet* set, SaveObject::PlayerInfo& outPlayerInfo);
 	static void MakeInventoryFromResultSet(sql::ResultSet* set, SaveObject::PlayerInfo& outPlayerInfo);
 	static void MakeQuestStatusFromResultSet(sql::ResultSet* set, SaveObject::PlayerInfo& outPlayerInfo);
-	static void MakeDefaultPlayerInfo(SaveObject::PlayerInfo& outPlayerInfo);	// ¼¼ÀÌºê µ¥ÀÌÅÍ »ı¼º ¹× db¿¡ ÀúÀå
+	static void MakeDefaultPlayerInfo(SaveObject::PlayerInfo& outPlayerInfo);
 	void SavePlayerInfo(const SaveObject::PlayerInfo& playerInfo, int userIdx);
 	bool SetNickname(const char* nickname, int userIdx);
+	bool Reconnect();
 
 public:
-	static GameServer* mSingleton;		// ½Ì±ÛÅæ °´Ã¼
+	static GameServer* mSingleton;
 		
-	vector<GameServerClient> mClients;	// Å¬¶óÀÌ¾ğÆ® ¸ñ·Ï
-	vector<HANDLE> mhThreads;			// Å¬¶óÀÌ¾ğÆ®º° ¼Û/¼ö½Å °ü¸® ½º·¹µå
+	vector<GameServerClient> mClients;	// í´ë¼ì´ì–¸íŠ¸ ëª©ë¡
+	vector<HANDLE> mhThreads;			// í´ë¼ì´ì–¸íŠ¸ë³„ ì†¡/ìˆ˜ì‹  ê´€ë¦¬ ìŠ¤ë ˆë“œ
 	vector<thread> mThreads;
 
-	SOCKET mServerSocket;				// ¼­¹ö ¼ÒÄÏ
-	SOCKADDR_IN mServerAddress;			// ¼­¹ö ÁÖ¼Ò
-	thread mListenThread;				// ¸®½¼ ½º·¹µå
+	SOCKET mServerSocket;				// ì„œë²„ ì†Œì¼“
+	SOCKADDR_IN mServerAddress;			// ì„œë²„ ì£¼ì†Œ
+	thread mListenThread;				// ë¦¬ìŠ¨ ìŠ¤ë ˆë“œ
 
 	// DB
 	sql::mysql::MySQL_Driver* mSQLDriver;

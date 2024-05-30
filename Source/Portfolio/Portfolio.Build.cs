@@ -19,13 +19,11 @@ public class Portfolio : ModuleRules
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
         PublicIncludePaths.AddRange(new string[] {
-            "../ThirdParty/Protobuf/include",
-            "../ThirdParty/ProtoObject/include"
+            "../ThirdParty/Protobuf/include"
         });
 
         PublicAdditionalLibraries.AddRange(new string[] {
-            "C:/Users/user/Documents/Unreal Projects/Portfolio/ThirdParty/Protobuf/lib/libprotobufd.lib",
-            "C:/Users/user/Documents/Unreal Projects/Portfolio/ThirdParty/ProtoObject/lib/ProtoObject.lib"
+            "C:/Users/user/Documents/Unreal Projects/Portfolio/ThirdParty/Protobuf/lib/libprotobuf.lib"
         });
 
         // Uncomment if you are using online features

@@ -1,14 +1,14 @@
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
 
 #include "MainClient.h"
-#include <ProtoObject/LoginObject.pb.h>
-#include <ProtoObject/SaveObject.pb.h>
+#include "../ThirdParty/ProtoObject/LoginObject.pb.h"
+#include "../ThirdParty/ProtoObject/SaveObject.pb.h"
 #include "Async/Async.h"
 #include "../Core/CustomGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 #include <assert.h>
 
-#define PACKET_SIZE 1024
+#define PACKET_SIZE 2048
 
 MainClient* MainClient::mSingleton = nullptr;
 
@@ -35,7 +35,7 @@ int MainClient::Init(TObjectPtr<UCustomGameInstance> gi)
 	mAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
 
 	mGameInstance = gi;
-	 
+
 	return 0;
 }
 
@@ -52,7 +52,7 @@ void MainClient::Run()
 	}
 
 	u_long nonblock = 1;
-	ioctlsocket(mSocket, FIONBIO, &nonblock);	// ³íºí·Ï ¼ÒÄÏÀ¸·Î ÁöÁ¤ÇØ, Running »óÅÂ¸¦ Ç×»ó È®ÀÎÇØ °ÔÀÓ Á¾·á ½Ã¿¡ ½º·¹µå°¡ Á¤»ó Á¾·áµË´Ï´Ù.
+	ioctlsocket(mSocket, FIONBIO, &nonblock);	// ë…¼ë¸”ë¡ ì†Œì¼“ìœ¼ë¡œ ì§€ì •í•´, Running ìƒíƒœë¥¼ í•­ìƒ í™•ì¸í•´ ê²Œìž„ ì¢…ë£Œ ì‹œì— ìŠ¤ë ˆë“œê°€ ì •ìƒ ì¢…ë£Œë©ë‹ˆë‹¤.
 
 	char recvBuffer[PACKET_SIZE] = {};
 
@@ -67,24 +67,24 @@ void MainClient::Run()
 		}
 		else
 		{
-			// ¼ö½Å µ¥ÀÌÅÍ È®ÀÎ
-			string recvString = &recvBuffer[2];
-			AsyncTask(ENamedThreads::GameThread, [this, recvString]()	// °ÔÀÓ ÀÎ½ºÅÏ½º¿¡ Á¢±ÙÇÏ±â ¶§¹®¿¡, ¾ð¸®¾ó GameThread¿¡¼­ ½ÇÇàµÇ¾î¾ß ÇÕ´Ï´Ù.
+			string recvString(recvBuffer, received);
+			AsyncTask(ENamedThreads::GameThread, [this, recvString]()	// ê²Œìž„ ì¸ìŠ¤í„´ìŠ¤ì— ì ‘ê·¼í•˜ê¸° ë•Œë¬¸ì—, ì–¸ë¦¬ì–¼ GameThreadì—ì„œ ì‹¤í–‰ë˜ì–´ì•¼ í•©ë‹ˆë‹¤.
 			{
-				string header = recvString.substr(0, 2);	// ¸Þ½ÃÁö Á¾·ù È®ÀÎ
-				if (header == "l_")			// ·Î±×ÀÎ °á°ú
+				string header = recvString.substr(0, 2);
+				string data = recvString.substr(2, string::npos);
+				if (header == "l_")			// ë¡œê·¸ì¸ ê²°ê³¼
 				{
-					HandleLoginResult(recvString.c_str(), false);
+					HandleLoginResult(data, false);
 				}
-				else if (header == "r_")	// È¸¿ø°¡ÀÔ °á°ú
+				else if (header == "r_")	// íšŒì›ê°€ìž… ê²°ê³¼
 				{
-					HandleLoginResult(recvString.c_str(), true);
+					HandleLoginResult(data, true);
 				}
-				else if (header == "n_")	// ´Ð³×ÀÓ ¼³Á¤ ¼º°ø
+				else if (header == "n_")	// ë‹‰ë„¤ìž„ ì„¤ì • ì„±ê³µ
 				{
-					HandleSubmitResult(recvString.c_str(), true);
+					HandleSubmitResult(data.c_str(), true);
 				}
-				else if (header == "f_")	// ´Ð³×ÀÓ ¼³Á¤ ½ÇÆÐ
+				else if (header == "f_")	// ë‹‰ë„¤ìž„ ì„¤ì • ì‹¤íŒ¨
 				{
 					HandleSubmitResult(nullptr, false);
 				}
@@ -107,8 +107,8 @@ int MainClient::SendLoginInfo(const char* id, const char* pw, bool isRegister)
 
 	string sendStr = isRegister ? "r_" : "l_";
 
-	// Á÷·ÄÈ­ ¹× Àü¼Û
-	sendStr += sendInfo.SerializeAsString();
+	string serialized = sendInfo.SerializeAsString();
+	sendStr += serialized;
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }
 
@@ -120,25 +120,25 @@ int MainClient::SendNickname(const char* nickname)
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }
 
-int MainClient::HandleLoginResult(const char* result, bool isRegister)
+int MainClient::HandleLoginResult(const string& result, bool isRegister)
 {
 	SaveObject::PlayerInfo recvInfo = {};
-	
+
 	if (!recvInfo.ParseFromString(result))
 	{
 		return -1;
 	}
 
 	PlayerInfo info;
-	info.ConvertFromProto(recvInfo);	// Proto ±¸Á¶Ã¼¿¡¼­ Unreal ±¸Á¶Ã¼·Î º¯È¯
-	mGameInstance->HandleLoginResult(info, isRegister);	// °ÔÀÓ ÀÎ½ºÅÏ½º¿¡¼­ °á°ú Ã³¸®
+	info.ConvertFromProto(recvInfo);	// Proto êµ¬ì¡°ì²´ì—ì„œ Unreal êµ¬ì¡°ì²´ë¡œ ë³€í™˜
+	mGameInstance->HandleLoginResult(info, isRegister);
 
 	return 0;
 }
 
 int MainClient::HandleSubmitResult(const char* result, bool isSucceeded)
 {
-	mGameInstance->HandleNicknameResult(result, isSucceeded);	// °ÔÀÓ ÀÎ½ºÅÏ½º¿¡¼­ °á°ú Ã³¸®
+	mGameInstance->HandleNicknameResult(result, isSucceeded);
 
 	return 0;
 }
@@ -150,7 +150,6 @@ int MainClient::SaveGame(PlayerInfo toSave)
 
 	string sendStr = "s_";
 
-	// Á÷·ÄÈ­ ¹× Àü¼Û
 	sendStr += sendInfo.SerializeAsString();
 	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
 }

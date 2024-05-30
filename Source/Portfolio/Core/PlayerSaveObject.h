@@ -1,30 +1,30 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "ProtoObject/SaveObject.pb.h"
+#include "../../../ThirdParty/ProtoObject/SaveObject.pb.h"
 #include "GameFramework/SaveGame.h"
 #include "../Common/Item.h"
 #include "../Common/Quest.h"
 #include "PlayerSaveObject.generated.h"
 
 /*
-	ÇÃ·¹ÀÌ¾î Á¤º¸¸¦ ´ãÀº ±¸Á¶Ã¼
-	- PlayerInfo : ¸Ê ÀÌµ¿ ½Ã ÇÃ·¹ÀÌ¾î ¾×ÅÍÀÇ Á¤º¸¸¦ ÀÓ½Ã ÀúÀåÇÏ±â À§ÇÑ ¿ëµµ
-	- UPlayerSaveObject : ¼¼ÀÌºê ÆÄÀÏ(.sav)¿¡ ÀúÀå/·ÎµåÇÏ´Â ¿ëµµ
-	- USaveSlot : ¼¼ÀÌºê ½½·ÔÀÇ ÆÄÀÏ¸í(ÇÃ·¹ÀÌ¾î¸í) ¸ñ·Ï
+	ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Ã¼
+	- PlayerInfo : ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï±ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ëµµ
+	- UPlayerSaveObject : ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½(.sav)ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½/ï¿½Îµï¿½ï¿½Ï´ï¿½ ï¿½ëµµ
+	- USaveSlot : ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½Ï¸ï¿½(ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ï¿½) ï¿½ï¿½ï¿½
 */
 
 struct PlayerInfo
 {
-	FString PlayerName;					// ÇÃ·¹ÀÌ¾î ÀÌ¸§
-	int CurrentLevel;					// ÇöÀç ·¹º§
-	int CurrentMap;						// ÇöÀç À§Ä¡ÇÑ ¸Ê ÀÎµ¦½º
-	FVector CurrentLocation;			// ÇöÀç ¸Ê »óÀÇ À§Ä¡
-	int CurrentGold;					// ÇöÀç °ñµå º¸À¯·®
-	FInventory Inventory;				// ÇöÀç ÀÎº¥Åä¸®
-	TArray<FQuestStatus> QuestTable;	// ÇöÀç Äù½ºÆ® ÁøÇàµµ
+	FString PlayerName;					// ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½Ì¸ï¿½
+	int CurrentLevel;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½
+	int CurrentMap;						// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½
+	FVector CurrentLocation;			// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡
+	int CurrentGold;					// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+	FInventory Inventory;				// ï¿½ï¿½ï¿½ï¿½ ï¿½Îºï¿½ï¿½ä¸®
+	TArray<FQuestStatus> QuestTable;	// ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½Æ® ï¿½ï¿½ï¿½àµµ
 
-	int SlotIndex;						// ¼¼ÀÌºê ½½·Ô ¹øÈ£
+	int SlotIndex;						// ï¿½ï¿½ï¿½Ìºï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½È£
 
 public:
 	void ConvertFromProto(const SaveObject::PlayerInfo& info);

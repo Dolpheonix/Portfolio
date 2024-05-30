@@ -50,6 +50,8 @@ void ChattingServer::Run()
 {
 	mListenThread = thread(&ChattingServer::AcceptClient, this);
 
+	cout << "Chatting Server Started" << endl;
+
 	char msg[PACKET_SIZE] = { 0 };
 	while (true)
 	{
@@ -154,7 +156,7 @@ unsigned int __stdcall HandleClient(void* data)
 			for (ChattingServerClient c : server->mClients)
 			{
 
-				send(c.Socket, sendString.c_str(), sendString.length(), 0); // º¸³½ Å¬¶óÀÌ¾ðÆ®¸¦ Æ÷ÇÔÇØ ¸ðµç Å¬¶óÀÌ¾ðÆ®¿¡ ¸Þ½ÃÁö Àü´Þ
+				send(c.Socket, sendString.c_str(), sendString.length(), 0); // ë³´ë‚¸ í´ë¼ì´ì–¸íŠ¸ë¥¼ í¬í•¨í•´ ëª¨ë“  í´ë¼ì´ì–¸íŠ¸ì— ë©”ì‹œì§€ ì „ë‹¬
 			}
 		}
 	} while (recvSize > 0);

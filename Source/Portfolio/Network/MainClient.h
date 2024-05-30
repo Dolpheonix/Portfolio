@@ -12,8 +12,8 @@ using namespace std;
 class UCustomGameInstance;
 
 /*
-	GameServer¿Í ¿¬°áµÇ´Â Å¬¶óÀÌ¾ğÆ® Å¬·¡½º
-	- Protobuf ±¸Á¶Ã¼·Î ¼­¹ö¿Í µ¥ÀÌÅÍ¸¦ ¼Û/¼ö½ÅÇÕ´Ï´Ù.
+	GameServerì™€ ì—°ê²°ë˜ëŠ” í´ë¼ì´ì–¸íŠ¸ í´ë˜ìŠ¤
+	- Protobuf êµ¬ì¡°ì²´ë¡œ ì„œë²„ì™€ ë°ì´í„°ë¥¼ ì†¡/ìˆ˜ì‹ í•©ë‹ˆë‹¤.
 */
 
 class MainClient
@@ -22,22 +22,22 @@ public:
 	MainClient();
 
 public:
-	int Init(TObjectPtr<UCustomGameInstance> gi);	// ¼ÒÄÏ ÃÊ±âÈ­ ¹× ¼­¹ö¿Í ¿¬°á ½Ãµµ
-	void Run();	// ¼­¹ö µ¥ÀÌÅÍ ¼ö½Å
+	int Init(TObjectPtr<UCustomGameInstance> gi);	// ì†Œì¼“ ì´ˆê¸°í™” ë° ì„œë²„ì™€ ì—°ê²° ì‹œë„
+	void Run();
 
-	int SendLoginInfo(const char* id, const char* pw, bool isRegister);	// ¼­¹ö¿¡ ·Î±×ÀÎ Á¤º¸ Àü¼Û
-	int SendNickname(const char* nickname);								// ´Ğ³×ÀÓ ¼³Á¤ ÈÄ Àü¼Û
-	int HandleLoginResult(const char* result, bool isRegister);			// ·Î±×ÀÎ °á°ú¸¦ ÇÚµé¸µ
-	int HandleSubmitResult(const char* result, bool isSucceeded);		// ´Ğ³×ÀÓ ¼³Á¤ °á°ú¸¦ ÇÚµé¸µ
+	int SendLoginInfo(const char* id, const char* pw, bool isRegister);	// ì„œë²„ì— ë¡œê·¸ì¸ ì •ë³´ ì „ì†¡
+	int SendNickname(const char* nickname);								// ë‹‰ë„¤ì„ ì„¤ì • í›„ ì „ì†¡
+	int HandleLoginResult(const string& result, bool isRegister);		// ë¡œê·¸ì¸ ê²°ê³¼ë¥¼ í•¸ë“¤ë§
+	int HandleSubmitResult(const char* result, bool isSucceeded);		// ë‹‰ë„¤ì„ ì„¤ì • ê²°ê³¼ë¥¼ í•¸ë“¤ë§
 
-	int SaveGame(PlayerInfo toSave);	// ÇöÀç °ÔÀÓ »óÅÂ¸¦ ¼­¹ö¿¡ ÀúÀå
+	int SaveGame(PlayerInfo toSave);	// í˜„ì¬ ê²Œì„ ìƒíƒœë¥¼ ì„œë²„ì— ì €ì¥
 
 	void SetRunning(bool newVal);
 
 public:
 	static MainClient* mSingleton;
 
-	TObjectPtr<UCustomGameInstance> mGameInstance;	// ½ÇÇàÁßÀÎ °ÔÀÓ ÀÎ½ºÅÏ½º
+	TObjectPtr<UCustomGameInstance> mGameInstance;	// ì‹¤í–‰ì¤‘ì¸ ê²Œì„ ì¸ìŠ¤í„´ìŠ¤
 
 	SOCKET mSocket;
 	SOCKADDR_IN mAddress;

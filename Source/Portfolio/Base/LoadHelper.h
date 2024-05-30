@@ -3,7 +3,7 @@
 
 namespace LoadHelper
 {
-	// ·Îµå ½Ã¿¡ »ç¿ëÇÒ ÁÖ¿ä °æ·Î ¸ğÀ½
+	// ìì£¼ ì‚¬ìš©ë˜ëŠ” ê²½ë¡œ ëª¨ìŒ
 	const FString PATH_DATA			= "/Game/Data/";
 	const FString PATH_MESH			= "/Game/Mesh/";
 	const FString PATH_FX			= "/Game/FX/";
@@ -12,7 +12,7 @@ namespace LoadHelper
 	const FString PATH_SOUND		= "/Game/Sound/Cue/";
 	const FString PATH_BLUEPRINT	= "/Game/Blueprint/";
 
-	// »ı¼ºÀÚ ³»¿¡¼­ »ç¿ëÇÒ ¼ö ÀÖ´Â ·Îµå ÇÔ¼ö
+	// ìƒì„±ì ë‚´ì—ì„œ ì‚¬ìš© ê°€ëŠ¥
 	template <typename T>
 	FORCEINLINE T* C_LoadObjectFromPath(const FName& path)
 	{
@@ -26,7 +26,7 @@ namespace LoadHelper
 		return finder.Object;
 	}
 
-	// »ı¼ºÀÚ ¿Ü¿¡¼­µµ »ç¿ëÇÒ ¼ö ÀÖ´Â ·Îµå ÇÔ¼ö
+	// ìƒì„±ì ì™¸ì—ì„œë„ ì‚¬ìš© ê°€ëŠ¥
 	template <typename T>
 	FORCEINLINE T* LoadObjectFromPath(const FName& path)
 	{

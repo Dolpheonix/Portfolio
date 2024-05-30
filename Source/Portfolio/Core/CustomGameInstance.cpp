@@ -18,9 +18,9 @@ void UCustomGameInstance::Init()
 {
 	if (bLoaded == false)
 	{
-		// ¸Ê Á¤º¸ ·Îµù
+		// ë§µ ì •ë³´ ë¡œë”©
 		FCoreUObjectDelegates::PostLoadMapWithWorld.AddUObject(this, &UCustomGameInstance::OnMapLoaded);
-		LoadGameData();	// °ÔÀÓ µ¥ÀÌÅÍ ·Îµå
+		LoadGameData();	// ê²Œìž„ ë°ì´í„° ë¡œë”©
 		
 		WSADATA wsa;
 		if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
@@ -28,7 +28,7 @@ void UCustomGameInstance::Init()
 			UE_LOG(LogTemp, Fatal, TEXT("Can't start WSA"));
 		}
 
-		// °ÔÀÓ ¼­¹ö¿Í ¿¬°á
+		// ê²Œìž„ ì„œë²„ì™€ ì—°ê²°
 		mMainClient = new MainClient;
 		check(mMainClient);
 		if (mMainClient->Init(this) == SOCKET_ERROR)
@@ -38,7 +38,7 @@ void UCustomGameInstance::Init()
 
 		mMainClientThread = thread(&MainClient::Run, mMainClient);
 
-		// Ã¤ÆÃ ¼­¹ö¿Í ¿¬°á
+		// ì±„íŒ… ì„œë²„ì™€ ì—°ê²°
 		mChattingClient = new ChattingClient;
 		check(mChattingClient);
 
@@ -67,7 +67,7 @@ void UCustomGameInstance::Shutdown()
 	mChattingClient->SetRunning(false);
 
 
-	// Á¾·á Á÷ÀüÀÇ °ÔÀÓ µ¥ÀÌÅÍ¸¦ ÀúÀå
+	// ì¢…ë£Œ ì§ì „ì˜ ê²Œìž„ ë°ì´í„°ë¥¼ ì €ìž¥
 	if (bIntro == false)
 	{
 		mMainClient->SaveGame(mTempPlayerInfo);
@@ -89,7 +89,6 @@ void UCustomGameInstance::OpenIntro()
 
 void UCustomGameInstance::LoadGameData()
 {
-	// °¢ °ÔÀÓ µ¥ÀÌÅÍ ·Îµù
 	ItemInfo::LoadInfoListFromJson(mItemInfoList);
 	FQuest::LoadInfoListFromJson(mQuestInfoList);
 	FEnemyLabelInfo::LoadInfoListFromJson(mEnemyLabelInfoList);
@@ -159,7 +158,7 @@ void UCustomGameInstance::LoadNpcList(UWorld* world)
 
 		if (!foundNpc)
 		{
-			UE_LOG(LogTemp, Log, TEXT("ÇØ´ç NPC°¡ Á¸ÀçÇÏÁö ¾Ê½À´Ï´Ù. [%s]"), *npcObject->GetStringField("Name"));
+			UE_LOG(LogTemp, Log, TEXT("ï¿½Ø´ï¿½ NPCï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê½ï¿½ï¿½Ï´ï¿½. [%s]"), *npcObject->GetStringField("Name"));
 			continue;
 		}
 

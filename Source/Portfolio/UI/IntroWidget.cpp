@@ -50,6 +50,7 @@ void UIntroWidget::NativeConstruct()
 	{
 		mLoginButton->OnClicked.AddDynamic(this, &UIntroWidget::OnClicked_Login);
 		mRegisterButton->OnClicked.AddDynamic(this, &UIntroWidget::OnClicked_Register);
+		mSubmitButton->OnClicked.AddDynamic(this, &UIntroWidget::OnClicked_Submit);
 
 		bBounded = true;
 	}
