@@ -13,6 +13,7 @@ UNpcTask_Interact::UNpcTask_Interact()
 
 EBTNodeResult::Type UNpcTask_Interact::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// Interact ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == false)
 	{
@@ -20,17 +21,16 @@ EBTNodeResult::Type UNpcTask_Interact::ExecuteTask(UBehaviorTreeComponent& Owner
 	}
 
 	TObjectPtr<AAIController> ownerController = OwnerComp.GetAIOwner();
-
+	// ì˜ˆì•½ëœ Movemnt ì¤‘ë‹¨
 	ownerController->StopMovement();
 
 	TObjectPtr<APawn> ownerActor = ownerController->GetPawn();
 	TObjectPtr<AActor> targetActor = Cast<AActor>(ownerController->GetBlackboardComponent()->GetValueAsObject(InteractTarget_Key.SelectedKeyName));
-
 	check(ownerActor);
 
 	if (!targetActor)
 	{
-		return EBTNodeResult::Failed;	//TEMP : NpcCharacter::Interact() È£Ãâ ½Ã, isIntaracting °ª°ú interacting target ¿ÀºêÁ§Æ®°¡ ¼øÂ÷ÀûÀ¸·Î ¾÷µ¥ÀÌÆ®µÊ. È¤½Ã ¸ð¸¦ ³ÎÆ÷ÀÎÅÍ ¹ß»ý ½Ã ½ÃÄö½º¸¦ ´Ù½Ã µ¹°Ô²û ÇÔ.
+		return EBTNodeResult::Failed;
 	}
 
 	const FVector lookVector = (targetActor->GetActorLocation() - ownerActor->GetActorLocation()).GetSafeNormal();
@@ -43,6 +43,7 @@ EBTNodeResult::Type UNpcTask_Interact::ExecuteTask(UBehaviorTreeComponent& Owner
 
 void UNpcTask_Interact::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	// Interacting ìƒíƒœì—ì„œ ë²—ì–´ë‚˜ë©´ íƒœìŠ¤í¬ ì¢…ë£Œ
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == false)
 	{

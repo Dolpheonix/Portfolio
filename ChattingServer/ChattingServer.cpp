@@ -2,22 +2,20 @@
 
 #include "ChattingServer.h"
 #include <iostream>
-#include <google/protobuf/port_def.inc>
 #include <assert.h>
 
 #define PACKET_SIZE 1024
 
-unsigned int __stdcall HandleClient(void* data);
-
 using namespace std;
 
-ChattingServer* ChattingServer::mSingleton = nullptr;
-
-ChattingServer::ChattingServer()
+ChattingServer::ChattingServer() : bRunning(false)
 {
-	assert(mSingleton == nullptr);
+}
 
-	mSingleton = this;
+ChattingServer* ChattingServer::GetSingleton()
+{
+	static ChattingServer cs;
+	return &cs;
 }
 
 int ChattingServer::InitServerSocket()
@@ -48,16 +46,18 @@ int ChattingServer::ListenToClient()
 
 void ChattingServer::Run()
 {
+	bRunning = true;
+
 	mListenThread = thread(&ChattingServer::AcceptClient, this);
 
 	cout << "Chatting Server Started" << endl;
 
-	char msg[PACKET_SIZE] = { 0 };
+	char msg[PACKET_SIZE] = {};
 	while (true)
 	{
 		ZeroMemory(&msg, PACKET_SIZE);
 		cin >> msg;
-		if ((string)msg == "list")
+		if ((string)msg == "list")	// 현재 연결된 클라이언트를 콘솔창에 출력
 		{
 			cout << "Connected Client List" << endl;
 			for (ChattingServerClient c : mClients)
@@ -65,12 +65,14 @@ void ChattingServer::Run()
 				cout << inet_ntoa(c.Address.sin_addr) << " --- " << ntohs(c.Address.sin_port) << " --- " << c.PlayerName << endl;
 			}
 		}
+		else if ((string)msg == "quit")
+		{
+			bRunning = false;
+			break;
+		}
 		else
 		{
-			for (ChattingServerClient c : mClients)
-			{
-				send(c.Socket, msg, strlen(msg), 0);
-			}
+			// TODO : 그 외 명령어
 		}
 	}
 
@@ -86,7 +88,7 @@ void ChattingServer::Run()
 
 void ChattingServer::AcceptClient()
 {
-	while (true)
+	while (bRunning == true)
 	{
 		SOCKADDR_IN clientAddr = {};
 		int client_size = sizeof(clientAddr);
@@ -102,18 +104,21 @@ void ChattingServer::AcceptClient()
 		{
 			cout << "Client Connected --- IP : " << inet_ntoa(clientAddr.sin_addr) << " --- Port : " << ntohs(clientAddr.sin_port) << endl;
 		}
+		else continue;
 
+		// 연결된 클라이언트마다 구조체를 생성해 정보를 보관
 		ChattingServerClient* client = new ChattingServerClient;
 		client->Socket = client_socket;
 		client->Address = clientAddr;
 		client->PlayerName = "Anonymous";
 
-		mhThreads.push_back((HANDLE)_beginthreadex(NULL, 0, HandleClient, client, 0, NULL));
+		// 각 클라이언트 별로 송수신 스레드를 실행
+		mhThreads.push_back((HANDLE)_beginthreadex(NULL, 0, &ChattingServer::HandleClient, client, 0, NULL));
 		mClients.push_back(*client);
 	}
 }
 
-unsigned int __stdcall HandleClient(void* data)
+unsigned int __stdcall ChattingServer::HandleClient(void* data)
 {
 	ChattingServerClient* clientInfo = static_cast<ChattingServerClient*>(data);
 	SOCKET socket_client = clientInfo->Socket;
@@ -122,7 +127,7 @@ unsigned int __stdcall HandleClient(void* data)
 
 	delete clientInfo;
 
-	auto server = ChattingServer::mSingleton;
+	auto server = GetSingleton();
 	char recvBuffer[1024];
 	int recvSize;
 
@@ -136,7 +141,7 @@ unsigned int __stdcall HandleClient(void* data)
 			continue;
 		}
 
-		if (recvBuffer[0] == '#')
+		if (recvBuffer[0] == '#')	// 닉네임 설정
 		{
 			int cnt = 1;
 			playerName = &recvBuffer[1];
@@ -145,8 +150,8 @@ unsigned int __stdcall HandleClient(void* data)
 		}
 		else
 		{
-			// send to all client		
-			// append player's name in front of message
+			// 채팅 메시지가 전송됨 --> 모든 클라이언트에 해당 메시지 전송		
+			// 메시지 앞에 클라이언트의 닉네임을 붙여서 전송
 			string sendString;
 			sendString = playerName + " : ";
 			sendString += recvBuffer;
@@ -156,11 +161,12 @@ unsigned int __stdcall HandleClient(void* data)
 			for (ChattingServerClient c : server->mClients)
 			{
 
-				send(c.Socket, sendString.c_str(), sendString.length(), 0); // 보낸 클라이언트를 포함해 모든 클라이언트에 메시지 전달
+				send(c.Socket, sendString.c_str(), sendString.length(), 0);
 			}
 		}
-	} while (recvSize > 0);
+	} while ((recvSize > 0) && (server->bRunning == true));
 
+	// 연결이 끊겼다면, 클라이언트 목록에서 삭제한다.
 	for (size_t i = 0; i < server->mClients.size(); ++i)
 	{
 		if (server->mClients[i].Socket == socket_client)
@@ -180,7 +186,7 @@ unsigned int __stdcall HandleClient(void* data)
 int main(int argc, char argv[])
 {
 	// Init Server Class
-	ChattingServer* server = new ChattingServer;
+	ChattingServer* server = ChattingServer::GetSingleton();
 
 	// Init WSA
 	WSADATA wsa;

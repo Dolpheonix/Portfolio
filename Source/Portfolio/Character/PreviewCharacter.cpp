@@ -37,6 +37,7 @@ void APreviewCharacter::SyncWithPlayer(TObjectPtr<APlayerCharacter> player)
 
 	//TODO : Cloth
 
+	// 무기 장착 및 타입에 맞는 애니메이션 재생
 	const int& weaponInventoryIndex = player->GetCurrentWeapon();
 	if (weaponInventoryIndex >= 0)
 	{

@@ -39,11 +39,11 @@ void ABullet::OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrim
 {
 	if (OtherActor != this && OtherComponent->IsSimulatingPhysics())
 	{
-		// È÷Æ® ÀÌº¥Æ® ½Ã¿¡´Â ¸ÂÀº ¿ÀºêÁ§Æ®°¡ Æ¨°ÜÁ® ³ª°¨ (ÇÇÁ÷½º Àû¿ë ½Ã¿¡¸¸)
+		// ì¶©ëŒí•œ ì•¡í„°ì—ê²Œ ì„í„ìŠ¤ ì ìš© (í”¼ì§ìŠ¤ ì ìš© ì‹œ)
 		OtherComponent->AddImpulseAtLocation(mBulletMovementComponent->Velocity * 100.f, Hit.ImpactPoint);
 	}
 
-	// È÷Æ® ÈÄ ¾×ÅÍ´Â »èÁ¦
+	// ì¶©ëŒ í›„ì—ëŠ” ì‚­ì œ
 	Destroy();
 }
 
@@ -52,26 +52,27 @@ void ABullet::OnOverlapped(UPrimitiveComponent* HitComponent, AActor* OtherActor
 	TObjectPtr<ACustomCharacter> Hittee = Cast<ACustomCharacter>(OtherActor);
 	if (Hittee)
 	{
-		// µ¥¹ÌÁö Àû¿ë
+		// ë°ë¯¸ì§€ ì ìš©
 		UGameplayStatics::ApplyDamage(Hittee, mDamage, nullptr, this, NULL);
 	}
 
-	// ¾×ÅÍ »èÁ¦
+	// ì¶©ëŒ í›„ì—ëŠ” ì‚­ì œ
 	Destroy();
 }
 
+#if WITH_EDITOR
 void ABullet::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent)
 {
 	const FString propName = PropertyChangedEvent.Property->GetName();
 	if (propName == "Speed")
 	{
-		// Speed Parameter º¯°æ ½Ã, ¹«ºê¸ÕÆ® ÄÄÆ÷³ÍÆ®ÀÇ ¼Óµµ °ª º¯°æ
 		mBulletMovementComponent->InitialSpeed = Speed;
 		mBulletMovementComponent->MaxSpeed = Speed;
 	}
 
 	Super::PostEditChangeProperty(PropertyChangedEvent);
 }
+#endif
 
 void ABullet::Launch(const FVector& direction, float damage)
 {

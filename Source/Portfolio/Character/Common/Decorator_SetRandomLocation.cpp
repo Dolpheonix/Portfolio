@@ -7,7 +7,6 @@ UDecorator_SetRandomLocation::UDecorator_SetRandomLocation() : Radius(100.f)
 {
 	bNotifyActivation = true;
 
-	// ¹éÅÍ ºí·¢º¸µå¸¸ ¼±ÅÃÇÒ ¼ö ÀÖÀ½
 	Pivot.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UDecorator_SetRandomLocation, Pivot));
 	Output.AddVectorFilter(this, GET_MEMBER_NAME_CHECKED(UDecorator_SetRandomLocation, Output));
 }
@@ -21,7 +20,7 @@ void UDecorator_SetRandomLocation::OnNodeActivation(FBehaviorTreeSearchData& sea
 
 	const FVector pivotLocation = blackboardComp->GetValueAsVector(Pivot.SelectedKeyName);
 
-	// ÇöÀç Owner Ä³¸¯ÅÍÀÇ À§Ä¡
+	// ìºë¦­í„°ì˜ í˜„ìž¬ ìœ„ì¹˜
 	const FVector currentLocation = controller->GetPawn()->GetActorLocation();
 
 	int cnt = 0;
@@ -31,9 +30,10 @@ void UDecorator_SetRandomLocation::OnNodeActivation(FBehaviorTreeSearchData& sea
 		UNavigationSystemV1* navSys = UNavigationSystemV1::GetNavigationSystem(GetWorld());
 		ANavigationData* navData = Cast<ANavigationData>(navSys->GetNavDataForActor(*Cast<AActor>(searchData.OwnerComp.GetAIOwner()->GetPawn())));
 
-		// Pivot¿¡¼­ºÎÅÍ Radius¸¸Å­ ¶³¾îÁø ·£´ý ÁöÁ¡(Destination)
+		// ëžœë¤ ìœ„ì¹˜ ì„¤ì •
 		navSys->GetRandomReachablePointInRadius(pivotLocation, Radius, destination, navData);
-		if (FVector::Dist(currentLocation, destination.Location) > Radius * 0.5f)	// ´Ü, ÇöÀç À§Ä¡¿Í ¸ñÇ¥ À§Ä¡°¡ ÀÏÁ¤ ÀÌ»ó ¶³¾îÁ®ÀÖ¾î¾ß ÇÔ (RadiusÀÇ ¹Ý)
+		// í˜„ìž¬ ìœ„ì¹˜ì™€ ë„ˆë¬´ ê°€ê¹Œìš°ë©´ ë‹¤ì‹œ ì„¤ì •
+		if (FVector::Dist(currentLocation, destination.Location) > Radius * 0.5f)
 		{
 			blackboardComp->SetValueAsVector(Output.SelectedKeyName, destination.Location);
 			return;

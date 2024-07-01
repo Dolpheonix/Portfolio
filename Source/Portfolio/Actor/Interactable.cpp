@@ -1,6 +1,6 @@
 #include "Interactable.h"
-#include "Components/StaticMeshComponent.h"
 #include "Components/BillboardComponent.h"
+#include "Components/StaticMeshComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "../Base/LoadHelper.h"

@@ -5,7 +5,8 @@
 #include "ShooterTask_Surveillance.generated.h"
 
 /*
-	UShooterTask_Surveillance : ÁöÁ¤µÈ À§Ä¡·Î ÀÌµ¿ÇÏ´Â ÅÂ½ºÅ©. ÇÃ·¹ÀÌ¾î¸¦ °¨ÁöÇÏ¸é ÅÂ½ºÅ©¸¦ ¹ş¾î³­´Ù.
+	Shooter ëª¹ì˜ íŒ¨íŠ¸ë¡¤ íƒœìŠ¤í¬
+	- í”Œë ˆì´ì–´ ê°ì§€ ì‹œ ìŠ¤í…Œì´íŠ¸ ì „í™˜
 */
 
 UCLASS()
@@ -20,7 +21,7 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
-	// ¿À³Ê Ä³¸¯ÅÍÀÇ State Å°
+	// ëª¹ State
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	FBlackboardKeySelector EnemyStateKey;
 };

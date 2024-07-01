@@ -81,6 +81,7 @@ void UQuestWidget::Open(TObjectPtr<APlayerCharacter> player)
 	int slotCnt = 0;
 	for (int i = 0; i < qt.Num(); ++i)
 	{
+		// 진행 중, 완료 가능 퀘스트만 표시
 		if ((qt[i].CurrProgress == EQuestProgressType::InProgess) || (qt[i].CurrProgress == EQuestProgressType::Completable))
 		{
 			const FQuest& q = gi->GetQuestInfo(i);
@@ -120,6 +121,7 @@ void UQuestWidget::OnClicked_SelectQuest(int index)
 		FString str = FString::FromInt(i + 1);
 		str += ". ";
 
+		// 수집, 사냥퀘는 현재 진행 상황을 표시함 (EX : FFF ~ 1/5)  
 		switch (selectedQuest.SubQuests[i].Type)
 		{
 		case ESubQuestType::Arrival:
@@ -142,6 +144,7 @@ void UQuestWidget::OnClicked_SelectQuest(int index)
 			break;
 		}
 
+		// 완료된 서브퀘는 따로 표시
 		if (selectedStatus.SubStatus[i].bCompleted == true)
 		{
 			str += "\t(Completed)";

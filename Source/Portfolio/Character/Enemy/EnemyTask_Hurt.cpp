@@ -11,7 +11,6 @@ UEnemyTask_Hurt::UEnemyTask_Hurt() : mOwnerEnemy(nullptr)
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// EEnemyState ºí·¢º¸µå Å°¸¸ ¼±ÅÃ °¡´É
 	EnemyStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UEnemyTask_Hurt, EnemyStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 	CachedStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UEnemyTask_Hurt, CachedStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 }
@@ -24,14 +23,14 @@ EBTNodeResult::Type UEnemyTask_Hurt::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 
 	TObjectPtr<UBlackboardComponent> blackboard = OwnerComp.GetAIOwner()->GetBlackboardComponent();
 
-	// Hurt »óÅÂ°¡ ¾Æ´Ï¸é ÅÂ½ºÅ©¿¡ ÁøÀÔÇÒ ¼ö ¾øÀ½.
+	// Hurt ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	const EEnemyState currState = static_cast<EEnemyState>(blackboard->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (currState != EEnemyState::Hurt)
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	// ÇöÀç ÁøÇàÁßÀÎ ÀÌµ¿ ¸í·ÉÀ» ÇØÁ¦ 
+	// í˜„ì¬ ì˜ˆì•½ëœ Movement ì¢…ë£Œ
 	OwnerComp.GetAIOwner()->StopMovement();
 
 	return EBTNodeResult::InProgress;
@@ -39,7 +38,7 @@ EBTNodeResult::Type UEnemyTask_Hurt::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 
 void UEnemyTask_Hurt::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	// ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³ª¸é ÅÂ½ºÅ© Á¾·á
+	// ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚˜ë©´ íƒœìŠ¤í¬ ì¢…ë£Œ
 	const bool isPlaying = mOwnerEnemy->GetMesh()->GetSingleNodeInstance()->IsPlaying();
 	if (isPlaying == false)
 	{

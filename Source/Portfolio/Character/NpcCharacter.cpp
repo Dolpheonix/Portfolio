@@ -8,7 +8,7 @@
 #include "../Core/CustomController.h"
 #include "../Base/LoadHelper.h"
 
-static_assert(static_cast<uint8>(EItemType::Count) == 3);	// LoadFromJson()�� ShopItems �κ�
+static_assert(static_cast<uint8>(EItemType::Count) == 3);
 
 ANpcCharacter::ANpcCharacter() :	Super(),
 									mNpcIndex(-1), bInteracting(false),
@@ -62,9 +62,9 @@ void ANpcCharacter::Interact(TObjectPtr<AActor> player)
 
 	TObjectPtr<APlayerCharacter> pc = Cast<APlayerCharacter>(player);
 	check(pc);
-
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
 	check(controller);
+	// 다이얼로그 UI를 엶
 	controller->OpenDialogue(pc, this);
 
 	bInteracting = true;
@@ -73,11 +73,12 @@ void ANpcCharacter::Interact(TObjectPtr<AActor> player)
 void ANpcCharacter::UnInteract(TObjectPtr<AActor> player)
 {
 	bInteracting = false;
+	// 다이얼로그 UI를 닫음
 	mController->UnInteract();
 
 	TObjectPtr<APlayerCharacter> pc = Cast<APlayerCharacter>(player);
 	check(pc);
-
+	// 플레이어도 상호작용 종료
 	pc->UnInteract();
 }
 
@@ -125,6 +126,7 @@ bool ANpcCharacter::LoadFromJson(const TSharedPtr<FJsonObject>& obj)
 {
 	check(obj);
 	
+	// 다이얼로그
 	const TArray<TSharedPtr<FJsonValue>>& dialogueValues = obj->GetArrayField("Dialogues");
 	mDialogue.Dialogues.SetNum(dialogueValues.Num());
 	for (int i = 0; i < dialogueValues.Num(); ++i)
@@ -132,7 +134,7 @@ bool ANpcCharacter::LoadFromJson(const TSharedPtr<FJsonObject>& obj)
 		mDialogue.Dialogues[i].LoadFromJson(dialogueValues[i]->AsObject());
 	}
 
-	// Shop Items
+	// 상점 아이템
 	const TSharedPtr<FJsonObject>& shopItemObj = obj->GetObjectField("ShopItems");
 	{
 		// Cloth
@@ -163,6 +165,7 @@ bool ANpcCharacter::LoadFromJson(const TSharedPtr<FJsonObject>& obj)
 		}
 	}
 
+	// 보상 아이템
 	const TArray<TSharedPtr<FJsonValue>>& rewardItemValues = obj->GetArrayField("RewardItems");
 	mRewardItems.SetNum(rewardItemValues.Num());
 	for (int i = 0; i < rewardItemValues.Num(); ++i)

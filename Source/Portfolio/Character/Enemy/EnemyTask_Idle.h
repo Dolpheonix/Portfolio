@@ -5,7 +5,7 @@
 #include "EnemyTask_Idle.generated.h"
 
 /*
-	UEnemyTask_Idle : Patrol Áß Æ¯Á¤ À§Ä¡¿¡ µµ´ŞÇÏ¸é ÀÏÁ¤ ½Ã°£µ¿¾È ´ë±âÇÏ´Â ÅÂ½ºÅ©
+	íƒœìŠ¤í¬ ë™ì•ˆ ê°€ë§Œíˆ ìˆìŒ
 */
 
 UCLASS()
@@ -20,7 +20,7 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 public:
-	// ¿À³Ê Ä³¸¯ÅÍÀÇ ½ºÅ×ÀÌÆ® Å°
+	// Enemy State
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector EnemyStateKey;
 };

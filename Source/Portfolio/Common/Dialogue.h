@@ -3,35 +3,27 @@
 #include "CoreMinimal.h"
 #include "Dialogue.generated.h"
 
-// ÇÑ ´ëÈ­¿¡ ¼±ÅÃ °¡´ÉÇÑ ÀÀ´äÀÇ ÃÖ´ë °³¼ö
-constexpr int MAX_DIALOGUE_RESPONSE = 3;
+constexpr int MAX_DIALOGUE_RESPONSE = 3; // í•œ ëŒ€í™”ì—ì„œ ì„ íƒí•  ìˆ˜ ìˆëŠ” ì‘ë‹µ ê°œìˆ˜
 
 
 /*
-	EDialogueEventType : ´ëÈ­¿¡¼­ Æ¯Á¤ ÀÀ´äÀ» ¼±ÅÃÇßÀ» ¶§ ¹ß»ıÇÏ´Â ÀÌº¥Æ® Å¸ÀÔ
-		- End : ´ëÈ­ Á¾·á (UI Ã¢ ´İ±â)
-		- Jump : Æ¯Á¤ ÀÎµ¦½º·Î ´ëÈ­¸¦ ÀÌµ¿
-		- Commit Quest : Äù½ºÆ®¸¦ ¸ÃÀ½
-		- Complete Quest : Äù½ºÆ®¸¦ ¿Ï·á Ã³¸®ÇÔ
-		- Open Shop : »óÁ¡ UI¸¦ ¿®
-		- Give Item : ¾ÆÀÌÅÛÀ» ÁÜ
-		- Set Bookmark : ´ÙÀ½¿¡ ÇØ´ç npc¿Í ´ëÈ­¸¦ ½ÃÀÛÇÏ¸é ÇØ´ç ÀÎµ¦½ººÎÅÍ ½ÃÀÛ
+	ë‹¤ì´ì–¼ë¡œê·¸ì—ì„œ ì‘ë‹µì„ ì„ íƒí–ˆì„ ë•Œ, ë°œìƒí•˜ëŠ” ì´ë²¤íŠ¸ ì¢…ë¥˜
 */
 UENUM(BlueprintType)
 enum class EDialogueEventType : uint8
 {
-	End,
-	Jump,
-	CommitQuest,
-	CompleteQuest,
-	OpenShop,
-	GiveItem,
-	SetBookmark,
+	End,			// ë‹¤ì´ì–¼ë¡œê·¸ ì¢…ë£Œ. UI ì°½ ë‹«ìŒ
+	Jump,			// íŠ¹ì •í•œ ì¸ë±ìŠ¤ë¡œ ë‹¤ì´ì–¼ë¡œê·¸ ì´ë™
+	CommitQuest,	// í€˜ìŠ¤íŠ¸ë¥¼ ë“±ë¡í•¨
+	CompleteQuest,	// í€˜ìŠ¤íŠ¸ë¥¼ ì™„ë£Œ ì²˜ë¦¬í•¨
+	OpenShop,		// ìƒì  UIë¥¼ ì—¶
+	GiveItem,		// ì•„ì´í…œì„ íšë“í•¨
+	SetBookmark,	// ë¶ë§ˆí¬ ì„¤ì •. ë‹¤ìŒ ìƒí˜¸ì‘ìš© ì‹œ í•´ë‹¹ ì¸ë±ìŠ¤ë¶€í„° ë‹¤ì´ì–¼ë¡œê·¸ë¥¼ ì‹œì‘í•¨.
 	Count,
 };
 
 /*
-	FDialogueEvent : ´ëÈ­ ÀÌº¥Æ® ±¸Á¶Ã¼
+	ë‹¤ì´ì–¼ë¡œê·¸ ì´ë²¤íŠ¸
 */
 
 USTRUCT(Atomic, BlueprintType)
@@ -40,14 +32,15 @@ struct FDialogueEvent
 	GENERATED_USTRUCT_BODY()
 
 	EDialogueEventType EventType;
-	union // EventType¿¡ µû¶ó ´Ù¸¥ º¯¼ö »ç¿ë
+	union // ì´ë²¤íŠ¸ íƒ€ì… ë³„ë¡œ í•„ìš”í•œ ë³€ìˆ˜
 	{
-		int JumpIndex;		// JumpÀÏ ¶§ »ç¿ë ==> Á¡ÇÁÇÒ ÀÎµ¦½º
-		int QuestIndex;		// CommitQuest/CompleteQuest ==> Äù½ºÆ® ÀÎµ¦½º
-		int ItemIndex;		// GiveItem ==> ÁÙ ¾ÆÀÌÅÛ ÀÎµ¦½º (NPC Ä³¸¯ÅÍÀÇ RewardItems ¹è¿­ »óÀÇ ÀÎµ¦½º)
-		int BookmarkIndex;	// SetBookmark ==> ´ëÈ­ ºÏ¸¶Å©
+		int JumpIndex;		// ì í”„í•  ë‹¤ì´ì–¼ë¡œê·¸ì˜ ì¸ë±ìŠ¤
+		int QuestIndex;		// ë“±ë¡/ì™„ë£Œí•  í€˜ìŠ¤íŠ¸ì˜ ì¸ë±ìŠ¤
+		int ItemIndex;		// íšë“í•  ì•„ì´í…œì˜ ì¸ë±ìŠ¤ (Npc ìºë¦­í„°ì˜ mRewardItems ìƒì˜ ì¸ë±ìŠ¤)
+		int BookmarkIndex;	// ë‹¤ìŒ ìƒí˜¸ì‘ìš© ì‹œ ì‹œì‘ ì¸ë±ìŠ¤
 	};
 
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& eventValue);
 
 public:
@@ -57,7 +50,7 @@ public:
 };
 
 /*
-	FDialogueResponse : ´ëÈ­¿¡ µû¸¥ ÀÀ´ä. ÀÌº¥Æ®¸¦ Æ÷ÇÔ
+	ë‹¤ì´ì–¼ë¡œê·¸ ì‘ë‹µ êµ¬ì¡°ì²´
 */
 
 USTRUCT(Atomic, BlueprintType)
@@ -65,9 +58,10 @@ struct FDialogueResponse
 {
 	GENERATED_USTRUCT_BODY()
 
-	FString Text;	// ÀÀ´ä ÅØ½ºÆ®
-	TArray<FDialogueEvent> Events;	// ÀÌº¥Æ®´Â ¿©·¯ °³°¡ ¹ß»ıÇÒ ¼ö ÀÖÀ½.
+	FString Text; // ì‘ë‹µ ëŒ€ì‚¬
+	TArray<FDialogueEvent> Events;	// í•´ë‹¹ ì‘ë‹µì„ ì„ íƒí–ˆì„ ë•Œ ë°œìƒí•  ì´ë²¤íŠ¸ ë°°ì—´
 
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& responseValue);
 
 public:
@@ -77,7 +71,9 @@ public:
 };
 
 /*
-	FDialogueLine : ´ë»ç + ÀÀ´äÀ» Æ÷ÇÔÇÑ ÇÑ ´ÙÀÌ¾ó·Î±×
+	ë‹¤ì´ì–¼ë¡œê·¸ì˜ ê¸°ë³¸ ë‹¨ìœ„
+	- ëŒ€ì‚¬
+	- ì‘ë‹µ 1~3
 */
 
 USTRUCT(Atomic, BlueprintType)
@@ -85,10 +81,11 @@ struct FDialogueLine
 {
 	GENERATED_USTRUCT_BODY()
 
-	FString SpeakerName;	// È­ÀÚ
-	FString Text;			// ´ë»ç ÅØ½ºÆ®
-	TArray<FDialogueResponse> Responses;	// ¼±ÅÃ °¡´ÉÇÑ ÀÀ´ä
+	FString SpeakerName;	// í™”ì ì´ë¦„
+	FString Text;			// ëŒ€ì‚¬
+	TArray<FDialogueResponse> Responses;	// ì„ íƒ ê°€ëŠ¥í•œ ì‘ë‹µ
 
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& lineValue);
 
 public:
@@ -98,7 +95,9 @@ public:
 };
 
 /*
-	FDialogueList : ´ÙÀÌ¾ó·Î±× ¸®½ºÆ®. NPC Ä³¸¯ÅÍ°¡ °¡Áö°í ÀÖÀ» ±¸Á¶Ã¼
+	ë‹¤ì´ì–¼ë¡œê·¸ ë¦¬ìŠ¤íŠ¸
+	- ë‹¤ì´ì–¼ë¡œê·¸ ë°°ì—´
+	- ë¶ë§ˆí¬
 */
 
 USTRUCT(Atomic, BlueprintType)
@@ -107,8 +106,9 @@ struct FDialogueList
 	GENERATED_USTRUCT_BODY()
 
 	TArray<FDialogueLine> Dialogues;
-	int Bookmark;	// ÇöÀç ´ëÈ­ÀÇ ºÏ¸¶Å©
+	int Bookmark;	// ë¶ë§ˆí¬
 
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& listValue);
 
 public:

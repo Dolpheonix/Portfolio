@@ -5,7 +5,7 @@
 #include "NpcTask_Idle.generated.h"
 
 /*
-	UNpcTask_Idle : Æ¯Á¤ ½Ã°£µ¿¾È °¡¸¸È÷ ÀÖ´Â ÅÂ½ºÅ©. »óÈ£ ÀÛ¿ë ½Ã¿¡ ÅÂ½ºÅ© Å»Ãâ
+	Npcìš© Idle íƒœìŠ¤í¬
 */
 
 UCLASS()
@@ -20,8 +20,10 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
+	// íƒœìŠ¤í¬ ì§€ì† ì‹œê°„
 	UPROPERTY(EditAnywhere, Category="Custom")
 	float IdleTime;
+	// Interacting ìƒíƒœì¸ê°€?
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector IsInteracting_Key;
 };

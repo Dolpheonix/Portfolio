@@ -1,0 +1,12 @@
+{
+    "ItemList" : 
+    [
+        {
+            "Index" : 0,
+            "Type" : "WEAPON",
+            "InfoIndex" : 0,
+            "Num" : 1,
+            "SpawnLocation" : [100.0, 100.0, 100.0]
+        }
+    ]
+}

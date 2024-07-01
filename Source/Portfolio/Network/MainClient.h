@@ -1,46 +1,95 @@
 #pragma once
 
-#include <WinSock2.h>
 #include <string>
-#include <thread>
+#include "ProtoObject/ProtoObject.grpc.pb.h"
+#include "ProtoObject/ProtoObject.pb.h"
 #include "../Core/PlayerSaveObject.h"
-
-#pragma comment(lib, "ws2_32.lib")
+#include "../Common/GameObject.h"
 
 using namespace std;
 
-class UCustomGameInstance;
+using google::protobuf::Empty;
+using grpc::Channel;
+using grpc::CompletionQueue;
+using grpc::ClientContext;
+using grpc::ClientReader;
+using grpc::ClientWriter;
+using grpc::Status;
+using grpc::ClientAsyncWriter;
+using grpc::ClientAsyncReader;
+
+using ProtoObject::GameService;
+using ProtoObject::Location;
+using ProtoObject::RepBoolean;
+using ProtoObject::Equipment;
+using ProtoObject::ResourceChange;
+using ProtoObject::MapTransition;
 
 /*
 	GameServer와 연결되는 클라이언트 클래스
-	- Protobuf 구조체로 서버와 데이터를 송/수신합니다.
+	- Protobuf/gRpc 방식으로 서버와 데이터를 주고받음
 */
+
+class UCustomGameInstance;
 
 class MainClient
 {
-public:
+private:
 	MainClient();
+	MainClient(const MainClient& rhs) = delete;
+	MainClient& operator=(const MainClient& rhs) = delete;
+	~MainClient() {}
+public:
+	static MainClient* GetSingleton();
+	// 로그인 시도 
+	PlayerInfo TryLogin(const string& id, const string& pw);	
+	// 회원가입 시도
+	PlayerInfo TryRegister(const string& id, const string& pw);
+	// 닉네임 설정
+	string SetNickname(const string& nickname);		
+	// 현재 게임 상태 저장
+	bool Save(const PlayerInfo toSave);							
+
+	// 위치,회전 정보 전송
+	void SendLocation(const GameObject::Location& loc);
+	// 스트림 Writer를 할당받음
+	void ReceiveLocation();
+
+	// 애니메이션용 Boolean 값 전송
+	void SendRepBoolean(const GameObject::RepBoolean& request);
+	// 스트림 Writer를 할당받음
+	void ReceiveRepBoolean();
+
+	// 장비 변경 정보를 전송
+	void SendEquipmentChange(const GameObject::Equipment& request);
+	// 스트림 Writer를 할당받음
+	void ReceiveEquipmentChange();
+
+	// 맵 리소스 변화를 전송
+	void SendMapResourceChange(const GameObject::ResourceChange& request);
+	// 스트림 Writer를 할당받음
+	void ReceiveMapResourceChange();
+
+	// 맵 이탈/진입을 전송
+	void SendMapTransition(const GameObject::MapTransition& request);
+	// 스트림 Writer를 할당받음
+	void ReceiveMapTransition();
+
+	// gRpc channel, stub 생성
+	void RunClient(TObjectPtr<UCustomGameInstance> gi);	
 
 public:
-	int Init(TObjectPtr<UCustomGameInstance> gi);	// 소켓 초기화 및 서버와 연결 시도
-	void Run();
+	unique_ptr<ProtoObject::GameService::Stub> mStub;	// 클라이언트 Stub
 
-	int SendLoginInfo(const char* id, const char* pw, bool isRegister);	// 서버에 로그인 정보 전송
-	int SendNickname(const char* nickname);								// 닉네임 설정 후 전송
-	int HandleLoginResult(const string& result, bool isRegister);		// 로그인 결과를 핸들링
-	int HandleSubmitResult(const char* result, bool isSucceeded);		// 닉네임 설정 결과를 핸들링
+	unique_ptr<ClientWriter<Location>> mLocationWriter;		// Location 정보 전송용 Writer
+	unique_ptr<ClientReader<Location>> mLocationReader;		// Location 정보 수신용 Reader
 
-	int SaveGame(PlayerInfo toSave);	// 현재 게임 상태를 서버에 저장
+	unique_ptr<ClientWriter<RepBoolean>> mRepBooleanWriter;	// RepBoolean 정보 전송용 Writer
+	unique_ptr<ClientReader<RepBoolean>> mRepBooleanReader;	// RepBoolean 정보 수신용 Reader
+	
+	unique_ptr<ClientReader<Equipment>> mEquipmentReader;			// Equipment 정보 수신용 Reader
+	unique_ptr<ClientReader<ResourceChange>> mResourceChangeReader;	// ResourceChange 정보 수신용 Reader
+	unique_ptr<ClientReader<MapTransition>> mMapTransitionReader;	// MapTransition 정보 수신용 Reader
 
-	void SetRunning(bool newVal);
-
-public:
-	static MainClient* mSingleton;
-
-	TObjectPtr<UCustomGameInstance> mGameInstance;	// 실행중인 게임 인스턴스
-
-	SOCKET mSocket;
-	SOCKADDR_IN mAddress;
-
-	bool bRunning;
+	TObjectPtr<UCustomGameInstance> mGameInstance;	// 게임 인스턴스
 };

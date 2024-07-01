@@ -7,7 +7,7 @@
 class AShooter;
 
 /*
-	UShooterTask_Shot : Shooter Ä³¸¯ÅÍÀÇ °ø°İ ÅÂ½ºÅ©
+	Shooter ëª¹ì˜ ê³µê²© íƒœìŠ¤í¬
 */
 
 UCLASS()
@@ -22,14 +22,14 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
-	// °ø°İ Å¸°Ù
+	// ê³µê²© íƒ€ê²Ÿ
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector TargetKey;
-	// ¿À³Ê Ä³¸¯ÅÍ(EnemyCharacter)ÀÇ ½ºÅ×ÀÌÆ® °ª
+	// ìºë¦­í„° State
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector EnemyStateKey;
 
 private:
-	// ¿À³Ê Ä³¸¯ÅÍ
+	// Owner ìºë¦­í„°
 	TObjectPtr<AShooter> mOwnerShooter;
 };

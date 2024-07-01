@@ -5,7 +5,7 @@
 #include "NpcTask_Stroll.generated.h"
 
 /*
-	UNpcTask_Stroll : Æ¯Á¤ À§Ä¡·Î ÀÌµ¿ÇÏ´Â ÅÂ½ºÅ©. À§Ä¡ µµÂø/»óÈ£ÀÛ¿ë ½Ã¿¡ ÅÂ½ºÅ© Á¾·á
+	ì •í•´ì§„ ë°˜ê²½ ë‚´ì—ì„œ ì´ë™í•˜ëŠ” íƒœìŠ¤í¬
 */
 
 UCLASS()
@@ -20,6 +20,7 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
+	// í˜„ì¬ ìƒí˜¸ì‘ìš© ì¤‘ì¸ê°€?
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector IsInteracting_Key;
 };

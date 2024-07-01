@@ -140,6 +140,7 @@ bool FEnemyInfo::LoadFromJson(const TSharedPtr<FJsonObject>& infoVal)
 		Labels[i] = labelArr[i]->AsNumber();
 	}
 
+	// 스폰할 액터 클래스
 	EnemyClass = GetEnemyClassFromType(StringToEnum<EEnemyType>(infoVal->GetStringField("Class")));
 
 	return true;
@@ -173,6 +174,7 @@ bool FEnemyInfo::LoadInfoListFromJson(TArray<FEnemyInfo>& outList)
 
 TSubclassOf<AEnemyCharacter> FEnemyInfo::GetEnemyClassFromType(const EEnemyType type)
 {
+	// 타입에 맞는 Enemy 클래스를 반환
 	switch (type)
 	{
 	case EEnemyType::Shooter:

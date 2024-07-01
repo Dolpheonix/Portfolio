@@ -1,12 +1,14 @@
 #include "RootItem.h"
-#include "Components/CapsuleComponent.h"
 #include "Components/BillboardComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "NiagaraFunctionLibrary.h"
 #include "NiagaraComponent.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISenseConfig_Sight.h"
 #include "../Base/LoadHelper.h"
 #include "../Character/PlayerCharacter.h"
+#include "../Core/CustomGameInstance.h"
 
 ARootItem::ARootItem() : Item()
 {
@@ -61,10 +63,25 @@ void ARootItem::Interact(TObjectPtr<AActor> player)
 	TObjectPtr<APlayerCharacter> pc = Cast<APlayerCharacter>(player);
 	check(pc);
 
-	pc->RootItem(Item);
+	pc->RootItem(Item);	// 캐릭터는 아이템 획득
 
-	pc->UnInteract();
+	pc->UnInteract();	// 루팅 후 상호작용 종료
 
-	Destroy();
+	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
+	check(gi);
+
+	gi->SendItemRemoval(mResIdx);	// 맵 리소스가 삭제됨을 서버에 알림
+
+	Destroy();	// 액터 삭제
+}
+
+void ARootItem::SetItem(const FGameItem& gi)
+{
+	Item = gi;
+}
+
+void ARootItem::SetResourceIndex(const int idx)
+{
+	mResIdx = idx;
 }
 

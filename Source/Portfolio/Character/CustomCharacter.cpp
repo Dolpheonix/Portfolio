@@ -18,10 +18,9 @@ float ACustomCharacter::TakeDamage(float Damage, struct FDamageEvent const& Dama
 {
 	float damage = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	mHp -= damage;
-
+	// HPê°€ 0ì´ ë˜ë©´ ì‚¬ë§ ì²˜ë¦¬
 	if (mHp <= 0)
 	{
-		// Ã¼·ÂÀÌ 0ÀÌ µÇ¸é »ç¸Á Ã³¸®
 		bDead = true;
 		OnDead();
 	}

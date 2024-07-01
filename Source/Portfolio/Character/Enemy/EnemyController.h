@@ -9,11 +9,11 @@ class UBlackboardData;
 class UAISenseConfig_Sight;
 
 /*
-	EEnemyState : Enemy Ä³¸¯ÅÍÀÇ State
-	- Patrol : ÇÃ·¹ÀÌ¾î¸¦ °¨ÁöÇÏÁö ¸øÇÑ »óÅÂ. ÀÏÁ¤ ¹üÀ§ ³»¸¦ µ¹¾Æ´Ù´Ô
-	- Caution : ÇÃ·¹ÀÌ¾î°¡ Ã³À½ °¨ÁöµÈ »óÅÂ.
-	- Detected: ÀÏÁ¤ ½Ã°£µ¿¾È Caution »óÅÂ°¡ À¯ÁöµÇ¸é Detected »óÅÂ·Î ÀüÈ¯µÊ.
-	- Hurt : µ¥¹ÌÁö¸¦ ÀÔÀº »óÅÂ. ÀÏÁ¤ ½Ã°£ µ¿¾È °æÁ÷
+	EEnemyState : Enemy ìºë¦­í„°ì˜ State
+	- Patrol : í”Œë ˆì´ì–´ë¥¼ ê°ì§€í•˜ì§€ ëª»í•œ ìƒíƒœ
+	- Caution : í”Œë ˆì´ì–´ë¥¼ ì²˜ìŒ ê°ì§€í•œ ìƒíƒœ
+	- Detected: Caution ìƒíƒœì—ì„œ ê°ì§€ ìƒíƒœê°€ ëª‡ì´ˆê°„ ìœ ì§€ë˜ì—ˆìœ¼ë©´, Detected ìƒíƒœë¡œ ì „í™˜. í”Œë ˆì´ì–´ë¥¼ ê³µê²©
+	- Hurt : í”Œë ˆì´ì–´ì—ê²Œ ê³µê²©ë°›ì•„ ê²½ì§ì´ ê±¸ë¦° ìƒíƒœ
 */
 
 UENUM(BlueprintType)
@@ -27,8 +27,9 @@ enum class EEnemyState : uint8
 };
 
 /*
-	AEnemyController : Àû Ä³¸¯ÅÍ¿¡ Àû¿ëµÉ ÄÁÆ®·Ñ·¯ÀÇ ±â¹İ Å¬·¡½º
-	ÁÖ¿ä ±â´É : ½Ã¾ß ÆÛ¼Á¼Ç, Enemy State º¯È¯ ·ÎÁ÷
+	ëª¹ ìºë¦­í„°ìš© ì»¨íŠ¸ë¡¤ëŸ¬
+	- Enemy State ì „í™˜
+	- í¼ì…‰ì…˜ ë“±ë¡, ê´€ë¦¬
 */
 
 UCLASS()
@@ -51,28 +52,29 @@ public:
 	UFUNCTION()
 	void OnTargetPerceptionUpdate(AActor* SourceActor, FAIStimulus Stimulus);
 
-	// Caution¿¡¼­ Detected »óÅÂ·Î º¯È¯
+	// Caution -> Detect
 	void CautionToDetected();
-	// Å¸°Ù ÇÃ·¹ÀÌ¾î¸¦ ÇØÁ¦
+	// Detect -> Patrol
 	void ReleaseTarget();
-	// Enemy State¸¦ º¯È¯
+
 	void SetState(EEnemyState s);
 
 protected:
-	// ½ÇÇàÇÒ ºñÇìÀÌºñ¾î Æ®¸®
+	// ë¹„í—¤ì´ë¹„ì–´ íŠ¸ë¦¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UBehaviorTree> mBehaviorTree;
-	// ½ÇÇàÇÒ ºí·¢º¸µå µ¥ÀÌÅÍ
+	// ë¸”ë™ë³´ë“œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UBlackboardData> mBlackboardData;
-	// ½Ã¾ß ÆÛ¼Á¼Ç
+	// ì‹œê° í¼ì…‰ì…˜
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAISenseConfig_Sight> mSenseConfig_Sight;
 
 private:
-	// ÇöÀç Enemy State
+	// í˜„ì¬ State
 	EEnemyState mCurrState;
-
+	// Caution ìƒíƒœì— ì§„ì…í•˜ë©´ ì‘ë™í•˜ëŠ” íƒ€ì´ë¨¸. ê°ì§€ì—ì„œ ë²—ì–´ë‚˜ë©´ í•´ì œ.
 	FTimerHandle mTimer_CautionToDetected;
+	// Detect ìƒíƒœì—ì„œ íƒ€ê²Ÿì´ ê°ì§€ë¥¼ ë²—ì–´ë‚˜ë©´ ì‘ë™í•˜ëŠ” íƒ€ì´ë¨¸. ë‹¤ì‹œ ê°ì§€ë˜ë©´ í•´ì œ/ 
 	FTimerHandle mTimer_ReleaseTarget;
 };

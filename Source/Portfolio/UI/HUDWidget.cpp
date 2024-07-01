@@ -117,7 +117,7 @@ void UHUDWidget::SetChattingBoxVisibility(bool newVisibility)
 	bChattingBoxVisibility = newVisibility;
 	if (newVisibility == true)
 	{
-		mChattingScroll->ScrollToEnd();
+		mChattingScroll->ScrollToEnd();	// 가장 최근 채팅부터 보여줌 (제일 아래쪽이 최근)
 	}
 }
 
@@ -128,6 +128,7 @@ bool UHUDWidget::GetChattingBoxVisibility() const
 
 void UHUDWidget::UpdateChatting()
 {
+	// 서버로부터 받은 채팅 목록은 게임 인스턴스에 저장되어 있으므로, 여기서 가져옴
 	UCustomGameInstance* gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
 	const TArray<FString>& chats = gi->GetSavedChattings();
@@ -147,15 +148,15 @@ void UHUDWidget::UpdateHpBar()
 void UHUDWidget::UpdateWeaponImage()
 {	
 	const int currIndex = mOwnerPlayer->GetCurrentWeapon();
+	// 가진 무기가 없음
 	if (currIndex < 0)
 	{
-		// �������� ���Ⱑ ����
 		mCurrentWeaponImage->Brush.SetResourceObject(LoadHelper::LoadObjectFromPath<UTexture2D>(TEXT("/Game/Texture/WidgetImage/Thumbnail/Empty_Normal.Empty_Normal")));
 		mNextWeaponImage->Brush.SetResourceObject(LoadHelper::LoadObjectFromPath<UTexture2D>(TEXT("/Game/Texture/WidgetImage/Thumbnail/Empty_Normal.Empty_Normal")));
 
 		return;
 	}
-	
+	// 무기가 있다면, 다음 인덱스의 무기 (무기가 하나뿐이면, 현재 무기 == 다음 무기)	
 	const int nextIndex = (currIndex + 1) % mOwnerPlayer->GetInventory().GetTypeInventory(EItemType::Weapon).ItemList.Num();
 
 	UCustomGameInstance* gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
@@ -172,6 +173,7 @@ void UHUDWidget::SendChatting()
 {
 	if (mChattingInputText->GetText().IsEmpty() == false)
 	{
+		// 게임 인스턴스에 입력된 채팅 전달
 		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 		check(gi);
 

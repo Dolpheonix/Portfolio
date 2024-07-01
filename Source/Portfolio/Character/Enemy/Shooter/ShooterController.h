@@ -5,7 +5,8 @@
 #include "ShooterController.generated.h"
 
 /*
-	AShooterController : AShooter Å¬·¡½º¿¡ Àû¿ëµÇ´Â ÄÁÆ®·Ñ·¯
+	Shooter ëª¹ ì „ìš© ì»¨íŠ¸ë¡¤ëŸ¬
+	- ë¹„í—¤ì´ë¹„ì–´ íŠ¸ë¦¬, ë¸”ë™ë³´ë“œ ì„¤ì •
 */
 
 UCLASS()

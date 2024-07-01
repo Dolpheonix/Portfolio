@@ -7,9 +7,9 @@
 #include "../NpcCharacter.h"
 
 ANpcController::ANpcController(const FObjectInitializer& objectInitializer) :
-				Super(objectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))	// ºí·çÇÁ¸°Æ®ÀÇ Detour Crowd Component(µÎ AI°¡ ¼­·Î ºÎµúÈ÷Áö ¾Ê°Ô ÀÌµ¿ ¹æÇâÀ» ¹Ù²Ş.)
+				Super(objectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ®ï¿½ï¿½ Detour Crowd Component(ï¿½ï¿½ AIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Îµï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê°ï¿½ ï¿½Ìµï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ù²ï¿½.)
 {
-	// ±âº» ¼³Á¤ °ª
+	// ë¸”ë™ë³´ë“œ, ë¹„í—¤ì´ë¹„ì–´ íŠ¸ë¦¬ ì„¤ì •
 	mBehaviorTree	= LoadHelper::C_LoadObjectFromPath<UBehaviorTree>(TEXT("/Game/Blueprint/Character/Npc/NpcBehaviorTree.NpcBehaviorTree"));
 	mBlackboardData = LoadHelper::C_LoadObjectFromPath<UBlackboardData>(TEXT("/Game/Blueprint/Character/Npc/NpcBlackboard.NpcBlackboard"));
 }
@@ -23,13 +23,13 @@ void ANpcController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	UBlackboardComponent* blackboard = Blackboard.Get(); //TEMP: UseBlackboard()°¡ ÀÎÀÚ·Î UBlackboardComponent*& ¸¦ ¹ŞÀ½
+	UBlackboardComponent* blackboard = Blackboard.Get(); // TEMP : TObjectPtrê³¼ UseBlackboardì˜ í˜¸í™˜ì„± ë¬¸ì œ
 	UseBlackboard(mBlackboardData, blackboard);
 	RunBehaviorTree(mBehaviorTree);
 
 	check(GetBlackboardComponent());
 
-	// ±âÁØ À§Ä¡
+	// ì‹œì‘ ìœ„ì¹˜ë¥¼ ì´ë™ Pivotìœ¼ë¡œ ì„¤ì •
 	GetBlackboardComponent()->SetValueAsVector(TEXT("Pivot"), GetPawn()->GetActorLocation());
 }
 

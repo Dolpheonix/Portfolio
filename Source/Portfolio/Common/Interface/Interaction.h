@@ -6,7 +6,9 @@
 #include "Interaction.generated.h"
 
 /*
-	UInteraction : »óÈ£ÀÛ¿ë °¡´ÉÇÑ ¿ÀºêÁ§Æ®µéÀÌ »ç¿ëÇÒ ÇÔ¼ö¸¦ ¸ğ¾Æ³õÀº ÀÎÅÍÆäÀÌ½º
+	í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš© ê°€ëŠ¥í•œ ì•¡í„°ë“¤ì˜ ì¸í„°í˜ì´ìŠ¤
+	- ìƒí˜¸ì‘ìš©/í•´ì œ
+	- ë²”ìœ„ì— ë“¤ì–´ì™”ì„ ë•Œ ì•Œë¦¼/í•´ì œ
 */
 
 UINTERFACE(MinimalAPI)
@@ -22,12 +24,12 @@ class PORTFOLIO_API IInteraction : public IGenericTeamAgentInterface
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override { return FGenericTeamId(1); };
 
-	// »óÈ£ ÀÛ¿ë °¡´ÉÇÑ »óÅÂ¿¡ ÁøÀÔÇßÀ» ¶§ È£Ãâ
-	virtual void Notify(TObjectPtr<AActor> player) {};
-	// »óÈ£ ÀÛ¿ë °¡´ÉÇÑ »óÅÂ¿¡¼­ ¹ş¾î³µÀ» ¶§ È£Ãâ
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ì— ë“¤ì–´ì™”ìŒì„ ì•Œë¦¼
+	virtual void Notify(TObjectPtr<AActor> player) {};	// Why? : ì–¸ë¦¬ì–¼ í´ë˜ìŠ¤ì—ì„œëŠ” ìˆœìˆ˜ ê°€ìƒí•¨ìˆ˜ë¥¼ ì„ ì–¸í•  ìˆ˜ ì—†ìŒ
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ì—ì„œ ë²—ì–´ë‚¬ìŒì„ ì•Œë¦¼
 	virtual void UnNotify(TObjectPtr<AActor> player) {};
-	// »óÈ£ ÀÛ¿ë ½ÃÀÛ
+	// í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš©
 	virtual void Interact(TObjectPtr<AActor> player) {};
-	// »óÈ£ ÀÛ¿ë ³¡³²
+	// ìƒí˜¸ì‘ìš© í•´ì œ
 	virtual void UnInteract(TObjectPtr<AActor> player) {};
 };

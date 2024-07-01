@@ -5,7 +5,6 @@
 
 AShooterController::AShooterController(const FObjectInitializer& objectInitializer) : Super(objectInitializer)
 {
-	// 비헤이비어 트리 및 블랙보드 설정
 	mBehaviorTree = LoadHelper::C_LoadObjectFromPath<UBehaviorTree>(TEXT("/Game/Blueprint/Character/Enemy/Shooter/ShooterBehaviorTree.ShooterBehaviorTree"));
 	mBlackboardData = LoadHelper::C_LoadObjectFromPath<UBlackboardData>(TEXT("/Game/Blueprint/Character/Enemy/Shooter/ShooterBlackboard.ShooterBlackboard"));
 }

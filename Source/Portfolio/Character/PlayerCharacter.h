@@ -8,46 +8,35 @@
 #include "../Common/Quest.h"
 #include "PlayerCharacter.generated.h"
 
+class UCustomGameInstance;
 class IInteraction;
 class UCameraComponent;
 class UAudioComponent;
 class UWeapon;
 
 /*
-	EPlayerActionMode : ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍÀÇ Çàµ¿ Å¸ÀÔ Á¤ÀÇ
-		- Idle : °¡¸¸È÷ ÀÖ´Â »óÅÂ
-		- Attack : °ø°İ Áß
-		- Interact : »óÈ£ÀÛ¿ë Áß
-
-	EPlayerMovementmode : ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍÀÇ ¿òÁ÷ÀÓ Å¸ÀÔ Á¤ÀÇ
-		- Idle : °¡¸¸È÷ ÀÖ´Â »óÅÂ
-		- Walk, Run : ÀÌµ¿(°È±â/¶Ù±â)
-		- Jump : Á¡ÇÁ Å°¸¦ ÅëÇØ Á¡ÇÁ ÁßÀÎ »óÅÂ
-		- Fall : Á¡ÇÁ ¿ÜÀÇ »óÈ²¿¡¼­ °øÁß¿¡ ¶á »óÅÂ
-
-	APlayerCharacter: Á¶ÀÛ °¡´ÉÇÑ ÇÃ·¹ÀÌ¾î Ä³¸¯ÅÍ
-		- °È±â, Á¡ÇÁ µîÀÇ ÀÌµ¿ ±â´É
-		- ÀÎº¥Åä¸®
-		- NPC, ·çÆÃ¾ÆÀÌÅÛ µî°úÀÇ »óÈ£ÀÛ¿ë ±â´É
+	í”Œë ˆì´ì–´ì˜ Action ìƒíƒœ
 */
-
 UENUM(BlueprintType)
 enum class EPlayerActionMode : uint8
 {
-	Idle,
-	Attack,
-	Interact,
+	Idle,		// ì•„ë¬´ Actionë„ ì·¨í•˜ì§€ ì•ŠìŒ
+	Attack,		// ê³µê²© ì¤‘
+	Interact,	// ìƒí˜¸ì‘ìš© ì¤‘
 	Count,
 };
 
+/*
+	í”Œë ˆì´ì–´ì˜ Movement ìƒíƒœ
+*/
 UENUM(BlueprintType)
 enum class EPlayerMovementMode : uint8
 {
-	Idle,
-	Walk,
-	Run,
-	Jump,
-	Fall,
+	Idle,	// ê°€ë§Œíˆ ìˆëŠ” ì¤‘
+	Walk,	// ê±·ëŠ” ì¤‘
+	Run,	// ë›°ëŠ” ì¤‘
+	Jump,	// ì í”„ ì¤‘
+	Fall,	// ë‚™í•˜ ì¤‘
 	Count,
 };
 
@@ -67,95 +56,98 @@ protected:
 
 public:
 	virtual void Tick(float DeltaTime) override;
-
+	// ë°ë¯¸ì§€ ì²˜ë¦¬
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
+	// í”Œë ˆì´ì–´ ì…ë ¥ ì²˜ë¦¬
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	// ë°ë¯¸ì§€ë¥¼ ì…ì—ˆì„ ë•Œ í˜¸ì¶œ
 	virtual void OnHurt() override;
 
-// ÀÔ·Â ¹ÙÀÎµù¿ë ÇÔ¼ö
-	// ¾Õ/µÚ ÀÌµ¿ (W/S Ãà ¸ÅÇÎ)
+// ì…ë ¥ í•¨ìˆ˜ ëª¨ìŒ
+	// ì•/ë’¤ ì´ë™ (W/S)
 	void MoveVertical(float val);
-	// ¿À/¿Ş ÀÌµ¿ (A/D Ãà ¸ÅÇÎ)
+	// ì¢Œ/ìš° ì´ë™ (A/D)
 	void MoveHorizontal(float val);
-	// »ó/ÇÏ Ä«¸Ş¶ó ÀÌµ¿ (¸¶¿ì½º ¼öÁ÷ Ãà)
+	// ìƒ/í•˜ íšŒì „ (ë§ˆìš°ìŠ¤ ìƒ/í•˜)
 	void TurnVertical(float val);
-	// ¿À/¿Ş Ä«¸Ş¶ó ÀÌµ¿ (¸¶¿ì½º ¼öÆò Ãà)
+	// ì¢Œ/ìš° íšŒì „ (ë§ˆìš°ìŠ¤ ì¢Œ/ìš°)
 	void TurnHorizontal(float val);
-	// ÀÌµ¿ Áß, ´Ş¸®±â È°¼ºÈ­ (Shift Å° ´©¸§)
+	// ë‹¬ë¦¬ê¸° ì „í™˜ (Shift í‚¤ ëˆ„ë¦„)
 	void StartRun();
-	// ÀÌµ¿ Áß, ´Ş¸®±â ºñÈ°¼ºÈ­ (Shift Å° ¶À)
+	// ê±·ê¸° ì „í™˜ (Shift í‚¤ ë—Œ)
 	void StopRun();
-	// Á¡ÇÁ (½ºÆäÀÌ½º¹Ù ´©¸§)
+	// ì í”„ (SpaceBar)
 	void Jump();
-	// »óÈ£ ÀÛ¿ë ½Ãµµ (E Å° ´©¸§)
+	// ìƒí˜¸ì‘ìš© ì‹œë„ (E)
 	void TryInteract();
-	// ¹«±â º¯È¯ Äü½½·Ô (R Å° ´©¸§)
+	// ë¬´ê¸° í€µìŠ¬ë¡¯ ì „í™˜ (T)
 	void TurnQuickSlot();
-	// ¹«±â ÀåÂø/ÇØÁ¦ (E Å° ´©¸§)
+	// ë¬´ê¸° ì¥ì°©/í•´ì œ (R)
 	void ChangeEquipment();
-	// °ø°İ (¸¶¿ì½º ÁÂÅ¬¸¯)
+	// ê³µê²© (ë§ˆìš°ìŠ¤ ì¢Œí´ë¦­)
 	void Attack();
-	// °ø°İ º¸Á¶ (¸¶¿ì½º ¿ìÅ¬¸¯ ´©¸§)
+	// ê³µê²© ë³´ì¡° (ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ëˆ„ë¦„)
 	void Subattack();
-	// °ø°İ º¸Á¶ ÇØÁ¦ (¸¶¿ì½º ¿ìÅ¬¸¯ ¶À)
+	// ê³µê²© ë³´ì¡° í•´ì œ (ë§ˆìš°ìŠ¤ ìš°í´ë¦­ ë—Œ)
 	void CancleSubattack();
-	// ÀÎº¥Åä¸® ui ¿­±â (I Å° ´©¸§)
+	// ì¸ë²¤í† ë¦¬ ì—´ê¸° (I)
 	void OpenInventory();
-	// ¸Ş´º Ã¢ ¿­±â (Esc Å° ´©¸§)
+	// ë©”ì¸ ë©”ë‰´ ì—´ê¸° (Esc)
 	void OpenMenu();
-	// Äù½ºÆ® Ã¢ ¿­±â
+	// í€˜ìŠ¤íŠ¸ ì°½ ì—´ê¸° (Q)
 	void OpenQuestTable();
-	// Ã¤ÆÃÃ¢ ¿­±â (¿£ÅÍ Å° ´©¸§)
+	// ì±„íŒ…ì°½ ì—´ê¸° (Enter)
 	void ShowChattingBox();
 
-	// mCurrentWeaponIndexÀÇ ¹«±â·Î º¯°æ(ÀåÂø »óÅÂ·Î)	
+	// mCurrentWeaponIndexë¡œ ë¬´ê¸° ë³€í™˜
 	void ChangeWeapon();
-	// ÇöÀç ¹«±âÀÇ ÀåÂø »óÅÂ¸¦ º¯°æ
+	// ë¬´ê¸°ì˜ ì¥ì°©/í•´ì œ í† ê¸€
 	void SetEquipment(bool isEquip);
-	// ¾ÆÀÌÅÛÀ» ÀÎº¥Åä¸®¿¡ Ãß°¡
+	// ì•„ì´í…œì„ íšë“
 	void RootItem(FGameItem item);
-	// ÀÎº¥Åä¸® ³»ÀÇ Æ¯Á¤ ¾ÆÀÌÅÛÀ» ¹ö¸²
+	// ì•„ì´í…œì„ ë²„ë¦¼
 	void ThrowItem(EItemType type, int index, int num);
-	// °¡Àå °¡±î¿î »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ®¿Í »óÈ£ ÀÛ¿ë
+	// ìƒí˜¸ì‘ìš©
 	void Interact();
-	// »óÈ£ ÀÛ¿ë ÇØÁ¦
+	// ìƒí˜¸ì‘ìš© í•´ì œ
 	void UnInteract();
-	// °ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³ª¸é È£ÃâµÊ
+	// Actionì´ ëë‚˜ë©´ Idle ìƒíƒœë¡œ ëŒë ¤ë†“ìŒ
 	void EndAction();
 
-	// Äù½ºÆ® µî·Ï
+	// í€˜ìŠ¤íŠ¸ë¥¼ ë“±ë¡
 	void CommitQuest(int index);
-	// ¼­ºê Äù½ºÆ® µî·Ï
+	// ì„œë¸Œ í€˜ìŠ¤íŠ¸ë¥¼ ë“±ë¡
 	void RegisterSubQuest(int questIndex, int subIndex);
-	// Äù½ºÆ® ¿Ï·á
+	// í€˜ìŠ¤íŠ¸ ì™„ë£Œì²˜ë¦¬
 	void CompleteQuest(int index);
-	// ¼­ºê Äù½ºÆ®¸¦ ¿Ï·á
+	// ì„œë¸Œí€˜ìŠ¤íŠ¸ ì™„ë£Œì²˜ë¦¬
 	void CompleteSubQuest(int questIndex, int subIndex);
-	// ¼­ºê Äù½ºÆ®¸¦ ´Ù½Ã ¹Ì¿Ï·á »óÅÂ·Î µ¹·Á³õÀ½
+	// ì„œë¸Œí€˜ìŠ¤íŠ¸ë¥¼ ë¯¸ì™„ë£Œ ìƒíƒœë¡œ ëŒë ¤ë†“ìŒ
 	void RevertSubQuest(int questIndex, int subIndex);
-	// Arrival Äù½ºÆ®¸¦ ¿Ï·á½ÃÅ´
+	// ë„ì°© ì„œë¸Œí€˜ ì™„ë£Œ ì²˜ë¦¬
 	void ReportArrival(int questIndex, int subIndex);
-	// ÇØ´ç ¶óº§ÀÇ ¸÷À» Ã³Ä¡ÇÏ´Â Äù½ºÆ® »óÅÂ¸¦ ¾÷µ¥ÀÌÆ®ÇÔ
+	// ì‚¬ëƒ¥ ì„œë¸Œí€˜ ì—…ë°ì´íŠ¸
 	void ReportKill(TArray<int> label);
-	// ÇØ´ç ¾ÆÀÌÅÛÀ» ¼öÁıÇÏ´Â Äù½ºÆ® »óÅÂ¸¦ ¾÷µ¥ÀÌÆ®ÇÔ
+	// ìˆ˜ì§‘ ì„œë¸Œí€˜ ì—…ë°ì´íŠ¸
 	void ReportItem(int infoIndex, int Num);
 
 // Tick Method
-	// µ¥¹ÌÁö¸¦ ÀÔ¾úÀ» ¶§, °æÁ÷ »óÅÂ¿Í È­¸é »óÀÇ ºÓÀº ÇÊÅÍ¸¦ Àç»ıÇÔ.
+	// Hurt ê²½ì§ ì‹œì— ë¶‰ì€ í•„í„°ë¥¼ ì—…ë°ì´íŠ¸
 	void UpdateHurtTimer(float deltaTime);
-	// ÇöÀç Ä³¸¯ÅÍÀÇ ÀÌµ¿ »óÈ²¿¡ µû¶ó Movment ¸ğµå¸¦ °áÁ¤
+	// Movementë¥¼ ì—…ë°ì´íŠ¸
 	void UpdateMovement();
-	// °¡Àå °¡±î¿î »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ®¿Í »óÈ£ÀÛ¿ë °¡´ÉÇÔÀ» ¾Ë¸²
+	// ê°€ì¥ ê°€ê¹Œìš´ ê±°ë¦¬ì— ìˆëŠ” ìƒí˜¸ì‘ìš© ì•¡í„°ë¥¼ Notify
 	void UpdateNotifyInteraction();
-	// Animation Bp »ó¿¡¼­ ¾î¶² ½ºÅ×ÀÌÆ® ¸Ó½ÅÀ» »ç¿ëÇÒ Áö °áÁ¤
+	// ì• ë‹ˆë©”ì´ì…˜ ë¸”ë£¨í”„ë¦°íŠ¸ì— ì‚¬ìš©ë  í”Œë˜ê·¸ ì—…ë°ì´íŠ¸
 	void UpdateAnimationMode();
+	// ì´ë™/íšŒì „ ìœ ë¬´ë¥¼ íŒë‹¨í•´ ì„œë²„ì— ì „ì†¡í•¨
+	void CheckMovementChanged();
 
-	// »óÈ£ÀÛ¿ë °¡´É ¿ÀºêÁ§Æ®°¡ °¨ÁöµÇ¸é, ¾Ë¸² ÀÌ¹ÌÁö¸¦ ¾÷µ¥ÀÌÆ®
+
+	// í¼ì…‰ì…˜ì— ê°ì§€ë˜ëŠ” ì•¡í„° ì²˜ë¦¬
 	UFUNCTION()
 	void ChangeNotification(AActor* source, FAIStimulus stimulus);
-	// ½Ã¾ß¿¡¼­ ¹ş¾î³ª¸é ¸®½ºÆ®¿¡¼­ »èÁ¦
+	// í¼ì…‰ì…˜ ë²”ìœ„ì—ì„œ ë²—ì–´ë‚˜ë©´, ìƒí˜¸ì‘ìš© ê°€ëŠ¥ ì•¡í„° ë¦¬ìŠ¤íŠ¸ì—ì„œ ì‚­ì œ
 	void RemoveFromInteractableList(TObjectPtr<AActor> actor);
 
 	// Setter
@@ -174,7 +166,6 @@ public:
 	int GetCurrentGold() const;
 	int GetCurrentLevel() const;
 	int GetCurrentMapIndex() const;
-	int GetSlotIndex() const;
 	FInventory& GetInventory();
 	const FInventory& GetInventory() const;
 	FInventory GetInventory_cpy() const;
@@ -183,70 +174,70 @@ public:
 	TArray<FQuestStatus> GetQuestTable_cpy() const;
 
 protected:
-	// 3ÀÎÄª Ä«¸Ş¶ó
+	// 3ì¸ì¹­ ì¹´ë©”ë¼ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera")
 	TObjectPtr<UCameraComponent> mCameraComponent;
-	// ¹ß»çÀ½ Àç»ı¿ë ¿Àµğ¿À
+	// ê°ì¢… íš¨ê³¼ìŒ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Audio")
 	TObjectPtr<UAudioComponent> mAudioComponent;
-	// ÇöÀç ÀåÂøÁßÀÎ ¹«±â ÄÄÆ÷³ÍÆ®
+	// ë¬´ê¸° ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UWeapon> mWeapon;
-	// ÇöÀç Action ¸ğµå
+	// í˜„ì¬ Action
 	UPROPERTY(BlueprintReadWrite)
 	EPlayerActionMode mActionMode;
-	// ÇöÀç Movement ¸ğµå
+	// í˜„ì¬ Movement
 	UPROPERTY(BlueprintReadWrite)
 	EPlayerMovementMode mMovementMode;
-	// ÇöÀç ÀåÂøÁßÀÎ ¹«±âÀÇ Å¸ÀÔ
+	// í˜„ì¬ ì¥ì°©ì¤‘ì¸ Weapon Type (ê³µê²© ì‹œì— ì‚¬ìš©)
 	UPROPERTY(BlueprintReadWrite)
 	EWeaponType mWeaponType;
 
-	// »óÈ£ ÀÛ¿ë °¡´ÉÇÑ ¾×ÅÍ ¸®½ºÆ®
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ ë‚´ì˜ ì•¡í„° ë¦¬ìŠ¤íŠ¸
 	TArray<TObjectPtr<AActor>> mInteractableList;
-	// °¡Àå °¡±î¿î »óÈ£ÀÛ¿ë ¾×ÅÍ
+	// ê°€ì¥ ê°€ê¹Œìš´ ìƒí˜¸ì‘ìš© ê°€ëŠ¥ ì•¡í„°
 	IInteraction* mNearestInteractableActor;
 
-// »óÅÂ ºÎ¿ï°ª
-	// »óÈ£ÀÛ¿ë ÁßÀÎ°¡?
+// Boolean ê°’
+	// ìƒí˜¸ì‘ìš© ì¤‘ì¸ê°€?
 	bool bInteracting;
-	// ¹«±â¸¦ ÀåÂø ÁßÀÎ°¡?
+	// ë¬´ê¸° ì¥ì°© ì¤‘ì¸ê°€?
 	bool bEquipped;
-	// Á¡ÇÁ ÁßÀÎ°¡?
+	// ì í”„ ì¤‘ì¸ê°€?
 	bool bJumping;
-	// ´Ş¸®´Â ÁßÀÎ°¡?
+	// ë‹¬ë¦¬ëŠ” ì¤‘ì¸ê°€?
 	bool bRunning;
-	// µ¥¹ÌÁö¸¦ ÀÔÀº »óÅÂÀÎ°¡?
+	// ê²½ì§ ìƒíƒœì¸ê°€?
 	UPROPERTY(BlueprintReadWrite)
 	bool bHurt;
-	// Locomotive/Action/Blend (Animation BPÀÇ ¾î¶² ½ºÅ×ÀÌÆ® ¸Ó½ÅÀ» »ç¿ëÇÒ Áö)
+	// ì• ë‹ˆë©”ì´ì…˜ BPì—ì„œ ì–´ë–¤ State Machineì„ ì‚¬ìš©í•  ê²ƒì¸ê°€?
 	UPROPERTY(BlueprintReadWrite)
 	uint8 mLoco_Action_Blend;
 
+	// í˜„ì¬ ì˜ìƒ ì¸ë±ìŠ¤
 	int mCurrentClothIndex;
-	// ÇöÀç ¼±ÅÃµÈ ¹«±â ÀÎµ¦½º (ÀÎº¥Åä¸® »ó)
+	// í˜„ì¬ ë¬´ê¸° ì¸ë±ìŠ¤
 	int mCurrentWeaponIndex;
 
-// Ä³¸¯ÅÍ State
-	// ÇöÀç ·¹º§
+// í”Œë ˆì´ì–´ ì •ë³´
+	// í˜„ì¬ ë ˆë²¨
 	int mCurrentLevel;
-	// ÇöÀç °ñµå
+	// í˜„ì¬ ê³¨ë“œ ë³´ìœ ëŸ‰
 	int mCurrentGold;
-	// ÇöÀç À§Ä¡ÇÑ ¸Ê ÀÎµ¦½º
+	// í˜„ì¬ ìœ„ì¹˜í•œ ë§µ ì¸ë±ìŠ¤
 	int mCurrentMap;
-	// ÇöÀç »ç¿ëÁßÀÎ ÀúÀå ½½·Ô
-	int mSlotIndex;
-	// Ä³¸¯ÅÍ ÀÎº¥Åä¸®
+	// ì¸ë²¤í† ë¦¬
 	FInventory mInventory;
-	// Äù½ºÆ® ÁøÇà »óÅÂ
+	// í€˜ìŠ¤íŠ¸ ì§„í–‰ ìƒí™©
 	TArray<FQuestStatus> mQuestTable;
 
-// ETC
+	// ê²Œì„ ì¸ìŠ¤í„´ìŠ¤
+	TObjectPtr<UCustomGameInstance> mGameInstance;
+	// ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ë™ì•ˆ ì§€ì†ë˜ëŠ” íƒ€ì´ë¨¸
 	FTimerHandle mAttackAnimationTimer;
-
+	
 	UPROPERTY(ReplicatedUsing=OnRep_Notify)
 	float testVal;
-
 	void OnTestValUpdated();
 	UFUNCTION()
 	void OnRep_Notify();

@@ -231,6 +231,7 @@ void UShopWidget::ChangeTab(int index, bool isNpcTab)
 		mCurrentTab_Ch = static_cast<EItemType>(index);
 	}
 
+	// 탭 버튼 + 아이템 슬롯창 업데이트
 	UpdateTab(isNpcTab);
 	UpdateItemSlot(isNpcTab);
 }
@@ -396,14 +397,14 @@ void UShopWidget::OpenConfirmPopup(int index, bool isBuying)
 		// 살 수 있는 개수와 상점 보유 개수 중 작은 쪽
 		const int maxNum = FMath::Min<int>((mOwnerPlayer->GetCurrentGold() / info.Price), item.Num);
 
-		//mConfirmPopup->SetTitle(TEXT("얼마나 구매하시겠습니까?"));
+		mConfirmPopup->SetTitle(TEXT("How much to buy?"));
 		mConfirmPopup->SetNumpad(maxNum);
 	}
 	else
 	{
 		const FGameItem& item = mOwnerPlayer->GetInventory().GetTypeInventory(mCurrentTab_Ch).ItemList[index];
 
-		//mConfirmPopup->SetTitle(TEXT("얼마나 판매하시겠습니까?"));
+		mConfirmPopup->SetTitle(TEXT("How much to sell?"));
 		mConfirmPopup->SetNumpad(item.Num);
 	}
 }

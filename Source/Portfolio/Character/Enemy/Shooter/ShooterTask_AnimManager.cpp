@@ -9,7 +9,6 @@ UShooterTask_AnimManager::UShooterTask_AnimManager()
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// ºÎ¿ï °ª ºí·¢º¸µå Å°¸¸ ¼±ÅÃÇÒ ¼ö ÀÖÀ½
 	Transition_Move_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UShooterTask_AnimManager, Transition_Move_Key));
 	Transition_Idle_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UShooterTask_AnimManager, Transition_Idle_Key));
 	Transition_Attack_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UShooterTask_AnimManager, Transition_Attack_Key));
@@ -22,6 +21,7 @@ EBTNodeResult::Type UShooterTask_AnimManager::ExecuteTask(UBehaviorTreeComponent
 	TObjectPtr<ACharacter> ownerCharacter = Cast<ACharacter>(OwnerComp.GetAIOwner()->GetPawn());
 	if (ownerCharacter)
 	{
+		// Idle ì• ë‹ˆë©”ì´ì…˜ìœ¼ë¡œ ì‹œìž‘
 		ownerCharacter->GetMesh()->PlayAnimation(LoadHelper::LoadObjectFromPath<UAnimSequence>(TEXT("/Game/Character/Mannequins/Animations/Rifle/AS_ShootingRack.AS_ShootingRack")), true);
 	}
 	return EBTNodeResult::InProgress;
@@ -34,7 +34,7 @@ void UShooterTask_AnimManager::TickTask(UBehaviorTreeComponent& OwnerComp, uint8
 	TObjectPtr<UBlackboardComponent> blackboardComp = OwnerComp.GetBlackboardComponent();
 	TObjectPtr<ACharacter> ownerCharacter = Cast<ACharacter>(OwnerComp.GetAIOwner()->GetPawn());
 
-	// °¢ ºÎ¿ï°ªÀÌ true·Î º¯°æµÇ¸é ÇØ´ç ¾Ö´Ï¸ÞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÑ´Ù.
+	// ê° Boolean ê°’ì´ Trueê°€ ë˜ë©´ í•´ë‹¹ ì• ë‹ˆë©”ì´ì…˜ì„ ìž¬ìƒ
 	if (blackboardComp->GetValueAsBool(Transition_Idle_Key.SelectedKeyName) == true)
 	{
 		blackboardComp->SetValueAsBool(Transition_Idle_Key.SelectedKeyName, false);
@@ -48,6 +48,7 @@ void UShooterTask_AnimManager::TickTask(UBehaviorTreeComponent& OwnerComp, uint8
 	else if (blackboardComp->GetValueAsBool(Transition_Attack_Key.SelectedKeyName) == true)
 	{
 		blackboardComp->SetValueAsBool(Transition_Attack_Key.SelectedKeyName, false);
+		// Attack ì• ë‹ˆë©”ì´ì…˜ì€ í•œë²ˆë§Œ ìž¬ìƒ
 		ownerCharacter->GetMesh()->PlayAnimation(LoadHelper::LoadObjectFromPath<UAnimSequence>(TEXT("/Game/Character/Mannequins/Animations/Rifle/AS_Shot.AS_Shot")), false);
 	}
 	else if (blackboardComp->GetValueAsBool(Transition_Return_Key.SelectedKeyName) == true)
@@ -58,6 +59,7 @@ void UShooterTask_AnimManager::TickTask(UBehaviorTreeComponent& OwnerComp, uint8
 	else if (blackboardComp->GetValueAsBool(Transition_Hurt_Key.SelectedKeyName) == true)
 	{
 		blackboardComp->SetValueAsBool(Transition_Hurt_Key.SelectedKeyName, false);
+		// Hurt ì• ë‹ˆë©”ì´ì…˜ì€ í•œë²ˆë§Œ ìž¬ìƒ
 		ownerCharacter->GetMesh()->PlayAnimation(LoadHelper::LoadObjectFromPath<UAnimSequence>(TEXT("/Game/Character/Mannequins/Animations/Manny/MM_Land.MM_Land")), false);
 	}
 }

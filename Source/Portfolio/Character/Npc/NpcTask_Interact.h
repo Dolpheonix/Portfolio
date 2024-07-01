@@ -5,7 +5,7 @@
 #include "NpcTask_Interact.generated.h"
 
 /*
-	UNpcTask_Interact : »óÈ£ ÀÛ¿ë »óÅÂ¿¡ ÁøÀÔÇÏ´Â ÅÂ½ºÅ©. Å¸°Ù ÇÃ·¹ÀÌ¾î¸¦ ¹Ù¶óº¸°í, »óÈ£ÀÛ¿ëÀÌ ³¡³¯ ¶§±îÁö ÅÂ½ºÅ©¸¦ À¯ÁöÇÑ´Ù.
+	ìƒí˜¸ì‘ìš© íƒœìŠ¤í¬. íƒ€ê²Ÿì„ ì‘ì‹œí•˜ëŠ” ê²ƒ ì™¸ì—ëŠ” Idle íƒœìŠ¤í¬ì™€ ë™ì¼
 */
 
 UCLASS()
@@ -20,9 +20,10 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
+	// í˜„ì¬ ìƒí˜¸ì‘ìš© ì¤‘ì¸ê°€?
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector IsInteracting_Key;
-
+	// ìƒí˜¸ì‘ìš© íƒ€ê²Ÿ
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector InteractTarget_Key;
 };

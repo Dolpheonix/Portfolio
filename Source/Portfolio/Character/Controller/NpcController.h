@@ -8,7 +8,8 @@ class UBehaviorTree;
 class UBlackboardData;
 
 /*
-	ANpcController : Npc Ä³¸¯ÅÍ¿¡ »ç¿ëµÇ´Â ÄÁÆ®·Ñ·¯
+	Npc ìºë¦­í„°ìš© ì»¨íŠ¸ë¡¤ëŸ¬
+	- Behavior Tree, Blackboard ì„¤ì •
 */
 
 UCLASS()
@@ -24,15 +25,15 @@ protected:
 	virtual void Tick(float DeltaTime) override;
 
 public:
-	// Ä³¸¯ÅÍ¿Í ÇÃ·¹ÀÌ¾î°¡ »óÈ£ÀÛ¿ë ½Ã, ºí·¢º¸µå °ª ¾÷µ¥ÀÌÆ®
+	// í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš© ì‹œ, ë¸”ë™ë³´ë“œ ê°’ ë³€ê²½
 	void Interact(TObjectPtr<AActor> player);
-	// »óÈ£ÀÛ¿ëÀÌ ³¡³µÀ» ¶§, ºí·¢º¸µå °ª ¾÷µ¥ÀÌÆ®
+	// ìƒí˜¸ì‘ìš© í•´ì œ ì‹œ, ë¸”ë™ë³´ë“œ ê°’ ë³€ê²½
 	void UnInteract();
 protected:
-	// »ç¿ëÇÒ ºñÇìÀÌºñ¾î Æ®¸®
+	// ë¹„í—¤ì´ë¹„ì–´ íŠ¸ë¦¬
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BehaviorTree")
 	TObjectPtr<UBehaviorTree> mBehaviorTree;
-	// »ç¿ëÇÒ ºí·¢º¸µå µ¥ÀÌÅÍ
+	// ë¸”ë™ë³´ë“œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BehaviorTree")
 	TObjectPtr<UBlackboardData> mBlackboardData;
 };

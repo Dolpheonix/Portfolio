@@ -19,14 +19,16 @@
 
 #define EPSILON_ZERO 0.000003
 
-constexpr float HURT_FREEZE_TIME = 1.0f;
-constexpr float CAMERA_LOC_X = -150.f;
+constexpr float HURT_FREEZE_TIME = 1.0f;	// Hurt ì‹œ ê²½ì§ ì‹œê°„
+constexpr float CAMERA_LOC_X = -150.f;		// ì¹´ë©”ë¼ ìœ„ì¹˜
 constexpr float CAMERA_LOC_Y = 0.f;
 constexpr float CAMERA_LOC_Z = 88.f;
-constexpr float CAMERA_ROT_PITCH = -20.f;
+constexpr float CAMERA_ROT_PITCH = -20.f;	// ì¹´ë©”ë¼ íšŒì „
 constexpr float CAMERA_ROT_YAW = 0.f;
 constexpr float CAMERA_ROT_ROLL = 0.f;
-constexpr float SHOT_ANIM_TIME = 0.7f;
+constexpr float SHOT_ANIM_TIME = 0.7f;		// ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ì§€ì† ì‹œê°„
+constexpr float SEND_LOCATION_THRESHOLD = 10.0f;	// ì´ë™ìœ¼ë¡œ íŒë‹¨í•˜ê³ , ì„œë²„ì— ì´ë™ ì •ë³´ë¥¼ ì „ì†¡í•  ìµœì†Œ ê±°ë¦¬
+constexpr float SEND_ROTATION_THRESHOLD = 5.0f;		// íšŒì „ìœ¼ë¡œ íŒë‹¨í•˜ê³ , ì„œë²„ì— ì´ë™ ì •ë³´ë¥¼ ì „ì†¡í•  ìµœì†Œ ê°ë„
 
 static_assert(static_cast<uint8>(EPlayerActionMode::Count) == 3);
 static_assert(static_cast<uint8>(EPlayerMovementMode::Count) == 5);
@@ -71,9 +73,10 @@ void APlayerCharacter::BeginPlay()
 
 	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
+	mGameInstance = gi;
 
-	// ÀÎÆ®·Î UI Ç¥½Ã Áß¿¡´Â ¾Æ·¡ÀÇ µ¿ÀÛÀ» ¼öÇàÇÒ ÇÊ¿ä°¡ ¾ø´Ù.
-	if (gi->IsIntro() == true)
+	// ï¿½ï¿½Æ®ï¿½ï¿½ UI Ç¥ï¿½ï¿½ ï¿½ß¿ï¿½ï¿½ï¿½ ï¿½Æ·ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ê¿ä°¡ ï¿½ï¿½ï¿½ï¿½.
+	if (mGameInstance->IsIntro() == true)
 	{
 		return;
 	}
@@ -86,21 +89,20 @@ void APlayerCharacter::BeginPlay()
 
 	perception->OnTargetPerceptionUpdated.AddDynamic(this, &APlayerCharacter::ChangeNotification);
 
-	// Intro UI°¡ ¿­·ÁÀÖ´Ù¸é ´İ°í, HUD UI¸¦ Ç¥½ÃÇÔ
+	// Intro UIï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ö´Ù¸ï¿½ ï¿½İ°ï¿½, HUD UIï¿½ï¿½ Ç¥ï¿½ï¿½ï¿½ï¿½
 	controller->CloseIntro();
 	controller->OpenHUD(this);
 
-	// ¸Ê ÀÌµ¿ ½Ã¿¡´Â °ÔÀÓ ÀÎ½ºÅÏ½º°¡ ÇÃ·¹ÀÌ¾î Á¤º¸¸¦ ÀÓ½Ã·Î º¸°üÇÏ°í ÀÖ´Ù°¡, ÇÃ·¹ÀÌ¾î »ı¼º ½Ã ÇØ´ç °ªÀ» ¹Ş¾Æ Àû¿ëÇÑ´Ù.
-	const PlayerInfo tempInfo = gi->GetPlayerInfo();
+	// ï¿½ï¿½ ï¿½Ìµï¿½ ï¿½Ã¿ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Î½ï¿½ï¿½Ï½ï¿½ï¿½ï¿½ ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½Ó½Ã·ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ï°ï¿½ ï¿½Ö´Ù°ï¿½, ï¿½Ã·ï¿½ï¿½Ì¾ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ ï¿½Ø´ï¿½ ï¿½ï¿½ï¿½ï¿½ ï¿½Ş¾ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½Ñ´ï¿½.
+	const PlayerInfo tempInfo = mGameInstance->GetPlayerInfo();
 	mDisplayName = tempInfo.PlayerName;
 	mCurrentLevel = tempInfo.CurrentLevel;
 	mCurrentGold = tempInfo.CurrentGold;
 	mCurrentMap = tempInfo.CurrentMap;
 	mQuestTable = tempInfo.QuestTable;
 	mInventory = tempInfo.Inventory;
-	mSlotIndex = tempInfo.SlotIndex;
 
-	// locationÀÇ Z °ªÀÌ 0º¸´Ù ÀÛÀ¸¸é ±âº» ½ºÆù À§Ä¡¿¡ ½ºÆù½ÃÅ²´Ù.
+	// locationï¿½ï¿½ Z ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½âº» ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½Ä¡ï¿½ï¿½ ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å²ï¿½ï¿½.
 	if (tempInfo.CurrentLocation.Z >= 0.f)
 	{
 		SetActorLocation(tempInfo.CurrentLocation);
@@ -109,10 +111,14 @@ void APlayerCharacter::BeginPlay()
 
 void APlayerCharacter::EndPlay(const EEndPlayReason::Type type)
 {
-	if ((type == EEndPlayReason::LevelTransition) || (type == EEndPlayReason::Quit))
+	switch (type)
 	{
-		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
-		check(gi);
+	// ê²Œì„ ì¸ìŠ¤í„´ìŠ¤ì— í”Œë ˆì´ì–´ ì •ë³´ë¥¼ ì˜®ê¸°ê³  ì•¡í„° ì‚­ì œ
+	case EEndPlayReason::LevelTransition:	// ë ˆë²¨ ì „í™˜
+	case EEndPlayReason::EndPlayInEditor:	// ì—ë””í„°ì—ì„œ ì¢…ë£Œ ì‹œ
+	case EEndPlayReason::Quit:				// ê²Œì„ ì¢…ë£Œ ì‹œ
+	{
+		check(mGameInstance);
 
 		PlayerInfo saveInfo;
 		saveInfo.PlayerName = mDisplayName;
@@ -122,8 +128,11 @@ void APlayerCharacter::EndPlay(const EEndPlayReason::Type type)
 		saveInfo.QuestTable = mQuestTable;
 		saveInfo.Inventory = mInventory;
 		saveInfo.CurrentLocation = GetActorLocation();
-		
-		gi->SetPlayerInfo(saveInfo);
+
+		mGameInstance->SetPlayerInfo(saveInfo);
+	}
+	default:
+		break;
 	}
 
 	Super::EndPlay(type);
@@ -133,20 +142,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	static float elapsed = 0.f;
-	elapsed += DeltaTime;
-	if (elapsed > 1.0f)
-	{
-		elapsed = 0.f;
-		testVal += 0.5f;
-	}
-
-	// °æÁ÷ ½Ã°£µ¿¾È Ä«¸Ş¶ó ÇÊÅÍ Àû¿ë
+	// ê²½ì§ ìƒíƒœì¼ ê²½ìš°, ë¶‰ì€ í•„í„° ì ìš© ë° ì—…ë°ì´íŠ¸
 	if (bHurt == true)
 	{
 		UpdateHurtTimer(DeltaTime);
 	}
-
+	
 	UpdateMovement();
 	UpdateNotifyInteraction();
 	UpdateAnimationMode();
@@ -157,9 +158,8 @@ float APlayerCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent
 	float dmg = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 	
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(GetController());
-	check(controller);
-	
-	// Hp ¹Ù UI¸¦ º¯°æ
+	check(controller);	
+	// HP ë°” ìœ„ì ¯ ì—…ë°ì´íŠ¸
 	controller->UpdateHealthBar();
 
 	return dmg;
@@ -225,17 +225,22 @@ void APlayerCharacter::StartRun()
 {
 	bRunning = true;
 	GetCharacterMovement()->MaxWalkSpeed = 1200.f;
+
+	mGameInstance->SendRunning(true);	// ì„œë²„ì— Running ìƒíƒœë¡œ ë°”ë€œì„ ì•Œë¦¼ (ë¦¬í”Œë¦¬ì¼€ì´ì…˜ ìºë¦­í„°ì— ì• ë‹ˆë©”ì´ì…˜ ì ìš©)
 }
 
 void APlayerCharacter::StopRun()
 {
 	bRunning = false;
 	GetCharacterMovement()->MaxWalkSpeed = 600.f;
+
+	mGameInstance->SendRunning(false);	// ì„œë²„ì— Walking ìƒíƒœë¡œ ë°”ë€œì„ ì•Œë¦¼ (ë¦¬í”Œë¦¬ì¼€ì´ì…˜ ìºë¦­í„°ì— ì• ë‹ˆë©”ì´ì…˜ ì ìš©)
 }
+
 
 void APlayerCharacter::Jump()
 {
-	// °øÁß¿¡ ¶á »óÅÂ¿¡¼­ Á¡ÇÁÅ°¸¦ ´­·¯µµ Àû¿ëµÇÁö ¾ÊÀ½
+	// ë‚™í•˜ì¤‘ì—ëŠ” ì í”„í‚¤ê°€ ë¨¹íˆì§€ ì•ŠìŒ
 	if ((GetCharacterMovement()->IsFalling() == true))
 	{
 		return;
@@ -243,11 +248,13 @@ void APlayerCharacter::Jump()
 
 	bPressedJump = true;
 	bJumping = true;
+
+	mGameInstance->SendJumping(true);	// ì„œë²„ì— Jumping ìƒíƒœë¡œ ë°”ë€œì„ ì•Œë¦¼ (ë¦¬í”Œë¦¬ì¼€ì´ì…˜ ìºë¦­í„°ì— ì• ë‹ˆë©”ì´ì…˜ ì ìš©)
 }
 
 void APlayerCharacter::TryInteract()
 {
-	// »óÈ£ÀÛ¿ë °¡´ÉÇÑ ¾×ÅÍ°¡ ÀÖ´Ù¸é »óÈ£ÀÛ¿ë
+	// ê°€ì¥ ê°€ê¹Œìš´ ìƒí˜¸ì‘ìš© ì•¡í„°ì™€ ìƒí˜¸ì‘ìš©
 	if (mNearestInteractableActor)
 	{
 		Interact();
@@ -256,13 +263,13 @@ void APlayerCharacter::TryInteract()
 
 void APlayerCharacter::TurnQuickSlot()
 {
-	// ¼±ÅÃÇÒ ¹«±â°¡ ¾ø´Ù¸é ±×´ë·Î ¸®ÅÏ
+	// ê°€ì§„ ë¬´ê¸°ê°€ ìˆì–´ì•¼ í€µìŠ¬ë¡¯ ì „í™˜ ê°€ëŠ¥
 	if (mCurrentWeaponIndex < 0)
 	{
 		return;
 	}
 
-	// ÀÎº¥Åä¸® »óÀÇ ´ÙÀ½ ¹«±â¸¦ ¼±ÅÃ
+	// ì¸ë²¤í† ë¦¬ìƒ ë‹¤ìŒ ë¬´ê¸°ë¡œ ì „í™˜
 	const int weaponNum = mInventory.GetTypeInventory(EItemType::Weapon).ItemList.Num();
 	if (weaponNum > 1)
 	{
@@ -278,25 +285,25 @@ void APlayerCharacter::ChangeEquipment()
 		return;
 	}
 
-	// ÀåÂø »óÅÂ¸¦ º¯°æ
+	// ë¬´ê¸° ì¥ì°©/í•´ì œ í† ê¸€
 	SetEquipment(!bEquipped);
 }
 
 void APlayerCharacter::Attack()
 {
-	// ¹«±â°¡ ÀåÂøµÇ¾îÀÖÁö ¾ÊÀ¸¸é °ø°İÇÒ ¼ö ¾øÀ½.
+	// ë¬´ê¸° ì¥ì°© í•´ì œ ìƒíƒœ OR ë¬´ê¸°ê°€ ì—†ëŠ” ìƒíƒœ
 	if (mWeaponType == EWeaponType::Fist)
 	{
 		return;
 	}
 
-	// ÀÌµ¿, Á¡ÇÁ, ³«ÇÏ Áß¿¡´Â °ø°İÇÒ ¼ö ¾øÀ½.
+	// ì´ë™ ì¤‘ì—ëŠ” ë¬´ê¸° ì‚¬ìš© ë¶ˆê°€
 	if (mMovementMode != EPlayerMovementMode::Idle)
 	{
 		return;
 	}
 
-	// ¾ÆÁ÷ °ø°İ ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³ªÁö ¾ÊÀ½.
+	// ì´ì¤‘ ê³µê²© ë¶ˆê°€
 	if (mActionMode == EPlayerActionMode::Attack)
 	{
 		return;
@@ -304,6 +311,7 @@ void APlayerCharacter::Attack()
 
 	mActionMode = EPlayerActionMode::Attack;
 
+	// Rifle ë¬´ê¸° ì‚¬ìš© ì‹œ ê³µê²© ì• ë‹ˆë©”ì´ì…˜ ë™ì•ˆ ê³µê²© ìƒíƒœë¥¼ ìœ ì§€
 	if(mWeaponType == EWeaponType::Rifle)
 	{
 		GetWorldTimerManager().SetTimer(mAttackAnimationTimer, this, &APlayerCharacter::EndAction, 0.5f, false, SHOT_ANIM_TIME);
@@ -320,6 +328,7 @@ void APlayerCharacter::Subattack()
 		break;
 	case EWeaponType::Rifle:
 	{
+		// ì¹´ë©”ë¼ë¥¼ ì´êµ¬ ìœ„ì¹˜ë¡œ ë³€ê²½ --> ì¡°ì¤€ê²½ íš¨ê³¼
 		const FVector& muzzleLocation = mWeapon->GetSocketLocation(TEXT("Muzzle"));
 		mCameraComponent->SetWorldLocation(muzzleLocation);
 		break;
@@ -337,6 +346,7 @@ void APlayerCharacter::CancleSubattack()
 		break;
 	case EWeaponType::Rifle:
 	{
+		// ì¹´ë©”ë¼ë¥¼ ì›ë˜ ìœ„ì¹˜ë¡œ ëŒë ¤ë†“ìŒ
 		mCameraComponent->SetRelativeLocation(FVector(CAMERA_LOC_X, CAMERA_LOC_Y, CAMERA_LOC_Z));
 		break;
 	}
@@ -347,6 +357,7 @@ void APlayerCharacter::CancleSubattack()
 
 void APlayerCharacter::OpenInventory()
 {
+	// ì¸ë²¤í† ë¦¬ UIë¥¼ ì—¶
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(UGameplayStatics::GetPlayerController(this, 0));
 	check(controller);
 	controller->OpenInventory(this);
@@ -380,30 +391,33 @@ void APlayerCharacter::ChangeWeapon()
 	if (mCurrentWeaponIndex < 0)
 	{
 		mWeapon->SetVisibility(false);
+
+		mGameInstance->SendEquipmentChange(EItemType::Weapon, -1);
 	}
 	else
 	{
-		// ¹«±â Á¤º¸¸¦ ºÒ·¯¿Â´Ù.
+		// mCurrentWepaonIndexì— ë§ëŠ” ë¬´ê¸°ë¡œ ë³€ê²½
 		const int itemInfoIndex = mInventory.GetTypeInventory(EItemType::Weapon).ItemList[mCurrentWeaponIndex].InfoIndex;
 		mWeapon->LoadFromItemInfo(itemInfoIndex);
 		mWeapon->SetVisibility(true);
 
 		mWeaponType = mWeapon->GetType();
 		
-		// Âø¿ë »óÅÂ·Î ¼³Á¤
+		// ë³€ê²½ ì´ˆê¸°ì—ëŠ” ì¥ì°© ìƒíƒœë¡œ ì„¤ì •
 		SetEquipment(true);
+
+		mGameInstance->SendEquipmentChange(EItemType::Weapon, itemInfoIndex);
 	}
 
 	TObjectPtr<ACustomController> controller = Cast<ACustomController>(GetController());
 	check(controller);
-
-	// UI »ó¿¡ Ç¥½ÃµÇ´Â ÀÌ¹ÌÁö º¯°æ
+	// í€µìŠ¬ë¡¯ ìœ„ì ¯ ì´ë¯¸ì§€ ë³€ê²½
 	controller->UpdateWeaponImage();
 }
 
 void APlayerCharacter::SetEquipment(bool isEquip)
 {
-	// Âø¿ë/ÇØÁ¦ »óÅÂ¿¡ µû¶ó ¼ÒÄÏ¿¡ ¾îÅÂÄ¡ÇÑ´Ù.
+	// ì¥ì°©/í•´ì œ ìƒíƒœì— ë§ëŠ” ì†Œì¼“ì— Attach
 	FString socketStr;
 	if (isEquip == true)
 	{
@@ -418,6 +432,8 @@ void APlayerCharacter::SetEquipment(bool isEquip)
 
 	bEquipped = isEquip;
 	mWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName(socketStr));
+
+	mGameInstance->SendEquipping(isEquip);	// ì„œë²„ì— ì¥ì°©/í•´ì œ ìƒíƒœ ë³€í™”ë¥¼ ì•Œë¦¼
 }
 
 void APlayerCharacter::RootItem(FGameItem item)
@@ -435,20 +451,21 @@ void APlayerCharacter::RootItem(FGameItem item)
 
 	if (foundPtr)
 	{
-		// ÀÎº¥Åä¸®¿¡ ÀÌ¹Ì Á¸ÀçÇÏ´Â ¾ÆÀÌÅÛ : °³¼ö¸¸ Áõ°¡
+		// ì¸ë²¤í† ë¦¬ì— ìˆëŠ” ì•„ì´í…œ --> ê°œìˆ˜ ì—…ë°ì´íŠ¸ ë° ìˆ˜ì§‘ ì„œë¸Œí€˜ ì—…ë°ì´íŠ¸
 		foundPtr->Num += item.Num;
 
 		ReportItem(foundPtr->InfoIndex, foundPtr->Num);
 	}
 	else
 	{
+		// ì¸ë²¤í† ë¦¬ì— ì—…ëŠ” ì•„ì´í…œ --> ì¸ë²¤í† ë¦¬ì— ì¶”ê°€
 		mInventory.GetTypeInventory(itemInfo.Type).ItemList.Add(item);
 
 		ReportItem(item.InfoIndex, item.Num);
 
 		if ((itemInfo.Type == EItemType::Weapon) && (mInventory.GetTypeInventory(EItemType::Weapon).ItemList.Num() == 1))
 		{
-			// °¡Áø ¹«±â°¡ ¾øÀ» ¶§ ¹«±â¸¦ È¹µæÇÏ¸é, ÀÚµ¿À¸·Î ÀåÂøÇÑ´Ù.
+			// ë¬´ê¸° ì•„ì´í…œ íšë“ AND ê¸°ì¡´ ë¬´ê¸°ê°€ ì—†ìŒ ==> ë°”ë¡œ í•´ë‹¹ ë¬´ê¸° ì¥ì°©
 			mCurrentWeaponIndex = 0;
 			ChangeWeapon();
 		}
@@ -461,15 +478,13 @@ void APlayerCharacter::ThrowItem(EItemType type, int index, int num)
 
 	check(num <= item.Num);
 
+	// ë³´ìœ ëŸ‰ê³¼ ë²„ë¦¬ëŠ” ì–‘ì´ ê°™ìŒ --> ì¸ë²¤í† ë¦¬ì—ì„œ ì•„ì´í…œ ì‚­ì œ
 	if (item.Num == num)
 	{
-		// °³¼ö°¡ 0ÀÌ µÇ¾úÀ¸¹Ç·Î ÀÎº¥Åä¸®¿¡¼­ »èÁ¦ÇÑ´Ù.
 		mInventory.TypeInventoryList[static_cast<uint8>(type)].ItemList.RemoveAt(index);
 
-		ReportItem(index, 0);
-		// TODO : ÀåÂøÁßÀÎ ÀÇ»ó »èÁ¦ ½Ã
-		// 
-		// ÀåÂøÁßÀÎ ¹«±â°¡ ¾ø¾îÁö¸é, ÀåÂøÁßÀÎ ¹«±â¸¦ ¾÷µ¥ÀÌÆ®ÇÑ´Ù.
+		ReportItem(index, 0);	// ìˆ˜ì§‘ ì„œë¸Œí€˜ ì—…ë°ì´íŠ¸
+		// í˜„ì¬ ì¥ì°©ì¤‘ì¸ ë¬´ê¸°ê°€ ì‚­ì œë¨ --> ë¬´ê¸° ë³€í™˜
 		if ((type == EItemType::Weapon) && (mCurrentWeaponIndex == index))
 		{
 			if (mInventory.TypeInventoryList[static_cast<uint8>(type)].ItemList.Num() == 0)
@@ -483,6 +498,7 @@ void APlayerCharacter::ThrowItem(EItemType type, int index, int num)
 			}
 		}
 	}
+	// ë²„ë ¤ë„ ì•„ì´í…œ ê°œìˆ˜ê°€ 0ì´ ì•„ë‹˜ --> ê°œìˆ˜ë§Œ ì—…ë°ì´íŠ¸
 	else
 	{
 		item.Num -= num;
@@ -493,12 +509,12 @@ void APlayerCharacter::ThrowItem(EItemType type, int index, int num)
 
 void APlayerCharacter::Interact()
 {
-	// Á¡ÇÁ, ³«ÇÏ Áß¿¡´Â »óÈ£ÀÛ¿ëÇÒ ¼ö ¾øÀ½.
+	// ì í”„, ë‚™í•˜ ì¤‘ì—ëŠ” ìƒí˜¸ì‘ìš© ë¶ˆê°€ëŠ¥
 	if ((mMovementMode == EPlayerMovementMode::Jump) || (mMovementMode == EPlayerMovementMode::Fall))
 	{
 		return;
 	}
-
+	// ê°€ì¥ ê°€ê¹Œìš´ ì•¡í„°ì™€ ìƒí˜¸ì‘ìš©
 	if (mNearestInteractableActor)
 	{
 		mActionMode = EPlayerActionMode::Interact;
@@ -530,18 +546,20 @@ void APlayerCharacter::CommitQuest(int index)
 		committed += (mQuestTable[i].CurrProgress == EQuestProgressType::InProgess) || (mQuestTable[i].CurrProgress == EQuestProgressType::Completable);
 	}
 
+	// ë“±ë¡ ê°€ëŠ¥í•œ ìµœëŒ€ í€˜ìŠ¤íŠ¸ ìˆ˜ë¥¼ ë„˜ìŒ
 	if (committed >= MAX_QUEST_COMMIT)
 	{
-		//TODO : Notify
+		// TODO : Noitfy UI
 		return;
 	}
 
 	mQuestTable[index].CurrProgress = EQuestProgressType::InProgess;
-
+	// Serial Quest : ì²« ì„œë¸Œí€˜ë§Œ ë“±ë¡
 	if (mQuestTable[index].Type == EQuestType::Serial)
 	{
 		RegisterSubQuest(index, 0);
 	}
+	// Parallel Quest : ëª¨ë“  ì„œë¸Œí€˜ë¥¼ ë“±ë¡
 	else
 	{
 		for (int i = 0; i < mQuestTable[index].SubStatus.Num(); ++i)
@@ -559,7 +577,7 @@ void APlayerCharacter::RegisterSubQuest(int questIndex, int subIndex)
 	}
 
 	mQuestTable[questIndex].SubStatus[subIndex].bStarted = true;
-
+	// ë„ì°© í€˜ìŠ¤íŠ¸ì˜ ê²½ìš°, Indicator ì•¡í„°ë¥¼ ìŠ¤í°í•¨
 	if (mQuestTable[questIndex].SubStatus[subIndex].Type == ESubQuestType::Arrival)
 	{
 		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
@@ -586,9 +604,9 @@ void APlayerCharacter::CompleteQuest(int index)
 
 void APlayerCharacter::CompleteSubQuest(int questIndex, int subIndex)
 {
+	// Serial í€˜ìŠ¤íŠ¸ì˜ ê²½ìš°, ë‹¤ìŒ ì„œë¸Œí€˜ë¥¼ ë“±ë¡í•¨
 	if (mQuestTable[questIndex].Type == EQuestType::Serial)
 	{
-		// ¿Ï·á½ÃÅ² ÈÄ, ´ÙÀ½ Äù½ºÆ®¸¦ µî·Ï
 		mQuestTable[questIndex].SubStatus[subIndex].bCompleted = true;
 		mQuestTable[questIndex].UpdateProgress();
 
@@ -596,7 +614,6 @@ void APlayerCharacter::CompleteSubQuest(int questIndex, int subIndex)
 	}
 	else
 	{
-		// ¿Ï·á ÈÄ ÁøÇàµµ ¾÷µ¥ÀÌÆ®
 		mQuestTable[questIndex].SubStatus[subIndex].bCompleted = true;
 		mQuestTable[questIndex].UpdateProgress();
 	}
@@ -604,11 +621,11 @@ void APlayerCharacter::CompleteSubQuest(int questIndex, int subIndex)
 
 void APlayerCharacter::RevertSubQuest(int questIndex, int subIndex)
 {
+	// ì™„ë£Œë˜ì–´ìˆë˜ í€˜ìŠ¤íŠ¸ë¥¼ ë¯¸ì™„ë£Œ ìƒíƒœë¡œ ëŒë ¤ë†“ìŒ
 	mQuestTable[questIndex].SubStatus[subIndex].bCompleted = false;
 
 	if (mQuestTable[questIndex].Type == EQuestType::Serial)
 	{
-		//TEMP : ¼øÂ÷ Äù½ºÆ®´Â ¸¶Áö¸· ¼­ºêÄù¿¡¼­¸¸ RevertÇÒ ¼ö ÀÖ¾î¾ß ÇÔ.
 		mQuestTable[questIndex].CurrPhase--;
 	}
 	else
@@ -621,7 +638,6 @@ void APlayerCharacter::ReportArrival(int questIndex, int subIndex)
 {
 	check(questIndex < mQuestTable.Num());
 	check(subIndex < mQuestTable[questIndex].SubStatus.Num());
-
 	check(mQuestTable[questIndex].SubStatus[subIndex].Type == ESubQuestType::Arrival);
 
 	CompleteSubQuest(questIndex, subIndex);
@@ -632,6 +648,7 @@ void APlayerCharacter::ReportKill(TArray<int> labelList)
 	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
 	
+	// labelì— ë§ëŠ” ì‚¬ëƒ¥ í€˜ìŠ¤íŠ¸ë¥¼ ì—…ë°ì´íŠ¸
 	for (int i = 0; i < mQuestTable.Num(); ++i)
 	{
 		if (mQuestTable[i].CurrProgress != EQuestProgressType::InProgess)
@@ -667,6 +684,7 @@ void APlayerCharacter::ReportItem(int infoIndex, int Num)
 	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
 
+	// ì•„ì´í…œ ì¢…ë¥˜ì— ë§ëŠ” ìˆ˜ì§‘ í€˜ìŠ¤íŠ¸ë¥¼ ì—…ë°ì´íŠ¸
 	for (int i = 0; i < mQuestTable.Num(); ++i)
 	{
 		if ((mQuestTable[i].CurrProgress != EQuestProgressType::InProgess) || (mQuestTable[i].CurrProgress != EQuestProgressType::Completable))
@@ -707,22 +725,23 @@ void APlayerCharacter::UpdateHurtTimer(float deltaTime)
 		hurtTimer = 0.f;
 		mCameraComponent->PostProcessSettings.bOverride_SceneColorTint = true;
 
-		// °æÁ÷ Àû¿ë
+		// í˜„ì¬ ì›€ì§ì„ì„ ë©ˆì¶¤
 		GetCharacterMovement()->StopMovementImmediately();
-
+		// ì…ë ¥ ë¶ˆê°€ ìƒíƒœë¡œ ë³€ê²½
 		TObjectPtr<APlayerController> pc = Cast<APlayerController>(GetController());
 		check(pc); 
 		pc->DisableInput(nullptr);
 	}
 	else if (hurtTimer < HURT_FREEZE_TIME)
 	{
-		// 1ÃÊ°£ ºÓÀº ÇÊÅÍ Àû¿ë (ÁøÇØÁ³´Ù ¿¬ÇØÁü)
+		// ë¶‰ì€ í•„í„° ì ìš© (1 ~ 2.5 ~ 1 ì˜ ì„¸ê¸° ë³€í™”)
 		float intensity = 1.5f * FMath::Sin(hurtTimer * PI) + 1.0f;
 		mCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor(intensity, 1.f, 1.f);
 		hurtTimer += deltaTime;
 	}
 	else
 	{
+		// í•„í„° ì œê±° í›„ Hurt ê²½ì§ í•´ì œ
 		mCameraComponent->PostProcessSettings.SceneColorTint = FLinearColor::White;
 		mCameraComponent->PostProcessSettings.bOverride_SceneColorTint = false;
 		hurtTimer = -1.f;
@@ -737,16 +756,23 @@ void APlayerCharacter::UpdateHurtTimer(float deltaTime)
 
 void APlayerCharacter::UpdateMovement()
 {
+	// Movement ì „í™˜ ì‹œ
+	// Walk, Run <--> Idle <--> Jump, Fall
+	// ì™€ ê°™ì´ Idle ìƒíƒœë¥¼ ê±°ì¹˜ê²Œë” ì„¤ê³„
+	// Why? ì• ë‹ˆë©”ì´ì…˜ BPì—ì„œ í˜„ì¬ Movementì— ë§ê²Œ ì• ë‹ˆë©”ì´ì…˜ì„ ì¬ìƒí•˜ëŠ”ë°, Transition Flowê°€ ë„ˆë¬´ ë³µì¡í•´ì ¸ì„œ ê°„ì†Œí™”í•¨
+
+	// ê³µì¤‘ì— ëœ¬ ìƒíƒœ (Jump, Fall)
 	if (GetMovementComponent()->IsFalling() == true)
 	{
-		// °È±â or ´Ş¸®±â »óÅÂ¿¡¼­ °øÁß¿¡ ¶ã °æ¿ì ¿ì¼± Idle »óÅÂ·Î ÀüÈ¯ (¾Ö´Ï¸ŞÀÌ¼Ç BP °£¼ÒÈ­)
+		// Walk, Run ìƒíƒœë©´ ë¨¼ì € Idleë¡œ ì „í™˜
 		if ((mMovementMode == EPlayerMovementMode::Walk) || (mMovementMode == EPlayerMovementMode::Run))
 		{
 			mMovementMode = EPlayerMovementMode::Idle;
 
 			return;
 		}
-		// JUMP OR FALL
+		
+		// ì í”„ ìƒíƒœë©´ Jump, ì•„ë‹ˆë©´ Fall
 		if (bJumping == true)
 		{
 			mMovementMode = EPlayerMovementMode::Jump;
@@ -756,17 +782,20 @@ void APlayerCharacter::UpdateMovement()
 			mMovementMode = EPlayerMovementMode::Fall;
 		}
 	}
+	// ë•…ì— ë‹¿ì€ ìƒíƒœ (Idle, Walk, Run)
 	else
 	{
-		// Á¡ÇÁ or ³«ÇÏ »óÅÂ¿¡¼­ ¹ş¾î³µÀ» ¶§´Â ¿ì¼± Idle »óÅÂ·Î ÀüÈ¯ (¾Ö´Ï¸ŞÀÌ¼Ç BP °£¼ÒÈ­)
+		// Jump, Fall ìƒíƒœë©´ ë¨¼ì € Idleë¡œ ì „í™˜
 		if ((mMovementMode == EPlayerMovementMode::Jump) || (mMovementMode == EPlayerMovementMode::Fall))
 		{
 			bJumping = false;
 			mMovementMode = EPlayerMovementMode::Idle;
 			
+			mGameInstance->SendJumping(false);	// ì í”„ê°€ ëë‚¬ìŒì„ ì•Œë¦¼
 			return;
 		}
 
+		// ì›€ì§ì„ì´ ì—†ìœ¼ë©´ Idle, ì•„ë‹ˆë©´ Walk, Run
 		const FVector& velocity = GetMovementComponent()->Velocity;
 		const float velocity2D = velocity.Size2D();
 
@@ -800,7 +829,7 @@ void APlayerCharacter::UpdateNotifyInteraction()
 			continue;
 		}
 
-		// °¨Áö ¹üÀ§ ³»ÀÇ »óÈ£ÀÛ¿ë ¾×ÅÍ Áß °¡Àå °¡±î¿î ¾×ÅÍ¸¦ Ã£À½.
+		// ê°€ì¥ ê°€ê¹Œìš´ ê±°ë¦¬ì˜ ìƒí˜¸ì‘ìš© ê°€ëŠ¥ ì•¡í„°ë¥¼ ì„¤ì •
 		const float dist = FVector::Dist(interactable->GetActorLocation(), GetActorLocation());
 		if (nearestDist > dist)
 		{
@@ -813,14 +842,14 @@ void APlayerCharacter::UpdateNotifyInteraction()
 		}
 	}
 
-	// Nearest Actor¿¡¼­ Å»¶ôÇÑ ¾×ÅÍ¿¡´Â UnNotify ÀÌº¥Æ® ½ÇÇà
+	// ì´ì „ ìƒí˜¸ì‘ìš© ì•¡í„°ì™€ ë‹¤ë¥´ë‹¤ë©´, ì´ì „ì˜ ì•¡í„°ëŠ” ì•Œë¦¼ í•´ì œ
 	if (oldNearest && (oldNearest != mNearestInteractableActor))
 	{
 		oldNearest->UnNotify(this);
 	}
 
-	// Nearest Actor´Â Notify ÀÌº¥Æ® ½ÇÇà
-	if (mNearestInteractableActor)
+	// ìƒˆë¡œìš´ ìƒí˜¸ì‘ìš© ì•¡í„°ëŠ” Notify
+	if (mNearestInteractableActor && (oldNearest != mNearestInteractableActor))
 	{
 		mNearestInteractableActor->Notify(this);
 	}
@@ -844,40 +873,61 @@ void APlayerCharacter::UpdateAnimationMode()
 	}
 }
 
+void APlayerCharacter::CheckMovementChanged()
+{
+	static FVector lastLocation = GetActorLocation();
+	static FRotator lastRotation = GetActorRotation();
+
+	FVector currLocation = GetActorLocation();
+	FRotator currRotation = GetActorRotation();
+
+	// ì´ë™/íšŒì „ìœ¼ë¡œ íŒë‹¨ë˜ë©´, ì„œë²„ì— ì´ë™ ì •ë³´ë¥¼ ì „ì†¡
+	if (FVector::Dist2D(lastLocation, currLocation) >= SEND_LOCATION_THRESHOLD ||
+		abs(lastRotation.Pitch - currRotation.Pitch) >= SEND_ROTATION_THRESHOLD ||
+		abs(lastRotation.Yaw - currRotation.Yaw) >= SEND_ROTATION_THRESHOLD)
+	{
+		mGameInstance->SendLocation(currLocation, currRotation);
+		lastLocation = currLocation;
+		lastRotation = currRotation;
+	}
+}
+
 void APlayerCharacter::ChangeNotification(AActor* source, FAIStimulus stimulus)
 {
-	if (stimulus.WasSuccessfullySensed() == true) // ¹üÀ§ ³»·Î µé¾î¿Â »óÅÂ
+	// ìƒˆë¡œìš´ ì•¡í„°ê°€ ê°ì§€ë¨
+	if (stimulus.WasSuccessfullySensed() == true)
 	{
 		IGenericTeamAgentInterface* teamAgent = Cast<IGenericTeamAgentInterface>(source);
-		if (teamAgent)	// team id¿¡ µû¶ó ÇÊ¿äÇÑ Ã³¸®¸¦ ¼öÇàÇÑ´Ù.
+		if (teamAgent)
 		{
 			switch (static_cast<uint8>(teamAgent->GetGenericTeamId()))
 			{
 			case 1:
-				// »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ®
+				// ìƒí˜¸ì‘ìš© ì•¡í„° --> ë¦¬ìŠ¤íŠ¸ì— ì¶”ê°€
 				mInteractableList.Add(source);
 				break;
 			case 2:
-				//TODO : enemy notification
+				//TODO : ì ì„ ë°œê²¬í–ˆì„ ë•ŒëŠ” ë­˜ í• ê¹Œ?
 				break;
 			default:
 				break;
 			}
 		}
 	}
+	// ê¸°ì¡´ ì•¡í„°ê°€ ê°ì§€ ë²”ìœ„ì—ì„œ ë²—ì–´ë‚¨
 	else
 	{
 		IGenericTeamAgentInterface* teamAgent = Cast<IGenericTeamAgentInterface>(source);
-		if (teamAgent)	// team id¿¡ µû¶ó ÇÊ¿äÇÑ Ã³¸®¸¦ ¼öÇàÇÑ´Ù.
+		if (teamAgent)
 		{
 			switch (static_cast<uint8>(teamAgent->GetGenericTeamId()))
 			{
 			case 1:
-				// »óÈ£ÀÛ¿ë ¿ÀºêÁ§Æ®
+				// ìƒí˜¸ì‘ìš© ì•¡í„° --> ë¦¬ìŠ¤íŠ¸ì—ì„œ ì œê±°
 				RemoveFromInteractableList(source);
 				break;
 			case 2:
-				//TODO : enemy notification
+				//TODO : ì ì´ ë²”ìœ„ì—ì„œ ë²—ì–´ë‚¬ì„ ë•Œ
 				break;
 			default:
 				break;
@@ -889,10 +939,9 @@ void APlayerCharacter::ChangeNotification(AActor* source, FAIStimulus stimulus)
 void APlayerCharacter::RemoveFromInteractableList(TObjectPtr<AActor> actor)
 {
 	mInteractableList.Remove(actor);
-
+	// ìµœë‹¨ê±°ë¦¬ ì•¡í„°ì˜€ë‹¤ë©´, ì•Œë¦¼ í•´ì œ
 	if (mNearestInteractableActor == Cast<IInteraction>(actor))
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Green, "removed!");
 		mNearestInteractableActor->UnNotify(this);
 		mNearestInteractableActor = nullptr;
 	}
@@ -1001,11 +1050,6 @@ int APlayerCharacter::GetCurrentLevel() const
 int APlayerCharacter::GetCurrentMapIndex() const
 {
 	return mCurrentMap;
-}
-
-int APlayerCharacter::GetSlotIndex() const
-{
-	return mSlotIndex;
 }
 
 void APlayerCharacter::OnTestValUpdated()

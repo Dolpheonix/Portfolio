@@ -3,8 +3,8 @@
 #include "Components/BillboardComponent.h"
 #include "Components/ProgressBar.h"
 #include "Components/WidgetComponent.h"
-#include "Sound/SoundCue.h"
 #include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 #include "../../Base/LoadHelper.h"
 #include "../../Core/CustomGameInstance.h"
 #include "Shooter/ShooterController.h"
@@ -37,11 +37,11 @@ void AShooter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ¹«±â Å¸ÀÔÀÌ RifleÀÌ¾î¾ß¸¸ ÇÔ
+	// ItemInfoë¥¼ í†µí•´ ë¬´ê¸° ì»´í¬ë„ŒíŠ¸ ì„¤ì •
 	mWeapon->LoadFromItemInfo(WeaponIndex);
 	check(mWeapon->GetType() == EWeaponType::Rifle);
 
-	// ÀåÂø »óÅÂ·Î ¹«±â À§Ä¡ Á¶Á¤
+	// ìž¥ì°© ìƒíƒœë¡œ ë¬´ê¸°ë¥¼ ì†Œì¼“ì— Attach
 	const FString socketStr = "Equipped_" + mWeapon->GetWeaponName();
 	mWeapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform, FName(socketStr));
 

@@ -13,7 +13,6 @@
 #include "TextButton.h"
 
 UIntroWidget::UIntroWidget(const FObjectInitializer& objectInitializer) : Super(objectInitializer)
-																		, mSelectedSlot(-1)
 																		, bBounded(false)
 {
 	NotifyPopupClass = LoadHelper::C_LoadObjectFromPath<UBlueprintGeneratedClass>(TEXT("/Game/UI/NotifyPopup_BP.NotifyPopup_BP_C"));
@@ -63,9 +62,16 @@ void UIntroWidget::OnClicked_Login()
 		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 		check(gi);
 
+		// FString에서 string으로 바꿔주는 작업
 		const char* id = TCHAR_TO_ANSI(*mIdText->GetText().ToString());
 		const char* pw = TCHAR_TO_ANSI(*mPwText->GetText().ToString());
-		gi->SendLoginInfo(id, pw, false);
+
+		// 로그인이 실패했다면, 실패 팝업창을 띄움
+		bool succeeded = gi->TryLogin(id, pw);
+		if (succeeded == false)
+		{
+			NotifyLoginFailed(false);
+		}
 	}
 }
 
@@ -78,7 +84,16 @@ void UIntroWidget::OnClicked_Register()
 
 		const char* id = TCHAR_TO_ANSI(*mIdText->GetText().ToString());
 		const char* pw = TCHAR_TO_ANSI(*mPwText->GetText().ToString());
-		gi->SendLoginInfo(id, pw, true);
+		
+		bool succeeded = gi->TryRegister(id, pw);
+		if (succeeded == true)
+		{
+			NotifyLoginFailed(true);
+		}
+		else
+		{
+			NotifyRegisterSucceeded();
+		}
 	}
 }
 
@@ -91,12 +106,17 @@ void UIntroWidget::OnClicked_Submit()
 
 		const char* nickname = TCHAR_TO_ANSI(*mNicknameText->GetText().ToString());
 
-		gi->SendNickname(nickname);
+		bool succeeded = gi->SetNickname(nickname);
+		if (succeeded == false)
+		{
+			NotifyNicknameDuplicated();
+		}
 	}
 }
 
 void UIntroWidget::NotifyLoginFailed(bool isRegister)
 {
+	// 팝업 UI는 한번만 생성하고, Visibility로 관리함
 	if (!mNotifyPopup)
 	{
 		mNotifyPopup = WidgetTree->ConstructWidget<UNotifyPopup>(NotifyPopupClass, TEXT("Popup"));
@@ -118,7 +138,7 @@ void UIntroWidget::NotifyLoginFailed(bool isRegister)
 
 void UIntroWidget::NotifyRegisterSucceeded()
 {
-	mWidgetSwitcher->SetActiveWidgetIndex(1);
+	mWidgetSwitcher->SetActiveWidgetIndex(1);	// 닉네임 설정 위젯으로 전환
 }
 
 void UIntroWidget::NotifyNicknameDuplicated()

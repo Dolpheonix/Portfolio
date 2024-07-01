@@ -13,7 +13,6 @@ UShooterTask_Shot::UShooterTask_Shot() : mOwnerShooter(nullptr)
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// °¢°¢ EEnemyState ¿­°ÅÇü, AActor Å¬·¡½ºÀÇ ºí·¡°öµå Å°¸¸ ¼±ÅÃ °¡´ÉÇÔ.
 	EnemyStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UShooterTask_Shot, EnemyStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 	TargetKey.AddObjectFilter(this, GET_MEMBER_NAME_CHECKED(UShooterTask_Shot, TargetKey), AActor::StaticClass());
 }
@@ -28,25 +27,24 @@ EBTNodeResult::Type UShooterTask_Shot::ExecuteTask(UBehaviorTreeComponent& Owner
 	check(mOwnerShooter);
 	check(target);
 
-	// Detected »óÅÂ°¡ ¾Æ´Ñµ¥ °ø°İÀ» ÇÒ ¼ö ¾øÀ½.
+	// Detected ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	const EEnemyState state = static_cast<EEnemyState>(blackboard->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (state != EEnemyState::Detected) return EBTNodeResult::Failed;
 
-	// Å¸°ÙÀ» ÇâÇØ ¸öÀ» µ¹¸²
+	// íƒ€ê²Ÿì„ ë°”ë¼ë³´ê²Œë” íšŒì „
 	const FVector dir = (target->GetActorLocation() - mOwnerShooter->GetActorLocation()).GetSafeNormal();
 	const FRotator rot = FRotationMatrix::MakeFromX(dir).Rotator();
 	mOwnerShooter->SetActorRotation(rot);
 
-	// ÇØ´ç ¹æÇâÀ¸·Î ¹ß»ç
+	// ì •ë©´ìœ¼ë¡œ ë°œì‚¬
 	mOwnerShooter->Shoot();
 
-	// ¹ß»ç ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³¯¶§±îÁö ÅÂ½ºÅ©¸¦ ÁøÇàÇØ¾ß ÇÔ
 	return EBTNodeResult::InProgress;
 }
 
 void UShooterTask_Shot::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-	// ¹ß»ç ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ³¡³µ°Å³ª, Detected »óÅÂ¿¡¼­ ¹ş¾î³ª°Ô µÇ¸é ÅÂ½ºÅ©¸¦ Á¾·á
+	// ì• ë‹ˆë©”ì´ì…˜ì´ ëë‚  ë•Œê¹Œì§€ íƒœìŠ¤í¬ ì§€ì†
 	const bool isPlaying = mOwnerShooter->GetMesh()->GetSingleNodeInstance()->IsPlaying();
 	const EEnemyState state = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if ((isPlaying == false) || (state != EEnemyState::Detected))

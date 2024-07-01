@@ -16,7 +16,7 @@ UShooterTask_Surveillance::UShooterTask_Surveillance(const FObjectInitializer& o
 
 EBTNodeResult::Type UShooterTask_Surveillance::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Patrol »óÅÂ°¡ ¾Æ´Ï¸é ÅÂ½ºÅ©¿¡ ÁøÀÔÇÒ ¼ö ¾øÀ½
+	// Patrol ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail
 	EEnemyState Mode = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (Mode != EEnemyState::Patrol)
 	{	
@@ -30,7 +30,7 @@ void UShooterTask_Surveillance::TickTask(UBehaviorTreeComponent& OwnerComp, uint
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// Patrol »óÅÂ¿¡¼­ ¹ş¾î³ª¸é ÅÂ½ºÅ© ½ÇÆĞ Ã³¸®
+	// Patrol ìƒíƒœì—ì„œ ë²—ì–´ë‚¬ë‹¤ë©´, íƒœìŠ¤í¬ ì¢…ë£Œ
 	EEnemyState Mode = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (Mode != EEnemyState::Patrol)
 	{

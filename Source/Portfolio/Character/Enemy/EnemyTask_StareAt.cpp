@@ -11,20 +11,19 @@ UEnemyTask_StareAt::UEnemyTask_StareAt()
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// EEnemyState ºí·¢º¸µå Å°¸¸ ¼±ÅÃ °¡´É
 	EnemyStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UEnemyTask_StareAt, EnemyStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 }
 
 EBTNodeResult::Type UEnemyTask_StareAt::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Caution »óÅÂ°¡ ¾Æ´Ï¸é ÅÂ½ºÅ© ÁøÀÔ ºÒ°¡
+	// Caution ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	const EEnemyState currState = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (currState != EEnemyState::Caution) 
 	{
 		return EBTNodeResult::Failed;
 	}
 
-	// ÁøÇàÁßÀÎ ÀÌµ¿ ¸í·É ÁßÁö
+	// ì˜ˆì•½ëœ ì›€ì§ì„ ì¢…ë£Œ
 	OwnerComp.GetAIOwner()->StopMovement();
 
 	return EBTNodeResult::InProgress;
@@ -34,7 +33,7 @@ void UEnemyTask_StareAt::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// Caution »óÅÂ¿¡¼­ ¹ş¾î³ª¸é ÅÂ½ºÅ© Á¾·á Ã³¸®
+	// Caution ìƒíƒœì—ì„œ ë²—ì–´ë‚˜ë©´ íƒœìŠ¤í¬ ì¢…ë£Œ
 	const EEnemyState currState = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (currState != EEnemyState::Caution)
 	{

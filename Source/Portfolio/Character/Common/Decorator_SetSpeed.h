@@ -5,7 +5,8 @@
 #include "Decorator_SetSpeed.generated.h"
 
 /*
-	UDecorator_SetSpeed : Ä³¸¯ÅÍÀÇ ¼Óµµ¸¦ º¯°æÇÏ´Â µ¥ÄÚ·¹ÀÌÅÍ
+	ìºë¦­í„°ì˜ ì´ë™ ì†ë„ ì„¤ì •
+	- í‰ìƒ ì‹œì™€ í”Œë ˆì´ì–´ë¥¼ ë°œê²¬í–ˆì„ ë•Œì˜ ì›€ì§ì„ì´ ë‹¬ë¼ì•¼ í•¨
 */
 
 UCLASS()
@@ -19,6 +20,7 @@ protected:
 	virtual void OnNodeActivation(FBehaviorTreeSearchData& SearchData) override;
 
 protected:
+	// ë³€ê²½í•  ì†ë„
 	UPROPERTY(EditAnywhere, Category="Custom")
 	float Speed;
 };

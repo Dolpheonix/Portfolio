@@ -5,7 +5,6 @@
 
 UNumpadPopup::UNumpadPopup(const FObjectInitializer& objectInitializer) : Super(objectInitializer), bBound(false), mCurrentNumber(-1), mMaxNumber(-1)
 {
-
 }
 
 void UNumpadPopup::NativePreConstruct()
@@ -55,7 +54,7 @@ void UNumpadPopup::SetTitle(FName str)
 
 void UNumpadPopup::SetNumpad(int max)
 {
-	mCurrentNumber = 1;
+	mCurrentNumber = 1;	// 초기 숫자는 1
 	mMaxNumber = max;
 
 	UpdateNumpad();
@@ -65,8 +64,8 @@ void UNumpadPopup::UpdateNumpad()
 {
 	mEditableNumBox->SetText(FText::FromString(FString::FromInt(mCurrentNumber)));
 
-	mIncreaseButton->SetIsEnabled(mCurrentNumber < mMaxNumber); // MAX �̻��� ��� increase button ��Ȱ��ȭ
-	mDecreaseButton->SetIsEnabled(mCurrentNumber > 1); // 1 ������ ��쿡�� decrease button ��Ȱ��ȭ
+	mIncreaseButton->SetIsEnabled(mCurrentNumber < mMaxNumber);	// 최대값이 되면 증가 버튼 비활성화
+	mDecreaseButton->SetIsEnabled(mCurrentNumber > 1);			// 최소값이 되면 감소 버튼 비활성화
 }
 
 void UNumpadPopup::OnClicked_Increase()
@@ -85,6 +84,7 @@ void UNumpadPopup::OnClicked_Decrease()
 
 void UNumpadPopup::OnCommitted_UpdateNumber(const FText& Text, ETextCommit::Type CommitMethod)
 {
+	// 숫자 텍스트만 입력해야 함
 	if (Text.IsNumeric() == true)
 	{
 		const int committedNumber = FCString::Atoi(*Text.ToString());

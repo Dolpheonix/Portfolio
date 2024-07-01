@@ -40,13 +40,17 @@ void UWeapon::Punch()
 
 void UWeapon::Fire()
 {
+	// 효과음 재생
 	mAudioComponent->Play();
-	const FVector muzzleLocation = GetSocketLocation(TEXT("Muzzle"));
+
+	// 총구 위치가 소켓으로 지정되어 있음
+	const FVector muzzleLocation = GetSocketLocation(TEXT("Muzzle"));	
 	
 	FActorSpawnParameters spawnParam;
 	spawnParam.Owner = GetOwner();
 	spawnParam.Instigator = GetOwner()->GetInstigator();
 	
+	// 스폰된 총알 액터를 정면으로 발사
 	TObjectPtr<ABullet> bullet = GetWorld()->SpawnActor<ABullet>(mBulletClass, muzzleLocation, FRotator(), spawnParam);
 	if (bullet)
 	{
@@ -77,10 +81,9 @@ void UWeapon::LoadFromItemInfo(int itemIndex)
 	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
 
-	auto& itemInfoList = gi->GetItemInfoList();
-	check(itemIndex < itemInfoList.Num());
-
-	const ItemInfo& itemInfo = itemInfoList[itemIndex];
+	// ItemInfo 상의 아이템 정보를 통해 데미지, 효과음 등을 설정
+	const ItemInfo& itemInfo = gi->GetItemInfo(itemIndex);
+	check(itemInfo.Type == EItemType::Weapon);
 	SetStaticMesh(LoadHelper::LoadObjectFromPath<UStaticMesh>(FName(*itemInfo.ItemMesh)));
 	mWeaponName	= itemInfo.Name;
 	mType		= itemInfo.SubInfo_Weapon.Type;

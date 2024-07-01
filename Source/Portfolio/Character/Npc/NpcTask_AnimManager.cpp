@@ -9,7 +9,6 @@ UNpcTask_AnimManager::UNpcTask_AnimManager()
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// ºÎ¿ï°ª ºí·¢º¸µå Å°¸¸ ¼±ÅÃ °¡´É
 	Transition_Move_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UNpcTask_AnimManager, Transition_Move_Key));
 	Transition_Idle_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UNpcTask_AnimManager, Transition_Idle_Key));
 	Transition_Interact_Key.AddBoolFilter(this, GET_MEMBER_NAME_CHECKED(UNpcTask_AnimManager, Transition_Interact_Key));
@@ -32,6 +31,7 @@ void UNpcTask_AnimManager::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 	TObjectPtr<UBlackboardComponent> blackboardComp = OwnerComp.GetAIOwner()->GetBlackboardComponent();
 	TObjectPtr<ACharacter> ownerCharacter = Cast<ACharacter>(OwnerComp.GetAIOwner()->GetPawn());
 
+	// Booleanì´ Trueê°€ ë˜ë©´ ì• ë‹ˆë©”ì´ì…˜ ìž¬ìƒ
 	if (blackboardComp->GetValueAsBool(Transition_Move_Key.SelectedKeyName) == true)
 	{
 		blackboardComp->SetValueAsBool(Transition_Move_Key.SelectedKeyName, false);

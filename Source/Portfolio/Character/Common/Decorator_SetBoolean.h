@@ -5,7 +5,8 @@
 #include "Decorator_SetBoolean.generated.h"
 
 /*
-	UDecorator_SetBoolean : ³ëµå¿¡ ÁøÀÔÇÒ ¶§ ºÎ¿ï°ªÀ» º¯°æ½ÃÅ°´Â µ¥ÄÚ·¹ÀÌÅÍ
+	ë¸”ë™ë³´ë“œ Boolean ë³€ìˆ˜ë¥¼ ë³€ê²½
+	- ì• ë‹ˆë©”ì´ì…˜ ì„¤ì •ìš© ë¶ˆë¦¬ì•ˆ ë³€ìˆ˜ (Idle, Walk, Run, Attack)
 */
 
 UCLASS()
@@ -19,9 +20,10 @@ protected:
 	virtual void OnNodeActivation(FBehaviorTreeSearchData& searchData) override;
 
 protected:
+	// ë³€ê²½í•  ë¶ˆë¦¬ì•ˆ ë³€ìˆ˜
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector BlackboardKey;
-
+	// ì„¤ì •ê°’
 	UPROPERTY(EditAnywhere, Category="Custom")
 	bool BooleanValue;
 };

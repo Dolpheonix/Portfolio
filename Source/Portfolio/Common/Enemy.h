@@ -6,26 +6,25 @@
 
 
 /*
-	EEnemyType : Àû Ä³¸¯ÅÍÀÇ Å¸ÀÔ (½ÇÁ¦·Î AEnemyCharacter¸¦ »ó¼Ó¹ŞÀº »õ Àû Ä³¸¯ÅÍ Å¬·¡½º¸¶´Ù ¿©±â Ãß°¡ÇØ¾ß ÇÔ)
+	ëª¹ íƒ€ì… : ìŠ¤í°í•  ì•¡í„°ì˜ í´ë˜ìŠ¤ì™€ ì—°ê²°í•˜ëŠ” ìš©ë„
 */
 UENUM(BlueprintType)
 enum class EEnemyType : uint8
 {
-	Shooter,
-	Monster,
+	Shooter,	// í”Œë ˆì´ì–´ì—ê²Œ ì´ì„ ì˜ëŠ” ëª¹
+	Monster,	// í”Œë ˆì´ì–´ì—ê²Œ ë‹¬ë ¤ë“œëŠ” ëª¹
 	Count,
 };
 
 /*
-	FEnemyLabelInfo : Àû Ä³¸¯ÅÍ¿¡ ºÙ´Â ¶óº§(ÅÂ±×) : ex) ÀÎ°£Á·, ¸ó½ºÅÍ, ...
-		- °ÔÀÓ µ¥ÀÌÅÍ·Î ·ÎµåµÊ
+	ëª¹ì˜ íŠ¹ì„± (ex : ì¸ê°„ì¡±, ...)
 */
 USTRUCT(BlueprintType)
 struct FEnemyLabelInfo
 {
 	GENERATED_USTRUCT_BODY()
 
-	FString Name;	// ¶óº§ ÀÌ¸§
+	FString Name;	// í‘œì‹œëª…
 
 public:
 	FEnemyLabelInfo();
@@ -34,29 +33,30 @@ public:
 	~FEnemyLabelInfo();
 
 public:
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& infoVal);
-
+	// ê²Œì„ë°ì´í„°ë¥¼ ë¡œë“œí•´ì˜¤ëŠ” í•¨ìˆ˜. ê²Œì„ ì‹œì‘ ì‹œì— í˜¸ì¶œë¨
 	static bool LoadInfoListFromJson(TArray<FEnemyLabelInfo>& outList);
 };
 
 /*
-	Àû Ä³¸¯ÅÍÀÇ Á¾·ù (EEnemyType°ú °°Àº ¹æ½ÄÀ¸·Î Å¬·¡½º¸¶´Ù ÇÏ³ªÀÇ info°¡ Á¸ÀçÇØ¾ß ÇÔ)
+	ê²Œì„ ë°ì´í„° ìƒì˜ ëª¹ ì •ë³´
 */
 USTRUCT(BlueprintType)
 struct FEnemyInfo
 {
 	GENERATED_USTRUCT_BODY()
 
-	int Index;	// °ÔÀÓ µ¥ÀÌÅÍ »óÀÇ ÀÎµ¦½º
+	int Index;		// ê²Œì„ ë°ì´í„° ìƒì˜ ì¸ë±ìŠ¤
 	
-	FString Name;	// ÀÌ¸§ (ex : Shooter, Dragon, ...)
+	FString Name;	// ëª¹ ì´ë¦„(ì¢…ë¥˜) (ex : Shooter, Dragon, ...)
 	
-	TSubclassOf<AEnemyCharacter> EnemyClass;	// ½ÇÁ¦ Ä³¸¯ÅÍ Å¬·¡½º
+	TSubclassOf<AEnemyCharacter> EnemyClass;	// ìŠ¤í° ì‹œ ì‚¬ìš©í•  í´ë˜ìŠ¤
 
-	int Hp;	// ÃÖ´ë HP
-	int Damage;	// µ¥¹ÌÁö
+	int Hp;	// ìµœëŒ€ HP
+	int Damage;	// ê³µê²© ë°ë¯¸ì§€
 
-	TArray<int> Labels;	// ¶óº§ ¸ñ·Ï
+	TArray<int> Labels;	// ëª¹ì´ ê°€ì§€ëŠ” íŠ¹ì„± ëª¨ìŒ
 
 public:
 	FEnemyInfo();
@@ -65,10 +65,11 @@ public:
 	~FEnemyInfo();
 
 public:
+	// Json ê°ì²´ë¡œë¶€í„° ì •ë³´ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& infoVal);
-	
+	// ê²Œì„ë°ì´í„°ë¥¼ ë¡œë“œí•´ì˜¤ëŠ” í•¨ìˆ˜. ê²Œì„ ì‹œì‘ ì‹œì— í˜¸ì¶œë¨
 	static bool LoadInfoListFromJson(TArray<FEnemyInfo>& outList);
 
-	// EEnemyType¿¡ ¸Â´Â Å¬·¡½º ¿ÀºêÁ§Æ®¸¦ ¹İÈ¯
+	// ëª¹ì˜ íƒ€ì…ìœ¼ë¡œë¶€í„° ìŠ¤í°í•  ì•¡í„° í´ë˜ìŠ¤ë¥¼ ë¶ˆëŸ¬ì˜´
 	static TSubclassOf<AEnemyCharacter> GetEnemyClassFromType(const EEnemyType type);
 };

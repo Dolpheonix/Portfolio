@@ -5,7 +5,8 @@
 #include "Decorator_SetRandomLocation.generated.h"
 
 /*
-	UDecorator_SetRandomLocation : ±âÁØ À§Ä¡·ÎºÎÅÍ ÀÏÁ¤ °Å¸®¸¸Å­ ¶³¾îÁø ·£´ı À§Ä¡¸¦ ¼³Á¤ÇÏ´Â µ¥ÄÚ·¹ÀÌÅÍ
+	í™œë™ ë°˜ê²½ ë‚´ì˜ ëœë¤ ìœ„ì¹˜ë¥¼ ì„¤ì •
+	- í”Œë ˆì´ì–´ë¥¼ ë°œê²¬í•˜ê¸° ì „, íŒ¨íŠ¸ë¡¤ í•  ë•Œ ì“°ì„
 */
 
 UCLASS()
@@ -19,13 +20,13 @@ protected:
 	virtual void OnNodeActivation(FBehaviorTreeSearchData& searchData) override;
 
 protected:
-	// ±âÁØ À§Ä¡
+	// ì´ë™ ì¤‘ì‹¬ì 
 	UPROPERTY(EditAnywhere, Category="Custom")
 	FBlackboardKeySelector Pivot;
-	// ±âÁØ À§Ä¡·ÎºÎÅÍÀÇ °Å¸®
+	// ì´ë™ ë°˜ê²½
 	UPROPERTY(EditAnywhere, Category="Custom")
 	float Radius;
-	// ¼³Á¤µÈ ·£´ı À§Ä¡¸¦ ´ãÀ» ºí·¢º¸µå Å°
+	// ì„¤ì •ëœ ëœë¤ ìœ„ì¹˜
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector Output;
 };

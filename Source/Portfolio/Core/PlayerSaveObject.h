@@ -1,34 +1,32 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../../../ThirdParty/ProtoObject/SaveObject.pb.h"
+#include "../Network/ProtoObject/ProtoObject.pb.h"
 #include "GameFramework/SaveGame.h"
 #include "../Common/Item.h"
 #include "../Common/Quest.h"
 #include "PlayerSaveObject.generated.h"
 
 /*
-	�÷��̾� ������ ���� ����ü
-	- PlayerInfo : �� �̵� �� �÷��̾� ������ ������ �ӽ� �����ϱ� ���� �뵵
-	- UPlayerSaveObject : ���̺� ����(.sav)�� ����/�ε��ϴ� �뵵
-	- USaveSlot : ���̺� ������ ���ϸ�(�÷��̾��) ���
+	플레이어의 기본 정보
 */
-
 struct PlayerInfo
 {
-	FString PlayerName;					// �÷��̾� �̸�
-	int CurrentLevel;					// ���� ����
-	int CurrentMap;						// ���� ��ġ�� �� �ε���
-	FVector CurrentLocation;			// ���� �� ���� ��ġ
-	int CurrentGold;					// ���� ��� ������
-	FInventory Inventory;				// ���� �κ��丮
-	TArray<FQuestStatus> QuestTable;	// ���� ����Ʈ ���൵
-
-	int SlotIndex;						// ���̺� ���� ��ȣ
+	FString PlayerName;					// 닉네임
+	int CurrentLevel;					// 레벨
+	int CurrentMap;						// 현재 위치한 맵
+	FVector CurrentLocation;			// 현재 위치
+	int CurrentGold;					// 현재 골드 보유량
+	FInventory Inventory;				// 인벤토리 상태
+	TArray<FQuestStatus> QuestTable;	// 퀘스트 진행 상태
+	
+	int UserIdx;						// 유저 고유 번호
 
 public:
-	void ConvertFromProto(const SaveObject::PlayerInfo& info);
-	void ConvertToProto(SaveObject::PlayerInfo& info);
+	// ProtoBuf 구조체로부터 값 복사
+	void ConvertFromProto(const ProtoObject::PlayerInfo& info);
+	// ProtoBuf 구조체로 값 전달
+	void ConvertToProto(ProtoObject::PlayerInfo& info) const;
 };
 
 UCLASS()

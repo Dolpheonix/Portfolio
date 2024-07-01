@@ -11,8 +11,9 @@ class USoundCue;
 class UWeapon;
 
 /*
-	AShooter : Enemy CharacterÀÇ ÆÄ»ı Ä³¸¯ÅÍ.
-		- Rifle ¹«±â ÀåÂø ¹× ¹ß»ç ÇÔ¼ö ±¸Çö
+	í”Œë ˆì´ì–´ì— ì´ì„ ì˜ëŠ” ëª¹ ìºë¦­í„°
+	- ì •ë©´ìœ¼ë¡œ ë°œì‚¬
+	- ë¬´ê¸° ì»´í¬ë„ŒíŠ¸ ì„¤ì • ê°€ëŠ¥
 */
 
 UCLASS()
@@ -27,23 +28,24 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	// ì •ë©´ìœ¼ë¡œ Bulletì„ ë°œì‚¬
 	UFUNCTION()
 	void Shoot();
 
 protected:
-	// ¹ß»çÀ½ Àç»ı¿ë ¿Àµğ¿À
+	// ë°œì‚¬ìŒ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UAudioComponent> mAudioComponent;
 
-	// ½ºÆùÇÒ ÃÑ¾Ë Å¬·¡½º
+	// Bullet íˆ¬ì‚¬ì²´ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TSubclassOf<ABullet> BulletClass;
 	
-	// Item Info·ÎºÎÅÍ ºÒ·¯¿Ã ¹«±âÀÇ ÀÎµ¦½º
+	// ë¬´ê¸°ì˜ ItemInfo ìƒì˜ ì¸ë±ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	int WeaponIndex;
 
-	// ¹«±â ÄÄÆ÷³ÍÆ®
+	// ë¬´ê¸° ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UWeapon> mWeapon;
 };

@@ -7,9 +7,7 @@
 class AEnemyCharacter;
 
 /*
-	UEnemyTask_Hurt : Ä³¸¯ÅÍ°¡ µ¥¹ÌÁö¸¦ ÀÔ¾úÀ» ¶§ ½ÇÇàµÇ´Â ÅÂ½ºÅ©.
-		- ¾Ö´Ï¸ŞÀÌ¼ÇÀÌ ½ÇÇàµÇ´Â µ¿¾È °æÁ÷ »óÅÂ¸¦ À¯Áö
-		- ÅÂ½ºÅ©°¡ ³¡³ª¸é ¿ø·¡ State °ªÀ¸·Î º¯°æÇÑ´Ù.
+	ë°ë¯¸ì§€ë¥¼ ì…ìœ¼ë©´ ì¼ì • ì‹œê°„ë™ì•ˆ ê²½ì§ì— ê±¸ë¦¬ëŠ” íƒœìŠ¤í¬
 */
 
 UCLASS()
@@ -24,14 +22,14 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
-	// ÇöÀç State °ª (EEnemyState::Hurt¿©¾ß ÇÔ)
+	// Enemy State
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector EnemyStateKey;
-	// µ¥¹ÌÁö¸¦ ÀÔ±â ÀüÀÇ State °ª
+	// íƒœìŠ¤í¬ ì¢…ë£Œ í›„ ë˜ëŒë ¤ë†“ì„ ì´ì „ State
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector CachedStateKey;
 
 private:
-	// ¿À³Ê Ä³¸¯ÅÍ
+	// íƒœìŠ¤í¬ Onwer
 	TObjectPtr<AEnemyCharacter> mOwnerEnemy;
 };

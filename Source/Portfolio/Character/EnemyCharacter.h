@@ -12,7 +12,9 @@ class UBillboardComponent;
 class UWidgetComponent;
 
 /*
-	AEnemyCharacter : ÇÃ·¹ÀÌ¾î¸¦ °ø°İÇÏ´Â Ä³¸¯ÅÍ(¸÷)ÀÇ ±â¹İ Å¬·¡½º
+	ëª¹ ìºë¦­í„°
+	- ë°ë¯¸ì§€ ì²˜ë¦¬
+	- í¼ì…‰ì…˜ ê°ì§€ ìƒíƒœì— ë”°ë¼ ëŠë‚Œí‘œ/ë¬¼ìŒí‘œ ì´ë¯¸ì§€ ë„ì›€
 */
 
 UCLASS()
@@ -29,7 +31,6 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 
-	// ÇÃ·¹ÀÌ¾î¸¦ ÀûÀ¸·Î ÀÎ½ÄÇÔ (ÇÃ·¹ÀÌ¾îÀÇ Team Id : 0)
 	virtual FGenericTeamId GetGenericTeamId() { return FGenericTeamId(2); };
 
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
@@ -37,28 +38,38 @@ public:
 	virtual void OnHurt() override;
 	virtual void OnDead() override;
 
-	// ÄÁÆ®·Ñ·¯¿¡ ÀÇÇØ °ü¸®µÇ´Â Enemy State º¯°æ ½Ã Ä³¸¯ÅÍ¿¡ Àû¿ëÇÔ.
+	// State ë³€í™”ì— ë”°ë¼ Billboard Component ì—…ë°ì´íŠ¸
 	void UpdateState(EEnemyState s);
 
+	void SetEnemyInfoIndex(const int idx);
+	void SetResourceIndex(const int idx);
+
 protected:
-	// Ä³¸¯ÅÍ À§¿¡ Ç¥½ÃµÇ´Â Ã¼·Â ¹Ù UIÀÇ Å¬·¡½º
+	// HP ë°” ìœ„ì ¯ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TSubclassOf<UHpBar> HpBarClass;
-	// ¹°À½Ç¥ ¸¶Å© (Caution »óÅÂÀÏ ¶§ È°¼ºÈ­)
+	// Caution ìƒíƒœì— ë³´ì—¬ì¤„ ë¬¼ìŒí‘œ ìœ„ì ¯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UBillboardComponent> mQuestionMarkComponent;
-	// ´À³¦Ç¥ ¸¶Å© (Detected »óÅÂÀÏ ¶§ È°¼ºÈ­)
+	// Detected ìƒíƒœì— ë³´ì—¬ì¤„ ëŠë‚Œí‘œ ìœ„ì ¯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UBillboardComponent> mExclamationMarkComponent;
-	// Hp ¹Ù (ÇÃ·¹ÀÌ¾îÀÇ °¨Áö ¹üÀ§¿¡ µé¾î¿À¸é È°¼ºÈ­)
+	// HP ë°” ìœ„ì ¯
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UWidgetComponent> mHpBarWidget;
 public:
-	// ÄÁÆ®·Ñ·¯¿¡ Àû¿ëÇÒ Perception ComponentÀÇ ÀÎÀÚµé
+	// ê°ì§€ ë°˜ê²½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Perception")
 	float SightRadius;
+	// ê°ì§€ í•´ì œ ë°˜ê²½
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 	float LoseSightRadius;
+	// ê°ì§€ ì‹œì•¼ê°
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Perception")
 	float SightAngle;
+	
+	// ëª¹ì˜ EnemyInfo ìƒ ì¸ë±ìŠ¤ (ëª¹ ì¢…ë¥˜)
+	uint64 mEnemyInfoIndex;
+	// ë§µ ìƒì˜ ë¦¬ì†ŒìŠ¤ ì¸ë±ìŠ¤
+	uint64 mResIdx;
 };

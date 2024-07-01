@@ -3,8 +3,7 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `SavePlayerInfo`(IN p_userIdx INT, I
 BEGIN
 	IF EXISTS (SELECT 1 FROM playerinfo WHERE userIdx = p_userIdx) THEN
 		UPDATE playerinfo
-        SET 
-			nickname = p_name,
+        SET nickname = p_name,
 			playerLevel = p_level,
             mapIdx = p_map,
             loc_x = p_loc_x,

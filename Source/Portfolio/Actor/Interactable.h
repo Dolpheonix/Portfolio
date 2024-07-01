@@ -12,7 +12,7 @@ class UBillboardComponent;
 class UAIPerceptionStimuliSourceComponent;
 
 /*
-	AInteractable : ÇÃ·¹ÀÌ¾î¿Í »óÈ£ÀÛ¿ë °¡´ÉÇÑ ¾×ÅÍ
+	í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš© ì‹œ ì»¤ìŠ¤í…€ ì´ë²¤íŠ¸ë¥¼ ì‹¤í–‰í•˜ëŠ” ì•¡í„°
 */
 
 UCLASS()
@@ -29,23 +29,26 @@ protected:
 public:	
 	virtual void Tick(float DeltaTime) override;
 
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ì— ë“¤ì–´ì™”ìŒì„ ì•Œë¦¼
 	virtual void Notify(TObjectPtr<AActor> player) override;
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ì—ì„œ ë²—ì–´ë‚¬ìŒì„ ì•Œë¦¼
 	virtual void UnNotify(TObjectPtr<AActor> player) override;
+	// í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš© ì‹œ í˜¸ì¶œ
 	virtual void Interact(TObjectPtr<AActor> player) override;
 
 public:
-	// »óÈ£ ÀÛ¿ë ½Ã ½ÇÇàÇÒ ÀÌº¥Æ® (ÇÏÀ§ Å¬·¡½º³ª ·¹º§ ¾×ÅÍ, ·¹º§ ºí·çÇÁ¸°Æ®¿¡¼­ ¹ÙÀÎµå ÇÒ ¼ö ÀÖÀ½)
+	// ìƒí˜¸ì‘ìš© ì‹œì— ì‹¤í–‰ë  ì´ë²¤íŠ¸
 	UPROPERTY(BlueprintAssignable, Category="Event")
 	FInteractionEvent mInteractionEvent;
 
 protected:
-	// ¿ÜÇü ¸Ş½Ã
+	// ì•¡í„° ë©”ì‹œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> mStaticMeshComponent;
-	// ÇÃ·¹ÀÌ¾îÀÇ °¨Áö ¹üÀ§¿¡ µé¾î¿ÔÀ» ¶§ Ç¥½ÃÇÒ ¾Ë¸²¿ë ÀÌ¹ÌÁö
+	// ì•Œë¦¼ìš© ì´ë¯¸ì§€
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBillboardComponent> mNotifyBillboard;
-	// ÇÃ·¹ÀÌ¾îÀÇ ÆÛ¼Á¼Ç¿¡ °¨ÁöµÇ±â À§ÇØ ÇÊ¿äÇÑ ÄÄÆ÷³ÍÆ®
+	// í”Œë ˆì´ì–´ì˜ í¼ì…‰ì…˜ì— ê°ì§€ë˜ê²Œë” í•˜ëŠ” ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> mPerceptionStimuliSourceComponent;
 

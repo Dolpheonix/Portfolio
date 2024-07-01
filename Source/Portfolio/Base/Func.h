@@ -1,16 +1,16 @@
 #pragma once
 #include "CoreMinimal.h"
 
-// Json ÆÄÀÏ Çü½ÄÀÇ °ÔÀÓ µ¥ÀÌÅÍ³ª, sav ÆÄÀÏ·Î ÀúÀåµÇ´Â enum classÀÇ °æ¿ì, ÇØ´ç ÅÛÇÃ¸´À» »ç¿ëÇØ¼­ string <-> enum º¯È¯.
+// Json íŒŒì‹± ì‹œ stringì„ enum ê°ì²´ë¡œ ë³€í™˜
 template <typename T>
 T StringToEnum(const FString& str);
-
+// enumì„ stringìœ¼ë¡œ ë³€í™˜
 template <typename T>
 FString EnumToString(const T& e);
 
 namespace Helper
 {
-	// JSON ¹è¿­À» FVector·Î º¯È¯ÇÏ´Â ÇÔ¼ö
+	// Json ê°ì²´ë¥¼ FVectorë¡œ ë³€í™˜
 	FORCEINLINE FVector JsonToVector(const TArray<TSharedPtr<FJsonValue>>& arrValue)
 	{
 		check(arrValue.Num() == 3);

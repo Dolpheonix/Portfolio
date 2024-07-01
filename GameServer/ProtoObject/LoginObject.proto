@@ -1,9 +1,0 @@
-syntax = "proto3";
-
-package LoginObject;
-
-message LoginInfo
-{
-	string id = 1;
-	string password = 2;
-}

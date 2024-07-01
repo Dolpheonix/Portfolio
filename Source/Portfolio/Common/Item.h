@@ -2,69 +2,60 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
-
 #include "Item.generated.h"
 
 class UStaticMesh;
 class UTexture2D;
 class USoundCue;
 
-constexpr int NUM_INVENTORY_ROW = 4;
-constexpr int NUM_INVENTORY_COL = 4;
-constexpr int MAX_ITEM_PER_TYPE = 16;
+constexpr int NUM_INVENTORY_ROW = 4;	// ì¸ë²¤í† ë¦¬, ìƒì  UIì—ì„œ ì•„ì´í…œì„ ë³´ì—¬ì¤„ ë•Œ ê°€ë¡œì— ë°°ì¹˜ë˜ëŠ” ì•„ì´í…œ ìˆ˜
+constexpr int NUM_INVENTORY_COL = 4;	// ì„¸ë¡œì— ë°°ì¹˜ë˜ëŠ” ì•„ì´í…œ ìˆ˜
+constexpr int MAX_ITEM_PER_TYPE = 16;	// íƒ€ì…ë³„ë¡œ ìµœëŒ€ ë³´ìœ  ê°€ëŠ¥í•œ ì•„ì´í…œ ìˆ˜
 
 /*
-	EItemType : ¾ÆÀÌÅÛ Å¸ÀÔ
-		- Cloth : ÀÇ»ó
-		- Weapon : ¹«±â,
-		- Item : ±âÅ¸ ¾ÆÀÌÅÛ
+	ì•„ì´í…œì˜ ì¢…ë¥˜
 */
 UENUM(BlueprintType)
 enum class EItemType : uint8
 {
-	Cloth,
-	Weapon,
-	Item,
+	Cloth,	// ì˜ìƒ
+	Weapon,	// ë¬´ê¸°
+	Item,	// ê¸°íƒ€ ì•„ì´í…œ
 	Count,
 };
 
 /*
-	 EWeaponType : ¹«±â Å¸ÀÔ (Å¸ÀÔ¿¡ µû¶ó °ø°İ ¸ÅÄ¿´ÏÁòÀÌ ´Ù¸§)
-		- Fist : ÁÖ¸Ô,
-		- Rifle : ÃÑ
+	ë¬´ê¸° ì•„ì´í…œì˜ íƒ€ì… (ê³µê²© ë°©ì‹ì„ ë‹¤ë¥´ê²Œ ì •ì˜í•´ì•¼ í•¨)
 */
 UENUM(BlueprintType)
 enum class EWeaponType : uint8
 {
-	Fist,
-	Rifle,
+	Fist,	// ì£¼ë¨¹ (ë¬´ê¸° ì—†ìŒ)
+	Rifle,	// ì´ê¸°ë¥˜
 	Count,
 };
 
 /*
-	EThumbnailType : ¾ÆÀÌÅÛ ½æ³×ÀÏ Å¸ÀÔ (ÀÎº¥Åä¸®, »óÁ¡ UI µî¿¡¼­ »ç¿ë)
-		- Normal : ÀÏ¹İ ½æ³×ÀÏ
-		- Hovered : ¸¶¿ì½º È£¹ö »óÅÂ ½æ³×ÀÏ
-		- Selected : ¼±ÅÃ/ÀåÂøµÈ ¾ÆÀÌÅÛ¿ë ½æ³×ÀÏ
+	ì•„ì´í…œì˜ ì„ íƒ ì—¬ë¶€ì— ë”°ë¼ ë³´ì—¬ì¤„ ì¸ë„¤ì¼ ì¢…ë¥˜
 */
 UENUM(BlueprintType)
 enum class EThumbnailType : uint8
 {
-	Normal,
-	Hovered,
-	Selected,
+	Normal,		// ì¼ë°˜ ì¸ë„¤ì¼
+	Hovered,	// ë§ˆìš°ìŠ¤ í˜¸ë²„ ì‹œ ì¸ë„¤ì¼
+	Selected,	// ì„ íƒëœ ì•„ì´í…œì¼ ì‹œ ì¸ë„¤ì¼
 	Count,
 };
 
 /*
-	WeaponInfo : ¹«±â Á¤º¸ (Å¸ÀÔ, µ¥¹ÌÁö µî)
+	ê²Œì„ ë°ì´í„° ìƒì˜ ë¬´ê¸° ì •ë³´
 */
 struct WeaponInfo
 {
-	EWeaponType Type;	// ¹«±â Å¸ÀÔ
-	float Damage;		// ¹«±â µ¥¹ÌÁö
-	FString Sound;		// °ø°İ ½Ã Àç»ıÇÒ »ç¿îµå ·¹ÆÛ·±½º¸í
-	FString BulletBP;	// Rifle Å¸ÀÔÀÏ ¶§, ½ºÆùÇÒ ÃÑ¾Ë Å¬·¡½º ·¹ÆÛ·±½º¸í
+	EWeaponType Type;	// ë¬´ê¸° ì¢…ë¥˜
+	float Damage;		// ë¬´ê¸° ë°ë¯¸ì§€
+	FString Sound;		// ë¬´ê¸° íš¨ê³¼ìŒ (EX : ë°œì‚¬ìŒ)
+	FString BulletBP;	// ì´ê¸°ë¥˜ì— í•œí•´, ë°œì‚¬í•  ì´ì•Œ í´ë˜ìŠ¤ì˜ ì´ë¦„
 
 public:
 	WeaponInfo();
@@ -74,26 +65,29 @@ public:
 };
 
 /*
-	ItemInfo : ¾ÆÀÌÅÛ Á¤º¸ (Å¸ÀÔ, °¡°İ µî)
+	ê²Œì„ ë°ì´í„° ìƒì˜ ì•„ì´í…œ ì •ë³´
 */
 struct ItemInfo
 {
-	int Index;			// °ÔÀÓ µ¥ÀÌÅÍ »óÀÇ ÀÎµ¦½º
-	EItemType Type;		// ¾ÆÀÌÅÛ Å¸ÀÔ
-	FString Name;		// ¾ÆÀÌÅÛ ÀÌ¸§
-	bool bSellable;		// »óÁ¡¿¡ ÆÈ ¼ö ÀÖ´Â ¾ÆÀÌÅÛÀÎ°¡?
-	int Price;			// »óÁ¡ ÆÇ¸Å °¡°İ
+	int Index;			// ë¦¬ìŠ¤íŠ¸ ìƒ ê³ ìœ  ì¸ë±ìŠ¤
+	EItemType Type;		// ì•„ì´í…œ ì¢…ë¥˜
+	FString Name;		// ì•„ì´í…œ í‘œì‹œëª…
+	bool bSellable;		// íŒ” ìˆ˜ ìˆëŠ” ì•„ì´í…œì¸ê°€?
+	int Price;			// ì•„ì´í…œ ê°€ê²©
 	
-	TArray<UTexture2D*> Thumbnail;	// ½æ³×ÀÏ ÀÌ¹ÌÁö
+	TArray<UTexture2D*> Thumbnail;	// ì¸ë„¤ì¼ ì¢…ë¥˜ë³„ ì´ë¯¸ì§€
 
-	FString ItemMesh;	// °ÔÀÓ¿¡ Ç¥½ÃµÇ´Â ¾ÆÀÌÅÛ ¸Ş½Ã ·¹ÆÛ·±½º
+	FString ItemMesh;	// ì¸ê²Œì„ ìƒìœ¼ë¡œ ë³´ì—¬ì¤„ ì•„ì´í…œì— í•œí•´, ì•„ì´í…œ ë©”ì‹œ íŒŒì¼ëª…
 
+	// ì•„ì´í…œ ì¢…ë¥˜ë³„ ë¶€ê°€ì •ë³´
 	union
 	{
-		WeaponInfo SubInfo_Weapon;	// Weapon Å¸ÀÔÀÎ °æ¿ì ==> ¹«±â Á¤º¸
+		WeaponInfo SubInfo_Weapon;	// ë¬´ê¸° ì•„ì´í…œ ì •ë³´
 	};
 
+	// Json ì˜¤ë¸Œì íŠ¸ë¡œë¶€í„° ê²Œì„ ë°ì´í„° ë¡œë“œ
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& infoVal);
+	// Json íŒŒì¼ë¡œë¶€í„° ItemInfo ì „ì²´ ë¡œë“œ
 	static bool LoadInfoListFromJson(TArray<ItemInfo>& list);
 public:
 	ItemInfo();
@@ -103,20 +97,21 @@ public:
 };
 
 /*
-	FGameItem : ÀÎº¥Åä¸® »ó¿¡ Ç¥½ÃµÇ´Â ¾ÆÀÌÅÛ ´ÜÀ§. °³¼ö¿Í Á¾·ù
+	ì¸ê²Œì„ ìƒìœ¼ë¡œ ì£¼ê³  ë°›ì„ ìˆ˜ ìˆëŠ” ì•„ì´í…œ êµ¬ì¡°ì²´
 */
 USTRUCT(Atomic, BlueprintType)
 struct FGameItem
 {
 	GENERATED_USTRUCT_BODY()
 
-	// ItemInfoÀÇ ÀÎµ¦½º
+	// ItemInfo ìƒ ì¸ë±ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	int InfoIndex;
-	// º¸À¯ °³¼ö
+	// ì•„ì´í…œ ê°œìˆ˜
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	int Num;
 
+	// Json íŒŒì¼ë¡œë¶€í„° ê²Œì„ ë°ì´í„° ë¡œë“œ
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& itemVal);
 
 public:
@@ -127,7 +122,8 @@ public:
 };
 
 /*
-	FTypeInventory : Å¸ÀÔº°·Î º¸°üÇÒ ¾ÆÀÌÅÛ ¸®½ºÆ®
+	ê°™ì€ ì¢…ë¥˜ì˜ ì•„ì´í…œë§Œ ëª¨ì•„ë†“ì€ ë¦¬ìŠ¤íŠ¸
+	- WHY? : TArrayë¥¼ 2ì°¨ì› ë°°ì—´ë¡œ ì‚¬ìš©í•  ìˆ˜ ì—†ì–´ì„œ Wrapper êµ¬ì¡°ì²´ë¥¼ ì¶”ê°€í•¨
 */
 USTRUCT(Atomic, BlueprintType)
 struct FTypeInventory
@@ -144,7 +140,7 @@ public:
 };
 
 /*
-	FInventory : Å¸ÀÔ ÀÎº¥Åä¸®¸¦ ¹è¿­·Î °¡Áö°í ÀÖ´Â ÅëÇÕ ÀÎº¥Åä¸®
+	í†µí•© ì¸ë²¤í† ë¦¬
 */
 USTRUCT(Atomic, BlueprintType)
 struct FInventory

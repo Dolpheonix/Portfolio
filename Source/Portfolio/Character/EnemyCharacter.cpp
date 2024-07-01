@@ -7,6 +7,8 @@
 #include "Kismet/GameplayStatics.h"
 #include "Enemy/EnemyController.h"
 #include "../Base/LoadHelper.h"
+#include "../Character/PlayerCharacter.h"
+#include "../Core/CustomGameInstance.h"
 
 static_assert(static_cast<uint8>(EEnemyState::Count) == 4);
 
@@ -50,7 +52,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// HP�ٰ� �÷��̾ �ٶ󺸰� �Ѵ�.
+	// Hp 바 위젯은 캐릭터를 바라보도록 설정
 	FVector dir = (UGameplayStatics::GetPlayerPawn(this, 0)->GetActorLocation() - GetActorLocation()).GetSafeNormal2D();
 	FRotator rot = FRotationMatrix::MakeFromX(dir).Rotator();
 
@@ -61,7 +63,7 @@ float AEnemyCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent,
 {
 	float dmg = Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 
-	// HP �� ������Ʈ
+	// HP 바 업데이트
 	TObjectPtr<UProgressBar> pgBar = Cast<UProgressBar>(mHpBarWidget->GetWidget());
 	check(pgBar);
 	pgBar->SetPercent(static_cast<float>(mHp) / mMaxHp);
@@ -72,15 +74,30 @@ float AEnemyCharacter::TakeDamage(float Damage, FDamageEvent const& DamageEvent,
 void AEnemyCharacter::OnHurt()
 {
 	Cast<AEnemyController>(GetController())->OnHurt();
+
+	Super::OnHurt();
 }
 
 void AEnemyCharacter::OnDead()
 {
-	// TODO : Labeling, controller ondead(), destroy handle
+	TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
+	check(gi);
+	// 서버에 몹이 제거됨을 알림
+	gi->SendEnemyRemoval(mResIdx);
+
+	TObjectPtr<APlayerCharacter> pc = Cast<APlayerCharacter>(UGameplayStatics::GetPlayerPawn(this, 0));
+	check(pc);
+	// 플레이어의 사냥 퀘스트를 업데이트
+	pc->ReportKill(gi->GetEnemyInfo(mEnemyInfoIndex).Labels);
+	
+	Super::OnDead();
+
+	Destroy();
 }
 
 void AEnemyCharacter::UpdateState(EEnemyState s)
 {
+	// State에 따라 느낌표/물음표 위젯 Visibility 업데이트
 	switch (s)
 	{
 	case EEnemyState::Patrol:
@@ -100,4 +117,14 @@ void AEnemyCharacter::UpdateState(EEnemyState s)
 	default:
 		break;
 	}
+}
+
+void AEnemyCharacter::SetEnemyInfoIndex(const int idx)
+{
+	mEnemyInfoIndex = idx;
+}
+
+void AEnemyCharacter::SetResourceIndex(const int idx)
+{
+	mResIdx = idx;
 }

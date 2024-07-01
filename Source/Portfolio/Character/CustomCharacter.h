@@ -4,8 +4,11 @@
 #include "GameFramework/Character.h"
 #include "CustomCharacter.generated.h"
 
-// ACustomCharacter : ¸ğµç Ä³¸¯ÅÍ Å¬·¡½ºÀÇ ±â¹İ Å¬·¡½º.
-// ÁÖ¿ä ±â´É : ÀÌ¸§, hp, °æÁ÷ ½Ã°£
+/*
+	ê²Œì„ ë‚´ì—ì„œ ì‚¬ìš©ë˜ë©´ Character í´ë˜ìŠ¤
+	- ì²´ë ¥
+	- ë°ë¯¸ì§€ ì²˜ë¦¬, ì‚¬ë§ ì²˜ë¦¬
+*/
 
 UCLASS()
 class PORTFOLIO_API ACustomCharacter : public ACharacter
@@ -20,41 +23,35 @@ protected:
 
 public:	
 	virtual void Tick(float DeltaTime) override;
-
+	// ë°ë¯¸ì§€ ì ìš©
 	UFUNCTION()
 	virtual float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser) override;
-
-	// µ¥¹ÌÁö¸¦ ÀÔ¾úÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// ë°ë¯¸ì§€ë¥¼ ì…ì—ˆì„ ë•Œ í˜¸ì¶œ
 	UFUNCTION()
 	virtual void OnHurt() {};
-
-	// HP°¡ 0ÀÌ µÇ¾úÀ» ¶§ È£ÃâµÇ´Â ÇÔ¼ö
+	// ì‚¬ë§ ì‹œ í˜¸ì¶œ
 	UFUNCTION()
 	virtual void OnDead() {};
 
-	// ÇöÀç Ã¼·Â ¹İÈ¯
 	int GetCurrHp();
-	// ÃÖ´ë Ã¼·Â ¹İÈ¯
 	int GetMaxHp();
 
 public:
-	// °ÔÀÓ¿¡ Ç¥½ÃµÇ´Â ÀÌ¸§
+	// ìºë¦­í„° í‘œì‹œëª…
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Name")
 	FString mDisplayName;
 
-	// ÃÖ´ë Ã¼·Â
+	// ìµœëŒ€ HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Status")
 	int mMaxHp;
-
-	// ÇöÀç Ã¼·Â
+	// í˜„ì¬ HP
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Status")
 	float mHp;
 
-	// »ç¸Á ¿©ºÎ
+	// ì‚¬ë§í–ˆëŠ”ê°€?
 	UPROPERTY(BlueprintReadWrite, Category="Status")
 	bool bDead;
-
-	// ¿òÁ÷ÀÓ Á¦ÇÑ ¿©ºÎ
+	// ì›€ì§ì„ì— ì˜í–¥ì„ ë°›ì€ ìƒíƒœì¸ê°€?
 	UPROPERTY(BlueprintReadWrite)
 	bool bForced;
 };

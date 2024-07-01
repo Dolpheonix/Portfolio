@@ -10,13 +10,12 @@ UEnemyTask_Chase::UEnemyTask_Chase(const FObjectInitializer& objinit) : Super(ob
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// Enemy State ºí·¢º¸µå Å°¸¸ ¼±ÅÃÇÒ ¼ö ÀÖÀ½.
 	EnemyStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UEnemyTask_Chase, EnemyStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 }
 
 EBTNodeResult::Type UEnemyTask_Chase::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Detected »óÅÂ°¡ ¾Æ´Ï¸é ÅÂ½ºÅ© ÁøÀÔ ºÒ°¡
+	// Detected ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	const EEnemyState currState = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (currState != EEnemyState::Detected) 
 	{
@@ -30,7 +29,7 @@ void UEnemyTask_Chase::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMe
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// Detected »óÅÂ¿¡¼­ ¹ş¾î³ª¸é ÅÂ½ºÅ© ½ÇÆĞ Ã³¸®
+	// Detected ìƒíƒœì—ì„œ ë²—ì–´ë‚˜ë©´ íƒœìŠ¤í¬ ì¢…ë£Œ
 	const EEnemyState currState = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (currState != EEnemyState::Detected)
 	{

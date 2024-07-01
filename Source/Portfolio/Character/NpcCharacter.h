@@ -13,8 +13,9 @@ class UCameraComponent;
 class UBillboardComponent;
 
 /*
-	ANpcCharacter : ÇÃ·¹ÀÌ¾î¿Í »óÈ£ÀÛ¿ëÀÌ °¡´ÉÇÑ Ä³¸¯ÅÍ.
-		- ´ëÈ­, »óÁ¡ ±â´É
+	í”Œë ˆì´ì–´ì™€ ëŒ€í™” ê°€ëŠ¥í•œ Npc ìºë¦­í„°
+	- ìƒí˜¸ì‘ìš© : ëŒ€í™”
+	- ìƒì  ê¸°ëŠ¥
 */
 
 UCLASS()
@@ -30,13 +31,15 @@ protected:
 public:
 	virtual void Tick(float DeltaTime) override;
 	
-	// Interaction Override
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ì— ë“¤ì–´ì™”ìŒì„ ì•Œë¦¼
 	virtual void Notify(TObjectPtr<AActor> player) override;
+	// ìƒí˜¸ì‘ìš© ë²”ìœ„ë¥¼ ë²—ì–´ë‚¬ìŒì„ ì•Œë¦´
 	virtual void UnNotify(TObjectPtr<AActor> player) override;
+	// ìƒí˜¸ì‘ìš© ì‹œì‘
 	virtual void Interact(TObjectPtr<AActor> player) override;
+	// ìƒí˜¸ì‘ìš© ë
 	virtual void UnInteract(TObjectPtr<AActor> player) override;
 
-	// Getter/Setter
 	TObjectPtr<UCameraComponent> GetSelfCamera();
 	TObjectPtr<ANpcController> GetNpcController();
 	FInventory& GetShopItems();
@@ -46,36 +49,33 @@ public:
 	int GetIndex() const;
 	bool IsInteracting() const;
 
-	// ´ëÈ­, »óÁ¡ Á¤º¸¸¦ Json µ¥ÀÌÅÍ·Î ·Îµå
+	// Json Objectë¡œë¶€í„° Npc ì •ë³´(ë‹¤ì´ì–¼ë¡œê·¸, ìƒì )ë¥¼ ë°›ì•„ì˜´
 	bool LoadFromJson(const TSharedPtr<FJsonObject>& obj);
 
 protected:
-	// ·¹º§ »óÀÇ NpcÀÇ ÀÎµ¦½º (data/leveldata/npc.json¿¡ ÀÛ¼ºµÈ npclist »óÀÇ ÀÎµ¦½º¿Í ÀÏÄ¡ÇØ¾ß ÇÔ)
+	// ë§µ ìƒì˜ Npc ì¸ë±ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	int mNpcIndex;
-	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UCameraComponent> mSelfCamera;
-	
-	// ÇÃ·¹ÀÌ¾îÀÇ »óÈ£ÀÛ¿ë ¹üÀ§¿¡ µé¾î¿À¸é Ç¥½ÃÇÒ ¾È³» ÀÌ¹ÌÁö
+	// ì•Œë¦¼ìš© ì´ë¯¸ì§€
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	TObjectPtr<UBillboardComponent> mNotifyBillboard;
-
+	// Npc ì»¨íŠ¸ë¡¤ëŸ¬
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<ANpcController> mController;
-
-	// NPCÀÇ »óÁ¡¿¡¼­ ÆÇ¸ÅÇÒ ¾ÆÀÌÅÛ ¸ñ·Ï
+	// ìƒì  ì•„ì´í…œ ëª©ë¡
 	UPROPERTY(BlueprintReadWrite)
 	FInventory mShopItems;
-
+	// ë³´ìƒ ì•„ì´í…œ ëª©ë¡ (ëŒ€í™”ì¤‘ì— ì´ë²¤íŠ¸ë¡œ íšë“)
 	UPROPERTY(BlueprintReadWrite)
 	TArray<FGameItem> mRewardItems;
 
-	// NPC¿Í »óÈ£ÀÛ¿ë ½Ã Ç¥½ÃÇÒ ´ëÈ­ ¸ñ·Ï
+	// ëŒ€í™” ëª©ë¡
 	UPROPERTY(BlueprintReadWrite)
 	FDialogueList mDialogue;
 	
-	// ÇöÀç ÇÃ·¹ÀÌ¾î¿Í »óÈ£ÀÛ¿ë ÁßÀÎ°¡?
+	// ìƒí˜¸ì‘ìš© ì¤‘ì¸ê°€?
 	UPROPERTY(BlueprintReadWrite)
 	bool bInteracting;
 };

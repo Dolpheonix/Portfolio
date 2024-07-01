@@ -5,7 +5,9 @@
 #include "ShooterTask_AnimManager.generated.h"
 
 /*
-	UShooterTask_AnimManager : Shooter Ä³¸¯ÅÍÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç Æ®·£Áö¼ÇÀ» °ü¸®ÇÏ´Â ÅÂ½ºÅ©
+	Shooter ëª¹ì˜ ì• ë‹ˆë©”ì´ì…˜ì„ ê´€ë¦¬í•˜ëŠ” íƒœìŠ¤í¬
+	- Parallel Taskë¡œ ì‹¤í–‰ë¨
+	- Idle, Move, Attack, Hurt, Return
 */
 
 UCLASS()
@@ -20,19 +22,19 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
-	// Move ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÒ Áö¸¦ °áÁ¤
+	// Move Animation ì„¤ì •ìš© Boolean
 	UPROPERTY(EditAnywhere, Category = "BlackboardKey")
 	FBlackboardKeySelector Transition_Move_Key;
-	// Idle ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÒ Áö¸¦ °áÁ¤
+	// Idle Animation ì„¤ì •ìš© Boolean
 	UPROPERTY(EditAnywhere, Category = "BlackboardKey")
 	FBlackboardKeySelector Transition_Idle_Key;
-	// Attack ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÒ Áö¸¦ °áÁ¤
+	// Attack Animation ì„¤ì •ìš© Boolean
 	UPROPERTY(EditAnywhere, Category = "BlackboardKey")
 	FBlackboardKeySelector Transition_Attack_Key;
-	// Return ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÒ Áö¸¦ °áÁ¤
+	// Return Animation ì„¤ì •ìš© Boolean
 	UPROPERTY(EditAnywhere, Category = "BlackboardKey")
 	FBlackboardKeySelector Transition_Return_Key;
-	// Hurt ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÒ Áö¸¦ °áÁ¤
+	// Hurt Animation ì„¤ì •ìš© Boolean
 	UPROPERTY(EditAnywhere, Category = "BlackboardKey")
 	FBlackboardKeySelector Transition_Hurt_Key;
 };

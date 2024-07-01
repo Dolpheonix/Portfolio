@@ -19,10 +19,9 @@ class UAIPerceptionComponent;
 class UAISenseConfig_Sight;
 
 /*
-	 ACustomController : °ÔÀÓ ±âº» ÇÃ·¹ÀÌ¾î ÄÁÆ®·Ñ·¯.
-		- UI Å¬·¡½º ¼³Á¤
-		- UI ¿­±â/´İ±â ±â´É
-		- ¿ÀºêÁ§Æ® °¨Áö¿ë ÆÛ¼Á¼Ç
+	 í”Œë ˆì´ì–´ ì»¨íŠ¸ë¡¤ëŸ¬ í´ë˜ìŠ¤
+	 - UI ê´€ë¦¬
+	 - ì‹œê° í¼ì…‰ì…˜ : ì£¼ë³€ ìƒí˜¸ì‘ìš© ì˜¤ë¸Œì íŠ¸ë¥¼ ê°ì§€í•˜ê¸° ìœ„í•¨
 */
 UCLASS()
 class PORTFOLIO_API ACustomController : public APlayerController
@@ -36,70 +35,93 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// °¢ UI°¡ ºäÆ÷Æ®¿¡ Ãß°¡/ÇØÁ¦µÉ ¶§ È£ÃâÇØ ºÎ°¡ÀûÀÎ Ã³¸®
+	// ì¸íŠ¸ë¡œ UIë¥¼ ì—¶
 	void OpenIntro();
+	// ì¸íŠ¸ë¡œ UIë¥¼ ë‹«ìŒ
 	void CloseIntro();
+	// ë©”ë‰´ UIë¥¼ ì—¶
 	void OpenMenu(TObjectPtr<APlayerCharacter> player);
+	// ë©”ë‰´ UIë¥¼ ë‹«ìŒ
 	void CloseMenu(TObjectPtr<APlayerCharacter> player, bool openIntro);
+	// ì•ˆê°œì•” UIë¥¼ ì—¶
 	void OpenHUD(TObjectPtr<APlayerCharacter> player);
+	// ë‹¤ì´ì–¼ë¡œê·¸ UIë¥¼ ì—¶
 	void OpenDialogue(TObjectPtr<APlayerCharacter> player, TObjectPtr<ANpcCharacter> npc);
+	// ë‹¤ì´ì–¼ë¡œê·¸ UIë¥¼ ë‹«ìŒ
 	void CloseDialogue(TObjectPtr<APlayerCharacter> player, TObjectPtr<ANpcCharacter> npc, bool openShop);
+	// ì¸ë²¤í† ë¦¬ UIë¥¼ ì—¶
 	void OpenInventory(TObjectPtr<APlayerCharacter> player);
+	// ì¸ë²¤í† ë¦¬ UIë¥¼ ë‹«ìŒ
 	void CloseInventory(TObjectPtr<APlayerCharacter> player);
+	// ìƒì  UIë¥¼ ì—¶
 	void OpenShop(TObjectPtr<APlayerCharacter> player, TObjectPtr<ANpcCharacter> npc);
+	// ìƒì  UIë¥¼ ë‹«ìŒ
 	void CloseShop(TObjectPtr<APlayerCharacter> player);
+	// í€˜ìŠ¤íŠ¸ UIë¥¼ ì—¶
 	void OpenQuestTable(TObjectPtr<APlayerCharacter> player);
+	// í€˜ìŠ¤íŠ¸ UIë¥¼ ë‹«ìŒ
 	void CloseQuestTable(TObjectPtr<APlayerCharacter> player);
+	// ì±„íŒ…ì°½ UIë¥¼ ì—¶
 	void OpenChattingBox();
+	// ì±„íŒ…ì°½ UIë¥¼ ë‹«ìŒ
 	void CloseChattingBox();
 
-	// UI ¿ÜºÎ¿¡¼­ ¹ß»ıÇÑ ÀÌº¥Æ®¸¦ UI¿¡ Àû¿ëÇÏ±â À§ÇÑ ¸Ş¼­µå
-	void UpdateChatting();						// ¼­¹ö·ÎºÎÅÍ Àü´ŞµÈ Ã¤ÆÃÀ» UI¿¡ Àû¿ë
-	void UpdateHealthBar();						// HUDÀÇ Ã¼·Â ¹Ù ¾÷µ¥ÀÌÆ®
-	void UpdateWeaponImage();					// Äü½½·Ô º¯°æ ½Ã ÀÌ¹ÌÁö ¾÷µ¥ÀÌÆ®
-	void NotifyLoginFailed(bool isRegister);	// ·Î±×ÀÎ/È¸¿ø°¡ÀÔ ½ÇÆĞ ½Ã ¾Ë¸³Ã¢ ÆË¾÷
-	void NotifyRegisterSucceeded();				// È¸¿ø°¡ÀÔ ¼º°ø ½Ã ´Ğ³×ÀÓ ¼³Á¤Ã¢À¸·Î º¯°æ
-	void NotifyNicknameDuplicated();			// ´Ğ³×ÀÓ Áßº¹ ½Ã ¾Ë¸²Ã¢ ÆË¾÷
+	// UI ì½”ë“œ ì™¸ë¶€ì˜ ë³€í™”ë¡œ ì¸í•´ UIë¥¼ ì—…ë°ì´íŠ¸í•´ì•¼ í•˜ëŠ” ê²½ìš°, ì´ í´ë˜ìŠ¤ë¥¼ ê±°ì³ì•¼ í•¨
+	// ì±„íŒ…ì°½ì„ ì—…ë°ì´íŠ¸í•¨
+	void UpdateChatting();
+	// HP ë°”ë¥¼ ì—…ë°ì´íŠ¸í•¨
+	void UpdateHealthBar();	
+	// í€µìŠ¬ë¡¯ì˜ ë¬´ê¸° ì´ë¯¸ì§€ë¥¼ ì—…ë°ì´íŠ¸í•¨
+	void UpdateWeaponImage();
 
-	// Getter
 	TObjectPtr<UAIPerceptionComponent> GetPerceptionComponent();
 
 public:
-	// ÀÎÆ®·Î UI Å¬·¡½º
+	// ì¸íŠ¸ë¡œ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UIntroWidget> IntroWidgetClass;
-	// ÀÎ°ÔÀÓ ±âº» UI Å¬·¡½º
+	// ì¸ê²Œì„ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UHUDWidget> HUDWidgetClass;
-	// ÀÎ°ÔÀÓ ¸Ş´º UI Å¬·¡½º
+	// ë©”ë‰´ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Widget")
 	TSubclassOf<UMenuWidget> MenuWidgetClass;
-	// ÀÎº¥Åä¸® UI Å¬·¡½º
+	// ì¸ë²¤í† ë¦¬ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UInventoryWidget> InventoryWidgetClass;
-	// Äù½ºÆ® UI Å¬·¡½º
+	// í€˜ìŠ¤íŠ¸ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UQuestWidget> QuestWidgetClass;
-	// ´ëÈ­ UI Å¬·¡½º
+	// ë‹¤ì´ì–¼ë¡œê·¸ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UDialogueWidget> DialogueWidgetClass;
-	// »óÁ¡ UI Å¬·¡½º
+	// ìƒì  UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UShopWidget> ShopWidgetClass;
-	// TODO : ¾Ë¸²ÆË¾÷ UI Å¬·¡½º
+	// ì•Œë¦¼ UIì˜ í´ë˜ìŠ¤
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Widget")
 	TSubclassOf<UNotifyWidget> NotifyWidgetClass;
 
 private:
+	// ì¸íŠ¸ë¡œ UI
 	TObjectPtr<UIntroWidget> mIntroWidget;
+	// ì¸ê²Œì„ UI
 	TObjectPtr<UHUDWidget> mHUDWidget;
+	// ë©”ë‰´ UI
 	TObjectPtr<UMenuWidget> mMenuWidget;
+	// ì¸ë²¤í† ë¦¬ UI
 	TObjectPtr<UInventoryWidget> mInventoryWidget;
+	// í€˜ìŠ¤íŠ¸ UI
 	TObjectPtr<UQuestWidget> mQuestWidget;
+	// ë‹¤ì´ì–¼ë¡œê·¸ UI
 	TObjectPtr<UDialogueWidget> mDialogueWidget;
+	// ìƒì  UI
 	TObjectPtr<UShopWidget> mShopWidget;
+	// ì•Œë¦¼ UI
 	TObjectPtr<UNotifyWidget> mNotifyWidget;
 
+	// ì‹œê° í¼ì…‰ì…˜ ì»´í¬ë„ŒíŠ¸
 	TObjectPtr<UAIPerceptionComponent> mPerceptionComponent;
+	// ì‹œê° í¼ì…‰ì…˜ ì„¤ì •
 	TObjectPtr<UAISenseConfig_Sight> mSenseConfig_Sight;
 };

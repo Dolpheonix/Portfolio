@@ -14,6 +14,7 @@ EBTNodeResult::Type UNpcTask_Idle::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 {
 	check(IdleTime > 0.f);
 
+	// 현재 상호작용 상태면 태스크 Fail 처리
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == true)
 	{
@@ -25,12 +26,14 @@ EBTNodeResult::Type UNpcTask_Idle::ExecuteTask(UBehaviorTreeComponent& OwnerComp
 
 void UNpcTask_Idle::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
+	// 상호작용 상태가 되면 태스크 실패
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == true)
 	{
 		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
 	}
 
+	// Idle Time이 지나면 태스크 성공
 	static float elapsedTime = 0.f;
 	elapsedTime += DeltaSeconds;	
 	if (elapsedTime > IdleTime)

@@ -10,7 +10,7 @@ USaveSlot::USaveSlot()
 {
 }
 
-void PlayerInfo::ConvertFromProto(const SaveObject::PlayerInfo& info)
+void PlayerInfo::ConvertFromProto(const ProtoObject::PlayerInfo& info)
 {
 	PlayerName = info.name().c_str();
 	CurrentLevel = info.level();
@@ -19,18 +19,18 @@ void PlayerInfo::ConvertFromProto(const SaveObject::PlayerInfo& info)
 	CurrentGold = info.gold();
 
 	// Inventory
-	const SaveObject::Inventory& invenInfo = info.inventory();
+	const ProtoObject::Inventory& invenInfo = info.inventory();
 
 	assert(invenInfo.typeinventory_size() == static_cast<uint8>(EItemType::Count));
 
 	for (int i = 0; i < static_cast<uint8>(EItemType::Count); ++i)
 	{
 		FTypeInventory& typeInventory = Inventory.TypeInventoryList[i];
-		const SaveObject::TypeInventory& typeInvenInfo = invenInfo.typeinventory(i);
+		const ProtoObject::TypeInventory& typeInvenInfo = invenInfo.typeinventory(i);
 
 		for (int j = 0; j < typeInvenInfo.items_size(); ++j)
 		{
-			const SaveObject::GameItem& gameItemInfo = typeInvenInfo.items(j);
+			const ProtoObject::GameItem& gameItemInfo = typeInvenInfo.items(j);
 			typeInventory.ItemList.Add(FGameItem(gameItemInfo.index(), gameItemInfo.num()));
 		}
 	}
@@ -38,7 +38,7 @@ void PlayerInfo::ConvertFromProto(const SaveObject::PlayerInfo& info)
 	// QuestStatus
 	for (int i = 0; i < info.queststatus_size(); ++i)
 	{
-		const SaveObject::QuestStatus& qsInfo = info.queststatus(i);
+		const ProtoObject::QuestStatus& qsInfo = info.queststatus(i);
 
 		FQuestStatus qs;
 
@@ -57,7 +57,7 @@ void PlayerInfo::ConvertFromProto(const SaveObject::PlayerInfo& info)
 
 		for (int j = 0; j < qsInfo.substatus_size(); ++j)
 		{
-			const SaveObject::QuestStatus_SubQuestStatus& sqsInfo = qsInfo.substatus(j);
+			const ProtoObject::QuestStatus_SubQuestStatus& sqsInfo = qsInfo.substatus(j);
 			
 			FSubQuestStatus sqs;
 
@@ -71,9 +71,11 @@ void PlayerInfo::ConvertFromProto(const SaveObject::PlayerInfo& info)
 
 		QuestTable.Add(qs);
 	}
+
+	UserIdx = info.useridx();
 }
 
-void PlayerInfo::ConvertToProto(SaveObject::PlayerInfo& info)
+void PlayerInfo::ConvertToProto(ProtoObject::PlayerInfo& info) const
 {
 	info.set_name(TCHAR_TO_ANSI(*PlayerName));
 	info.set_level(CurrentLevel);
@@ -103,8 +105,8 @@ void PlayerInfo::ConvertToProto(SaveObject::PlayerInfo& info)
 		auto qs = info.add_queststatus();
 
 		qs->set_index(QuestTable[i].Index);
-		qs->set_type(static_cast<SaveObject::QuestStatus_QuestType>(QuestTable[i].Type));
-		qs->set_progresstype(static_cast<SaveObject::QuestStatus_QuestProgressType>(QuestTable[i].CurrProgress));
+		qs->set_type(static_cast<ProtoObject::QuestStatus_QuestType>(QuestTable[i].Type));
+		qs->set_progresstype(static_cast<ProtoObject::QuestStatus_QuestProgressType>(QuestTable[i].CurrProgress));
 		
 		if (QuestTable[i].Type == EQuestType::Serial)
 		{
@@ -120,10 +122,12 @@ void PlayerInfo::ConvertToProto(SaveObject::PlayerInfo& info)
 			auto sqs = info.mutable_queststatus(i)->add_substatus();
 			const auto& sqsInfo = QuestTable[i].SubStatus[j];
 
-			sqs->set_type(static_cast<SaveObject::QuestStatus_SubQuestStatus_SubQuestType>(sqsInfo.Type));
+			sqs->set_type(static_cast<ProtoObject::QuestStatus_SubQuestStatus_SubQuestType>(sqsInfo.Type));
 			sqs->set_bstarted(sqsInfo.bStarted);
 			sqs->set_bcompleted(sqsInfo.bCompleted);
 			sqs->set_curramount(sqsInfo.CurrAmount);
 		}
 	}
+
+	info.set_useridx(UserIdx);
 }

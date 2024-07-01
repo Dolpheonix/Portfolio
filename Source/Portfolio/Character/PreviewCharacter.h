@@ -9,7 +9,7 @@ class USceneCaptureComponent2D;
 class APlayerCharacter;
 
 /*
-	APreviewCharacter : ¸Ê ·Îµå ½Ã ÀÚµ¿À¸·Î ½ºÆùµÇ´Â Ä³¸¯ÅÍ·Î, ÀÎº¥Åä¸® Ã¢ÀÇ ÇÁ¸®ºä ÀÌ¹ÌÁö¸¦ À§ÇÑ ´õ¹Ì Ä³¸¯ÅÍ
+	ì¸ë²¤í† ë¦¬ UIì—ì„œ ë¬´ê¸°/ì˜ìƒ ì¥ì°© ì‹œ ë³´ì—¬ì¤„ í”„ë¦¬ë·° ìºë¦­í„°. ë§µ ì•„ë˜ìª½ì— ìë™ ìŠ¤í°ë¨
 */
 
 UCLASS()
@@ -25,24 +25,22 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
-	// ÇöÀç ÇÃ·¹ÀÌ¾îÀÇ ÀåÂø »óÅÂ¿Í µ¿±âÈ­ÇÑ´Ù.
+	// í”Œë ˆì´ì–´ ìºë¦­í„°ì˜ ì°©ì¥ ìƒíƒœì™€ ë™ê¸°í™”
 	void SyncWithPlayer(TObjectPtr<APlayerCharacter> player);
-	// ÇØ´ç ¾ÆÀÌÅÛÀ» ÀåÂø
+	// ë¬´ê¸°/ì˜ìƒì„ ì¥ì°©
 	void SetEquipment(EItemType type, int index);
-	// ¹«±â¿¡ ¸Â´Â Idle ¾Ö´Ï¸ŞÀÌ¼ÇÀ» Àç»ı
+	// ì• ë‹ˆë©”ì´ì…˜ ì„¤ì • (ë¬´ê¸° íƒ€ì…ì— ë”°ë¼ ë‹¤ë¦„)
 	void SetAnimation(EWeaponType type);
 
 protected:
-	// ÇÁ¸®ºä¿ë Ä«¸Ş¶ó
+	// ì™¸í˜•ì„ ë³´ì—¬ì¤„ ì¹´ë©”ë¼
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Camera")
 	TObjectPtr<USceneCaptureComponent2D> mPreviewCamera;
 
-	//TODO : Cloth mesh
-
-	// ¹«±â ¸Ş½Ã
+	// ë¬´ê¸° ë©”ì‰¬ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> mWeaponMeshComponent;
 
-	// ÇöÀç ÀåÂøÁßÀÎ ¹«±âÀÇ Å¸ÀÔ
+	// í˜„ì¬ ì¥ì°©ì¤‘ì¸ ë¬´ê¸°ì˜ íƒ€ì…
 	EWeaponType mCurrentWeaponType;
 };

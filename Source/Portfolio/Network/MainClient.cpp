@@ -1,160 +1,271 @@
-#define _WINSOCK_DEPRECATED_NO_WARNINGS
-
 #include "MainClient.h"
-#include "../ThirdParty/ProtoObject/LoginObject.pb.h"
-#include "../ThirdParty/ProtoObject/SaveObject.pb.h"
+#include <grpc/grpc.h>
+#include <grpcpp/grpcpp.h>
 #include "Async/Async.h"
 #include "../Core/CustomGameInstance.h"
-#include "Kismet/GameplayStatics.h"
-#include <assert.h>
 
-#define PACKET_SIZE 2048
-
-MainClient* MainClient::mSingleton = nullptr;
-
-MainClient::MainClient() : bRunning(false), mGameInstance(nullptr)
+MainClient::MainClient()
 {
-	assert(mSingleton == nullptr);
-
-	mSingleton = this;
 }
 
-int MainClient::Init(TObjectPtr<UCustomGameInstance> gi)
+MainClient* MainClient::GetSingleton()
+{
+	static MainClient mc;
+	return &mc;
+}
+
+PlayerInfo MainClient::TryLogin(const string& id, const string& pw)
+{
+	// RPC용 구조체 생성
+	ProtoObject::LoginInfo li;
+	li.set_id(id);
+	li.set_password(pw);
+
+	// 출력 구조체
+	ProtoObject::PlayerInfo pi = {};
+	
+	grpc::ClientContext context;
+	grpc::Status res = mStub->TryLogin(&context, li, &pi);	// RPC 호출
+
+	if (!res.ok())
+	{
+		// TOOD : error 처리
+	}
+
+	PlayerInfo outInfo = {};
+	outInfo.ConvertFromProto(pi);	// 인게임용 구조체로 변환
+	return outInfo;
+}
+
+PlayerInfo MainClient::TryRegister(const string& id, const string& pw)
+{
+	ProtoObject::LoginInfo li;
+	li.set_id(id);
+	li.set_password(pw);
+
+	ProtoObject::PlayerInfo pi = {};
+
+	grpc::ClientContext context;
+	grpc::Status res = mStub->TryRegister(&context, li, &pi);
+
+	if (!res.ok())
+	{
+		// error 처리
+	}
+
+	PlayerInfo outInfo = {};
+	outInfo.ConvertFromProto(pi);
+	return outInfo;
+}
+
+string MainClient::SetNickname(const string& nickname)
+{
+	ProtoObject::Nickname request;
+	request.set_nickname(nickname);
+
+	ProtoObject::Nickname reply;
+	grpc::ClientContext context;
+	grpc::Status res = mStub->SetNickname(&context, request, &reply);
+
+	if (!res.ok())
+	{
+		// error 처리
+	}
+
+	return reply.nickname();
+}
+
+bool MainClient::Save(const PlayerInfo toSave)
+{
+	ProtoObject::PlayerInfo proto = {};
+	toSave.ConvertToProto(proto);
+
+	grpc::ClientContext context;
+	grpc::Status res = mStub->Save(&context, proto, nullptr);
+
+	if (!res.ok())
+	{
+		// error 처리
+		return false;
+	}
+
+	return true;
+}
+
+void MainClient::SendLocation(const GameObject::Location& loc)
+{
+	ProtoObject::Location req = {};
+	loc.ConvertToProto(req);
+
+	mLocationWriter->Write(req);
+}
+
+void MainClient::ReceiveLocation()
+{
+	ProtoObject::Location rep = {};
+	while (mLocationReader->Read(&rep))
+	{
+		cout << rep.useridx() << endl;
+	}
+}
+
+void MainClient::SendRepBoolean(const GameObject::RepBoolean& request)
+{
+	ProtoObject::RepBoolean req = {};
+	request.ConvertToProto(req);
+
+	mRepBooleanWriter->Write(req);
+}
+
+void MainClient::ReceiveRepBoolean()
+{
+	ProtoObject::RepBoolean rep = {};
+	while (mRepBooleanReader->Read(&rep))
+	{
+		// WHY? : 언리얼 객체를 사용하려면 게임 스레드 내에서 실행되야 함
+		AsyncTask(ENamedThreads::GameThread, [this, rep]()
+		{
+			switch (rep.type())
+			{
+			case ProtoObject::RepBoolean_RepType_RUNNING:
+				mGameInstance->ReplicateRunning(rep.useridx(), rep.boolean());
+				break;
+			case ProtoObject::RepBoolean_RepType_JUMPING:
+				mGameInstance->ReplicateJumping(rep.useridx(), rep.boolean());
+				break;
+			case ProtoObject::RepBoolean_RepType_EQUIPPPED:
+				mGameInstance->ReplicateEquipping(rep.useridx(), rep.boolean());
+				break;
+			default:
+				break;
+			}
+		});
+	}
+}
+
+void MainClient::SendEquipmentChange(const GameObject::Equipment& request)
+{
+	ProtoObject::Equipment req = {};
+	request.ConvertToProto(req);
+	
+	ClientContext ctx;
+	Empty empty;
+
+	mStub->SendEquipmentChange(&ctx, req, &empty);
+}
+
+void MainClient::ReceiveEquipmentChange()
+{
+	ProtoObject::Equipment rep = {};
+	while (mEquipmentReader->Read(&rep))
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, rep]()
+		{
+			switch (rep.equiptype())
+			{
+			case ProtoObject::Equipment_EquipmentType_CLOTH:
+				mGameInstance->ReplicateEquipmentChange(rep.useridx(), EItemType::Cloth, rep.itemindex());
+				break;
+			case ProtoObject::Equipment_EquipmentType_WEAPON:
+				mGameInstance->ReplicateEquipmentChange(rep.useridx(), EItemType::Weapon, rep.itemindex());
+				break;
+			default:
+				break;
+			}
+		});
+	}
+}
+
+void MainClient::SendMapResourceChange(const GameObject::ResourceChange& request)
+{
+	ProtoObject::ResourceChange req = {};
+	request.ConvertToProto(req);
+
+	ClientContext ctx;
+	Empty empty;
+
+	mStub->SendMapResourceChange(&ctx, req, &empty);
+}
+
+void MainClient::ReceiveMapResourceChange()
+{
+	ProtoObject::ResourceChange rep = {};
+	while (mResourceChangeReader->Read(&rep))
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, rep]()
+		{
+			switch (rep.restype())
+			{
+			case ProtoObject::ResourceChange_ResourceType_ITEM:
+				mGameInstance->ReplicateItemRemoval(rep.mapidx(), rep.residx());
+				break;
+			case ProtoObject::ResourceChange_ResourceType_ENEMY:
+				mGameInstance->ReplicateEnemyRemoval(rep.mapidx(), rep.residx());
+				break;
+			default:
+				break;
+			}
+		});
+	}
+}
+
+void MainClient::SendMapTransition(const GameObject::MapTransition& request)
+{
+	ProtoObject::MapTransition req = {};
+	request.ConvertToProto(req);
+
+	ClientContext ctx;
+	Empty empty;
+
+	mStub->SendMapTransition(&ctx, req, &empty);
+}
+
+void MainClient::ReceiveMapTransition()
+{
+	ProtoObject::MapTransition rep = {};
+	while (mMapTransitionReader->Read(&rep))
+	{
+		AsyncTask(ENamedThreads::GameThread, [this, rep]()
+		{
+			mGameInstance->ReplicateMapTransition(rep.useridx(), rep.before(), rep.after());
+		});
+	}
+}
+
+void MainClient::RunClient(TObjectPtr<UCustomGameInstance> gi)
 {
 	check(gi);
 
-	mSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
-	if (mSocket == INVALID_SOCKET)
-	{
-		return SOCKET_ERROR;
-	}
+	auto channel = grpc::CreateChannel("127.0.0.1:5050", grpc::InsecureChannelCredentials());
+	mStub = ProtoObject::GameService::NewStub(channel);
 
-	mAddress = {};
-	mAddress.sin_family = AF_INET;
-	mAddress.sin_port = htons(5555);
-	mAddress.sin_addr.s_addr = inet_addr("127.0.0.1");
+	ClientContext ctx_loc_w, ctx_loc_r, ctx_rep_w, ctx_rep_r, ctx_eq, ctx_rc, ctx_mt;
+	Empty empty_loc_w, empty_loc_r, empty_rep_w, empty_rep_r, empty_eq, empty_rc, empty_mt;
+
+	mLocationWriter = mStub->SendLocation(&ctx_loc_w, &empty_loc_w);
+	mLocationReader = mStub->BroadcastLocation(&ctx_loc_r, empty_loc_r);
+
+	mRepBooleanWriter = mStub->SendRepBoolean(&ctx_rep_w, &empty_rep_w);
+	mRepBooleanReader = mStub->BroadcastRepBoolean(&ctx_rep_r, empty_rep_r);
+
+	mEquipmentReader = mStub->BroadcastEquipmentChange(&ctx_eq, empty_eq);
+
+	mResourceChangeReader = mStub->BroadcastMapResourceChange(&ctx_rc, empty_rc);
+
+	mMapTransitionReader = mStub->BroadcastMapTransition(&ctx_mt, empty_mt);
 
 	mGameInstance = gi;
 
-	return 0;
-}
+	// Writer 스트림 객체를 유지시켜야 하므로, 각각 다른 스레드로 실행 후 루프 실행
+	thread receiver_location(&MainClient::ReceiveLocation, this);
+	thread receiver_repboolean(&MainClient::ReceiveRepBoolean, this);
+	thread receiver_equipment(&MainClient::ReceiveEquipmentChange, this);
+	thread receiver_resourceChange(&MainClient::ReceiveMapResourceChange, this);
+	thread receiver_mapTransition(&MainClient::ReceiveMapTransition, this);
 
-void MainClient::Run()
-{
-	bRunning = true;
-
-	while (true)
-	{
-		if (!connect(mSocket, (SOCKADDR*)&mAddress, sizeof(mAddress)))
-		{
-			break;
-		}
-	}
-
-	u_long nonblock = 1;
-	ioctlsocket(mSocket, FIONBIO, &nonblock);	// 논블록 소켓으로 지정해, Running 상태를 항상 확인해 게임 종료 시에 스레드가 정상 종료됩니다.
-
-	char recvBuffer[PACKET_SIZE] = {};
-
-	while (bRunning == true)
-	{
-		ZeroMemory(&recvBuffer, PACKET_SIZE);
-		int received = recv(mSocket, recvBuffer, PACKET_SIZE, 0);
-
-		if (received == SOCKET_ERROR)
-		{
-			continue;
-		}
-		else
-		{
-			string recvString(recvBuffer, received);
-			AsyncTask(ENamedThreads::GameThread, [this, recvString]()	// 게임 인스턴스에 접근하기 때문에, 언리얼 GameThread에서 실행되어야 합니다.
-			{
-				string header = recvString.substr(0, 2);
-				string data = recvString.substr(2, string::npos);
-				if (header == "l_")			// 로그인 결과
-				{
-					HandleLoginResult(data, false);
-				}
-				else if (header == "r_")	// 회원가입 결과
-				{
-					HandleLoginResult(data, true);
-				}
-				else if (header == "n_")	// 닉네임 설정 성공
-				{
-					HandleSubmitResult(data.c_str(), true);
-				}
-				else if (header == "f_")	// 닉네임 설정 실패
-				{
-					HandleSubmitResult(nullptr, false);
-				}
-				else
-				{
-					//TOOO : REPLICATION, ...
-				}
-			});
-		}
-	}
-
-	closesocket(mSocket);
-}
-
-int MainClient::SendLoginInfo(const char* id, const char* pw, bool isRegister)
-{
-	LoginObject::LoginInfo sendInfo = {};
-	sendInfo.set_id(id);
-	sendInfo.set_password(pw);
-
-	string sendStr = isRegister ? "r_" : "l_";
-
-	string serialized = sendInfo.SerializeAsString();
-	sendStr += serialized;
-	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
-}
-
-int MainClient::SendNickname(const char* nickname)
-{
-	string sendStr = "n_";
-
-	sendStr += nickname;
-	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
-}
-
-int MainClient::HandleLoginResult(const string& result, bool isRegister)
-{
-	SaveObject::PlayerInfo recvInfo = {};
-
-	if (!recvInfo.ParseFromString(result))
-	{
-		return -1;
-	}
-
-	PlayerInfo info;
-	info.ConvertFromProto(recvInfo);	// Proto 구조체에서 Unreal 구조체로 변환
-	mGameInstance->HandleLoginResult(info, isRegister);
-
-	return 0;
-}
-
-int MainClient::HandleSubmitResult(const char* result, bool isSucceeded)
-{
-	mGameInstance->HandleNicknameResult(result, isSucceeded);
-
-	return 0;
-}
-
-int MainClient::SaveGame(PlayerInfo toSave)
-{
-	SaveObject::PlayerInfo sendInfo = {};
-	toSave.ConvertToProto(sendInfo);
-
-	string sendStr = "s_";
-
-	sendStr += sendInfo.SerializeAsString();
-	return send(mSocket, sendStr.c_str(), sendStr.length(), 0);
-}
-
-void MainClient::SetRunning(bool newVal)
-{
-	bRunning = newVal;
+	receiver_location.join();
+	receiver_repboolean.join();
+	receiver_equipment.join();
+	receiver_resourceChange.join();
+	receiver_mapTransition.join();
 }

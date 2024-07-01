@@ -7,5 +7,4 @@ ACustomGameMode::ACustomGameMode()
 {
 	DefaultPawnClass		= APlayerCharacter::StaticClass();
 	PlayerControllerClass	= ACustomController::StaticClass();
-	PlayerStateClass		= ACustomPlayerState::StaticClass();
 }

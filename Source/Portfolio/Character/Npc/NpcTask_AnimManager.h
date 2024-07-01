@@ -5,7 +5,7 @@
 #include "NpcTask_AnimManager.generated.h"
 
 /*
-	UNpcTask_AnimManager : NPC Ä³¸¯ÅÍÀÇ ¾Ö´Ï¸ŞÀÌ¼Ç °ü¸®¿ë ÅÂ½ºÅ©
+	Npc ì• ë‹ˆë©”ì´ì…˜ ê´€ë¦¬ìš© íƒœìŠ¤í¬. Parallel Taskë¡œ ì‹¤í–‰
 */
 
 UCLASS()
@@ -20,13 +20,13 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 protected:
-	// Move ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÏ±â À§ÇÑ ºí·¢º¸µå Å°
+	// Move ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒìš© Boolean
 	UPROPERTY(EditAnywhere, Category="BlackboardKey")
 	FBlackboardKeySelector Transition_Move_Key;
-	// Idle ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÏ±â À§ÇÑ ºí·¢º¸µå Å°
+	// Idle ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒìš© Boolean
 	UPROPERTY(EditAnywhere, Category="BlackboardKey")
 	FBlackboardKeySelector Transition_Idle_Key;
-	// Interact ¾Ö´Ï¸ŞÀÌ¼ÇÀ¸·Î ÀüÈ¯ÇÏ±â À§ÇÑ ºí·¢º¸µå Å°
+	// Interact ì• ë‹ˆë©”ì´ì…˜ ì¬ìƒìš© Boolean
 	UPROPERTY(EditAnywhere, Category="BlackboardKey")
 	FBlackboardKeySelector Transition_Interact_Key;
 };

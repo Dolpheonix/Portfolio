@@ -5,8 +5,8 @@
 #include "EnemyTask_Chase.generated.h"
 
 /*
-	UEnemyTask_Chase : Å¸°Ù ÇÃ·¹ÀÌ¾î¸¦ ÂÑ´Â ÅÂ½ºÅ©. Å¸°ÙÀÌ »ç¶óÁö¸é ÅÂ½ºÅ© Á¾·á
-						(MoveTo ÅÂ½ºÅ©¸¦ »ó¼Ó¹Ş¾Æ, °ø°İ °¡´ÉÇÑ °Å¸®±îÁö¸¸ ÂÑµµ·Ï ¼³Á¤ÇÒ ¼ö ÀÖÀ½.)
+	EnemyCharacterì˜ ì¶”ê²© íƒœìŠ¤í¬
+	- íƒ€ê²Ÿì„ ê³µê²© ê°€ëŠ¥ ë²”ìœ„ì— ë“¤ì–´ì˜¬ë•Œê¹Œì§€ ì«“ì•„ê°
 */
 
 UCLASS()
@@ -21,7 +21,7 @@ protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 public:
-	// ¿À³Ê Ä³¸¯ÅÍÀÇ State °ª
+	// Enemy State
 	UPROPERTY(EditAnywhere, Category = "Custom")
 	FBlackboardKeySelector EnemyStateKey;
 };

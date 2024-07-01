@@ -12,6 +12,7 @@ UNpcTask_Stroll::UNpcTask_Stroll(const FObjectInitializer& objinit) : Super(obji
 
 EBTNodeResult::Type UNpcTask_Stroll::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	// 상호작용 상태면 태스크 Fail 처리
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == true)
 	{
@@ -24,7 +25,7 @@ EBTNodeResult::Type UNpcTask_Stroll::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 void UNpcTask_Stroll::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
-
+	// 상호작용 상태가 되면 태스크 종료
 	const bool isInteracting = OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsBool(IsInteracting_Key.SelectedKeyName);
 	if (isInteracting == true)
 	{

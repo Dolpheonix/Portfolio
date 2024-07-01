@@ -9,9 +9,9 @@ class UStaticMeshComponent;
 class UProjectileMovementComponent;
 
 /*
-	ABullet : ÃÑ¾Ë ¸Ş½Ã¸¦ Æ÷ÇÔÇÑ ¹ß»çÃ¼ ¾×ÅÍ
-	- ¿À¹ö·¦ ÀÌº¥Æ® : ÇÃ·¹ÀÌ¾î, Àû Ä³¸¯ÅÍ¿Í Ãæµ¹ ½Ã
-	- Èı(ºí·Ï) ÀÌº¥Æ® : ±× ¿ÜÀÇ Static, Dynamic ¿ÀºêÁ§Æ®¿Í Ãæµ¹ ½Ã
+	ì •í•´ì§„ ë°©í–¥ìœ¼ë¡œ ë‚ ì•„ê°€ëŠ” íˆ¬ì‚¬ì²´ ì•¡í„°
+	- Hit : ì•¡í„°ì™€ ì¶©ëŒ ì‹œ ì¶©ëŒí•œ ì•¡í„°ê°€ ë°€ë ¤ë‚¨
+	- Overlap : ëª¹ ìºë¦­í„°ì™€ ì¶©ëŒ ì‹œ ë°ë¯¸ì§€ ì ìš©
 */
 
 UCLASS()
@@ -25,9 +25,11 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
-public:	
+public:
+	// Dynamic ì•¡í„°ì™€ ì¶©ëŒ : ë°€ë ¤ë‚¨
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, FVector NormalImpulse, const FHitResult& Hit);
+	// Enemy Characterì™€ ì¶©ëŒ : ë°ë¯¸ì§€ ì ìš©
 	UFUNCTION()
 	void OnOverlapped(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
@@ -35,24 +37,24 @@ public:
 	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) override;
 #endif
 
-	// ÁöÁ¤µÈ ¹æÇâÀ¸·Î ¾×ÅÍ¸¦ ¹ß»çÇÏ°í ¿À¹ö·¦ ÀÌº¥Æ® ½Ã µ¥¹ÌÁö¸¦ Àû¿ë
+	// ì •í•´ì§„ ë°©í–¥ìœ¼ë¡œ ë°œì‚¬. ë°ë¯¸ì§€ ì ìš©
 	void Launch(const FVector& direction, float damage);
 
 protected:
-	// Ãæµ¹ °ü¸®¿ë ÄÄÆ÷³ÍÆ®
+	// ì¶©ëŒ ê°ì§€ìš© ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<USphereComponent> mCollisionComponent;
-	// ÃÑ¾Ë ¸Ş½Ã
+	// íˆ¬ì‚¬ì²´ ë©”ì‹œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UStaticMeshComponent> mMeshComponent;
-	// ¹ß»çÃ¼ÀÇ ¹«ºê¸ÕÆ®
+	// íˆ¬ì‚¬ì²´ì˜ Movement Component
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UProjectileMovementComponent> mBulletMovementComponent;
 
-	// Àû¿ëÇÒ µ¥¹ÌÁö (»ç¿ëÇÏ´Â ¹«±âÀÇ µ¥¹ÌÁö¿¡ ÀÇÇØ °áÁ¤µÇ¹Ç·Î, ºí·çÇÁ¸°Æ®¿¡¼­ º¯°æ ºÒ°¡)
+	// ì¶©ëŒì‹œ ì ìš©í•  ë°ë¯¸ì§€
 	float mDamage;
 
-	// ¹ß»ç ¼Óµµ
+	// ë°œì‚¬ì²´ ì†ë„
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	float Speed;
 };

@@ -10,13 +10,12 @@ UEnemyTask_Idle::UEnemyTask_Idle(const FObjectInitializer& objinit) : Super(obji
 	bNotifyTick = true;
 	bCreateNodeInstance = true;
 
-	// EEnemyState ºí·¢º¸µå Å°¸¸ ¼±ÅÃ °¡´É
 	EnemyStateKey.AddEnumFilter(this, GET_MEMBER_NAME_CHECKED(UEnemyTask_Idle, EnemyStateKey), FindObject<UEnum>(ANY_PACKAGE, TEXT("EEnemyState")));
 }
 
 EBTNodeResult::Type UEnemyTask_Idle::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// Patrol »óÅÂ°¡ ¾Æ´Ï¸é ÅÂ½ºÅ© ÁøÀÔ ºÒ°¡
+	// Patrol ìƒíƒœê°€ ì•„ë‹ˆë©´ íƒœìŠ¤í¬ Fail ì²˜ë¦¬
 	EEnemyState Mode = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (Mode != EEnemyState::Patrol)
 	{
@@ -30,7 +29,7 @@ void UEnemyTask_Idle::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMem
 {
 	Super::TickTask(OwnerComp, NodeMemory, DeltaSeconds);
 
-	// Patrol »óÅÂ¿¡¼­ ¹ş¾î³ª¸é ÅÂ½ºÅ© Á¾·á
+	// Patrol ìƒíƒœì—ì„œ ë²—ì–´ë‚˜ë©´ íƒœìŠ¤í¬ ì¢…ë£Œ
 	EEnemyState Mode = static_cast<EEnemyState>(OwnerComp.GetAIOwner()->GetBlackboardComponent()->GetValueAsEnum(EnemyStateKey.SelectedKeyName));
 	if (Mode != EEnemyState::Patrol)
 	{

@@ -44,7 +44,7 @@ void ACustomController::BeginPlay()
 	}
 	else
 	{
-		// �⺻ ���� ���� ����
+		// 퍼셉션 설정
 		mSenseConfig_Sight->SightRadius = 200.f;
 		mSenseConfig_Sight->LoseSightRadius = 200.f;
 		mSenseConfig_Sight->PeripheralVisionAngleDegrees = 360.f;
@@ -91,12 +91,14 @@ void ACustomController::CloseMenu(TObjectPtr<APlayerCharacter> player, bool open
 	mMenuWidget->Close();
 	mMenuWidget->RemoveFromParent();
 
+	// 메뉴에서 'Exit Game' 버튼을 눌렀을 경우 : 인트로 UI로 전환
 	if (openIntro == true)
 	{
 		TObjectPtr<UCustomGameInstance> gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 		check(gi);
 		gi->OpenIntro();
 	}
+	// 메뉴에서 'Back to Game' 버튼을 눌렀을 경우 : 인게임 UI로 전환
 	else
 	{
 		SetInputMode(FInputModeGameOnly());
@@ -129,10 +131,12 @@ void ACustomController::CloseDialogue(TObjectPtr<APlayerCharacter> player, TObje
 	mDialogueWidget->Close();
 	mDialogueWidget->RemoveFromParent();
 
+	// 대화가 종료되며 상점이 열릴 경우 : 상점 UI로 전환
 	if (openShop == true)
 	{
 		OpenShop(player, npc);
 	}
+	// 그 외의 경우 : 인게임 UI로 전환
 	else
 	{
 		SetInputMode(FInputModeGameOnly());
@@ -236,30 +240,6 @@ void ACustomController::UpdateHealthBar()
 void ACustomController::UpdateWeaponImage()
 {
 	mHUDWidget->UpdateWeaponImage();
-}
-
-void ACustomController::NotifyLoginFailed(bool isRegister)
-{
-	if (mIntroWidget->IsInViewport() == true)
-	{
-		mIntroWidget->NotifyLoginFailed(isRegister);
-	}
-}
-
-void ACustomController::NotifyRegisterSucceeded()
-{
-	if (mIntroWidget->IsInViewport() == true)
-	{
-		mIntroWidget->NotifyRegisterSucceeded();
-	}
-}
-
-void ACustomController::NotifyNicknameDuplicated()
-{
-	if (mIntroWidget->IsInViewport() == true)
-	{
-		mIntroWidget->NotifyNicknameDuplicated();
-	}
 }
 
 TObjectPtr<UAIPerceptionComponent> ACustomController::GetPerceptionComponent()

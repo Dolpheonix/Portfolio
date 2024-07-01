@@ -8,6 +8,9 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FIndexedButtonEvent, int, index);
 
+/*
+	버튼 이벤트 발생 시 index 값을 파라미터로 전달하는 UI
+*/
 UCLASS()
 class PORTFOLIO_API UIndexedButton : public UButton
 {

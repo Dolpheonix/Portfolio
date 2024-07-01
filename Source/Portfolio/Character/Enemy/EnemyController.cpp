@@ -1,16 +1,16 @@
 #include "EnemyController.h"
-#include "Kismet/GameplayStatics.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BlackboardData.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "Navigation/CrowdFollowingComponent.h"
 #include "Perception/AIPerceptionComponent.h"
 #include "Perception/AISenseConfig.h"
 #include "Perception/AISenseConfig_Sight.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "Navigation/CrowdFollowingComponent.h"
+#include "../../Base/LoadHelper.h"
 #include "../EnemyCharacter.h"
 #include "../PlayerCharacter.h"
-#include "../../Base/LoadHelper.h"
 
 static_assert(static_cast<uint8>(EEnemyState::Count) == 4);
 
@@ -41,7 +41,7 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	TObjectPtr<AEnemyCharacter> ownerEnemy = Cast<AEnemyCharacter>(GetPawn());
 	check(ownerEnemy);
 
-	// Enemy ¿ÀºêÁ§Æ®¿¡¼­ ¼³Á¤ÇÑ ÆÛ¼Á¼Ç ÀÎÀÚ Àû¿ë
+	// í¼ì…‰ì…˜ ParameterëŠ” Enemy Characterì—ì„œ ì„¤ì •
 	TObjectPtr<UAISenseConfig_Sight> sightSense = Cast<UAISenseConfig_Sight>(GetPerceptionComponent()->GetSenseConfig(UAISense::GetSenseID<UAISense_Sight>()));
 	sightSense->SightRadius = ownerEnemy->SightRadius;
 	sightSense->LoseSightRadius = ownerEnemy->LoseSightRadius;
@@ -51,14 +51,13 @@ void AEnemyController::OnPossess(APawn* InPawn)
 	sightSense->DetectionByAffiliation.bDetectNeutrals = false;
 	GetPerceptionComponent()->RequestStimuliListenerUpdate();
 
-	// ÆÄ»ı Å¬·¡½º¿¡¼­ ¼³Á¤ÇÑ ºñÇìÀÌºñ¾î Æ®¸®¿Í ºí·¢º¸µå ½ÇÇà
 	if (mBehaviorTree && mBlackboardData)
 	{
-		UBlackboardComponent* blackboard = Blackboard.Get(); //TEMP: UseBlackboard()°¡ ÀÎÀÚ·Î UBlackboardComponent*& ¸¦ ¹ŞÀ½
+		UBlackboardComponent* blackboard = Blackboard.Get(); // TEMP : TObjectPtrì™€ UseBlackboardì˜ í˜¸í™˜ì„± ë¬¸ì œ
 		UseBlackboard(mBlackboardData, blackboard);
 		RunBehaviorTree(mBehaviorTree);
 
-		// ÇöÀç À§Ä¡¸¦ ºí·¢º¸µå¿¡ ¼³Á¤ (ÆĞÆ®·Ñ ½Ã¿¡ ±âÁØÁ¡À¸·Î »ç¿ë)
+		// ì‹œì‘ ìœ„ì¹˜ë¥¼ Pivotìœ¼ë¡œ ì„¤ì •
 		GetBlackboardComponent()->SetValueAsVector(TEXT("Origin Location"), ownerEnemy->GetActorLocation());
 
 		SetState(EEnemyState::Patrol);
@@ -72,7 +71,7 @@ void AEnemyController::Tick(float DeltaTime)
 
 void AEnemyController::OnHurt()
 {
-	// Hurt »óÅÂ°¡ ³¡³ª°Ô µÇ¸é, ±âÁ¸ÀÇ State·Î µ¹¾Æ°¡¾ß ÇÏ±â ¶§¹®¿¡ ÀÌÀü State¸¦ ºí·¢º¸µå¿¡ ¼³Á¤ÇØ¾ß ÇÔ
+	// Hurt ê²½ì§ ì‹œì—ëŠ” ì´ì „ Stateë¥¼ ìºì‹±í•œ í›„, ê²½ì§ì´ ëë‚˜ë©´ ë˜ëŒë ¤ì•¼ í•¨
 	GetBlackboardComponent()->SetValueAsEnum(TEXT("Cached State"), static_cast<uint8>(mCurrState));
 	SetState(EEnemyState::Hurt);
 }
@@ -85,27 +84,33 @@ void AEnemyController::OnTargetPerceptionUpdate(AActor* SourceActor, FAIStimulus
 		return;
 	}
 
+	// í”Œë ˆì´ì–´ê°€ ê°ì§€ë˜ì—ˆì„ ë•Œ
 	if (Stimulus.WasSuccessfullySensed() == true)
 	{
-		if (mCurrState == EEnemyState::Patrol) // ÇÃ·¹ÀÌ¾î¸¦ Ã³À½ ¹ß°ßÇÑ »óÈ², 2ÃÊ°£ ´ë±â ÈÄ Detected ¸ğµå·Î ÀüÈ¯
+		// Patrol ìƒíƒœì—ì„œ ê°ì§€ë¨ ==> íƒ€ì´ë¨¸ ë“±ë¡, ê°ì§€ ìƒíƒœ 2ì´ˆê°„ ìœ ì§€ë˜ë©´ Caution ìƒíƒœë¡œ ì „í™˜
+		if (mCurrState == EEnemyState::Patrol)
 		{
 			SetState(EEnemyState::Caution);
 			GetWorld()->GetTimerManager().SetTimer(mTimer_CautionToDetected, this, &AEnemyController::CautionToDetected, 0.5f, false, 2.0f);
 			GetBlackboardComponent()->SetValueAsObject(TEXT("Target Player"), SourceActor);
 		}
-		else if(mCurrState == EEnemyState::Detected)	// Detected »óÅÂ¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ ½Ã¾ß¿¡¼­ ¹ş¾î³µ´Ù°¡ ´Ù½Ã ¹ß°ßµÊ
+		// Detected ìƒíƒœì—ì„œ ê°ì§€ë¨ ==> ReleaseTarget íƒ€ì´ë¨¸ê°€ ì´ë¯¸ ì‘ë™í•œ ìƒíƒœì´ë¯€ë¡œ í•´ì œ
+		else if(mCurrState == EEnemyState::Detected)
 		{
 			GetWorld()->GetTimerManager().ClearTimer(mTimer_ReleaseTarget);
 		}
 	}
+	// í”Œë ˆì´ì–´ê°€ ì—†ì–´ì¡Œì„ ë•Œ
 	else
 	{
-		if (mCurrState == EEnemyState::Caution)	// Caution »óÅÂ¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ ½Ã¾ß¿¡¼­ ¹ş¾î³²
+		// Caution ìƒíƒœì—ì„œ ì‚¬ë¼ì§ ==> íƒ€ì´ë¨¸ í•´ì œ
+		if (mCurrState == EEnemyState::Caution)
 		{
 			SetState(EEnemyState::Patrol);
 			GetWorld()->GetTimerManager().ClearTimer(mTimer_CautionToDetected);
 		}
-		else if (mCurrState == EEnemyState::Detected)	// Detected »óÅÂ¿¡¼­ ÇÃ·¹ÀÌ¾î°¡ ½Ã¾ß¿¡¼­ ¹ş¾î³­ »óÈ². 5ÃÊ°£ ´ë±â ÈÄ Patrol »óÅÂ·Î ÀüÈ¯
+		// Detected ìƒíƒœì—ì„œ ì‚¬ë¼ì§ ==> íƒ€ì´ë¨¸ ë“±ë¡, 5ì´ˆê°„ ìœ ì§€ë˜ë©´ Patrol ìƒíƒœë¡œ ì „í™˜
+		else if (mCurrState == EEnemyState::Detected)
 		{
 			GetWorld()->GetTimerManager().SetTimer(mTimer_ReleaseTarget, this, &AEnemyController::ReleaseTarget, 0.2f, false, 5.0f);
 		}
@@ -123,7 +128,7 @@ void AEnemyController::ReleaseTarget()
 {
 	GetWorld()->GetTimerManager().ClearTimer(mTimer_ReleaseTarget);
 
-	// Å¸°ÙÀ» »èÁ¦
+	// íƒ€ê²Ÿ í”Œë ˆì´ì–´ë¥¼ í•´ì œ
 	GetBlackboardComponent()->SetValueAsObject(TEXT("Target Player"), nullptr);
 
 	SetState(EEnemyState::Patrol);
@@ -133,13 +138,12 @@ void AEnemyController::SetState(EEnemyState s)
 {
 	mCurrState = s;
 
-	// ºí·¢º¸µå¿¡ State ¼³Á¤
 	GetBlackboardComponent()->SetValueAsEnum(TEXT("Current State"), static_cast<uint8>(mCurrState));
 
 	TObjectPtr<AEnemyCharacter> ownerEnemy = Cast<AEnemyCharacter>(GetPawn());
 	check(ownerEnemy);
 
-	// Ä³¸¯ÅÍ¿¡ State º¯°æÀ» ¾Ë¸²
+	// ìºë¦­í„°ì—ë„ State ë³€í™” ì ìš©
 	ownerEnemy->UpdateState(s);
 }
 

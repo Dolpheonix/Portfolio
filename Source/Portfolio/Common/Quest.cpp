@@ -316,11 +316,12 @@ void FQuestStatus::UpdateProgress()
 {
 	if (Type == EQuestType::Serial)
 	{
+		// 모든 서브퀘를 완료한 상황
 		if (CurrPhase >= SubStatus.Num())
 		{
 			return;
 		}
-
+		// 현재 진행중인 서브퀘가 완료됨 --> CurrPhase를 증가시키고, 완료 가능 상태로 변경
 		if (SubStatus[CurrPhase].bCompleted == true)
 		{
 			CurrPhase++;
@@ -330,12 +331,13 @@ void FQuestStatus::UpdateProgress()
 			}
 			else
 			{
-				CurrProgress = EQuestProgressType::Completable;
+				CurrProgress = EQuestProgressType::Completable;	// NPC와 대화를 통해 완료시킬 수 있음
 			}
 		}
 	}
 	else
 	{
+		// 완료한 서브퀘 수를 다시 체크
 		Completed = 0;
 		for (int i = 0; i < SubStatus.Num(); ++i)
 		{

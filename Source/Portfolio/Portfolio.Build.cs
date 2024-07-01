@@ -2,6 +2,8 @@
 
 using UnrealBuildTool;
 using System.IO;
+using UnrealBuildBase;
+using UnrealBuildTool.Rules;
 
 public class Portfolio : ModuleRules
 {
@@ -11,20 +13,17 @@ public class Portfolio : ModuleRules
 
         bEnableUndefinedIdentifierWarnings = false;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "AIModule", "GameplayTasks", "NavigationSystem", "Json", "Niagara" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "UMG", "AIModule", "GameplayTasks", "NavigationSystem", "Json", "Niagara"});
+
+        PublicDependencyModuleNames.AddRange(new string[] { "Grpc" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
 		// Uncomment if you are using Slate UI
 		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 
-        PublicIncludePaths.AddRange(new string[] {
-            "../ThirdParty/Protobuf/include"
-        });
-
-        PublicAdditionalLibraries.AddRange(new string[] {
-            "C:/Users/user/Documents/Unreal Projects/Portfolio/ThirdParty/Protobuf/lib/libprotobuf.lib"
-        });
+        PublicDefinitions.Add("GOOGLE_PROTOBUF_NO_RTTI");
+        PublicDefinitions.Add("GRPC_ALLOW_EXCEPTIONS=0");
 
         // Uncomment if you are using online features
         // PrivateDependencyModuleNames.Add("OnlineSubsystem");

@@ -5,7 +5,7 @@
 #include "EnemyTask_StareAt.generated.h"
 
 /*
-	UEnemyTask_StareAt : Enemy Ä³¸¯ÅÍ°¡ Caution »óÅÂ¿¡ ÁøÀÔÇÏ¸é ½ÇÇàµÇ´Â ÅÂ½ºÅ©. Å¸°ÙÀ» ÃÄ´Ùº½.
+	íƒ€ê²Ÿì„ ì‘ì‹œí•˜ëŠ” íƒœìŠ¤í¬. Caution ìƒíƒœì— ëŒ€ì‘ë¨
 */
 
 UCLASS()

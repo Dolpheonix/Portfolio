@@ -33,7 +33,6 @@ void UInventoryWidget::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
-	// Game Time
 	if (IsDesignTime() == false)
 	{
 		mTabButtons[static_cast<uint8>(EItemType::Cloth)] = Cast<UIndexedButton>(GetWidgetFromName(TEXT("ItemTab_Cloth")));
@@ -84,22 +83,6 @@ void UInventoryWidget::NativePreConstruct()
 			mItemSlotButtons[i]->mIndex = i;
 		}
 
-/*
-		int cnt = 0;
-		for (int i = 0; i < NUM_INVENTORY_ROW; ++i)
-		{
-			for (int j = 0; j < NUM_INVENTORY_COL; ++j)
-			{
-				mItemSlotButtons[cnt] = Cast<UIndexedButton>(GetWidgetFromName(FName(TEXT("ItemSlot_%i%i"), i, j)));
-				mItemSlotButtons[cnt]->mIndex = cnt;
-
-				mItemNumbers[cnt] = Cast<UTextBlock>(GetWidgetFromName(FName(TEXT("ItemNumber_%i%i"), i, j)));
-
-				++cnt;
-			}
-		}
-*/
-
 		mThrowButton	= Cast<UButton>(GetWidgetFromName(TEXT("Btn_Throw")));
 		mExitButton		= Cast<UButton>(GetWidgetFromName(TEXT("Btn_Exit")));
 		mPreviewImage	= Cast<UImage>(GetWidgetFromName(TEXT("Img_Preview")));
@@ -109,7 +92,6 @@ void UInventoryWidget::NativePreConstruct()
 		mDraggedImage = Cast<UImage>(GetWidgetFromName(TEXT("Img_Dragged")));
 
 		mSlotBrush_Empty.SetResourceObject(LoadHelper::LoadObjectFromPath<UTexture2D>(TEXT("/Game/Texture/WidgetImage/Thumbnail/Empty_Normal.Empty_Normal")));
-		//Tab Button Style
 		mTabBrush_Bright.SetResourceObject(LoadHelper::LoadObjectFromPath<UTexture2D>(TEXT("/Game/Texture/WidgetImage/Button_Wood.Button_Wood")));
 		mTabBrush_Bright.TintColor = FLinearColor::White;
 
@@ -172,6 +154,7 @@ void UInventoryWidget::NativeTick(const FGeometry& Mygeometry, float InDeltaTime
 {
 	Super::NativeTick(Mygeometry, InDeltaTime);
 
+	// 드래그 중인 경우, 드래그 이미지가 커서를 따라가게 함
 	if (bDragging)
 	{
 		FVector2D imagePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(this);
@@ -212,7 +195,7 @@ void UInventoryWidget::Open(TObjectPtr<APlayerCharacter> player)
 
 	mDraggedImage->SetVisibility(ESlateVisibility::Hidden);
 
-	//Preview 씬
+	//프리뷰 캐릭터를 찾아, 플레이어 캐릭터와 동기화
 	TObjectPtr<ACustomLevelScript> levelScript = Cast<ACustomLevelScript>(GetWorld()->GetLevelScriptActor());
 	check(levelScript);
 
@@ -252,7 +235,7 @@ void UInventoryWidget::UpdateItemSlot()
 	const UCustomGameInstance* gi = Cast<UCustomGameInstance>(UGameplayStatics::GetGameInstance(this));
 	check(gi);
 
-	// Update item slot by current tab
+	// 현재 탭에 맞는 인벤토리로 전환
 	const FTypeInventory& typeInventory = mOwnerPlayer->GetInventory().GetTypeInventory(mCurrentTab);
 
 	for (int i = 0; i < typeInventory.ItemList.Num(); ++i)
@@ -260,7 +243,7 @@ void UInventoryWidget::UpdateItemSlot()
 		const FGameItem item = typeInventory.ItemList[i];
 		
 		const ItemInfo& info = gi->GetItemInfo(item.InfoIndex);
-		// Update Thumbnail Brush
+		// 선택된 아이템은 선택 썸네일로 설정
 		FSlateBrush brush_N, brush_H;
 		if ((mCurrentTab == EItemType::Cloth) && (i == mOwnerPlayer->GetCurrentCloth()))
 		{
@@ -282,7 +265,7 @@ void UInventoryWidget::UpdateItemSlot()
 		mItemSlotButtons[i]->WidgetStyle.SetPressed(brush_N);
 		mItemSlotButtons[i]->SetIsEnabled(true);
 
-		// Update Item Number TextBlock
+		// 아이템 개수도 표시
 		mItemNumbers[i]->SetText(FText::FromString(FString::FromInt(item.Num)));
 	}
 
@@ -308,6 +291,7 @@ void UInventoryWidget::SelectItem(int index)
 	const FGameItem& item = mOwnerPlayer->GetInventory().GetTypeInventory(mCurrentTab).ItemList[index];
 	const ItemInfo& info = gi->GetItemInfo(item.InfoIndex);
 
+	// 선택 썸네일로 변경
 	FSlateBrush brush_N;
 	brush_N.SetResourceObject(info.Thumbnail[static_cast<uint8>(EThumbnailType::Selected)]);
 	mItemSlotButtons[index]->WidgetStyle.SetNormal(brush_N);
@@ -326,6 +310,7 @@ void UInventoryWidget::UnselectItem(int index)
 	const FGameItem item = mOwnerPlayer->GetInventory().GetTypeInventory(mCurrentTab).ItemList[index];
 	const ItemInfo& info = gi->GetItemInfo(item.InfoIndex);
 
+	// 일반 썸네일로 변경
 	FSlateBrush brush_N;
 	brush_N.SetResourceObject(info.Thumbnail[static_cast<uint8>(EThumbnailType::Normal)]);
 	mItemSlotButtons[index]->WidgetStyle.SetNormal(brush_N);
@@ -333,6 +318,7 @@ void UInventoryWidget::UnselectItem(int index)
 
 void UInventoryWidget::ShowDeletePopup()
 {
+	// 팝업 UI는 한번만 생성하고, 비지빌리티로 관리
 	if (!mThrowPopup)
 	{
 		mThrowPopup = WidgetTree->ConstructWidget<UNumpadPopup>(mNumpadPopupClass, TEXT("Popup"));
@@ -378,6 +364,7 @@ void UInventoryWidget::OnClicked_SelectItem(int index)
 
 	switch (mCurrentTab)
 	{
+	// 의상, 무기의 경우 아이템을 선택하고, 프리뷰 캐릭터를 업데이트함
 	case EItemType::Cloth:
 		lastSelected = mOwnerPlayer->GetCurrentCloth();
 		mOwnerPlayer->SetCurrentCloth(index);
@@ -408,7 +395,7 @@ void UInventoryWidget::OnHovered_ShowExplanation(int index)
 	const FGameItem item = mOwnerPlayer->GetInventory().GetTypeInventory(mCurrentTab).ItemList[index];
 	const ItemInfo& info = gi->GetItemInfo(item.InfoIndex);
 
-	mExplanationText->SetText(FText::FromString(info.Name)); //TODO : 아이템 설명이 추가되면 여기에 붙여서 표시
+	mExplanationText->SetText(FText::FromString(info.Name));
 }
 
 void UInventoryWidget::OnPressed_DragSlot(int index)
@@ -437,6 +424,7 @@ void UInventoryWidget::OnReleased_ThrowItem()
 	UCanvasPanelSlot* throwSlot = Cast<UCanvasPanelSlot>(mThrowButton->Slot);
 	check(throwSlot);
 
+	// 쓰레기통 이미지 위에서 드래그를 풀었다면, 아이템 삭제
 	const FVector2D& throwButtonPos = throwSlot->GetPosition();
 	const FVector2D& throwButtonSize = throwSlot->GetSize();
 

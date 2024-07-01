@@ -12,7 +12,7 @@ class UBillboardComponent;
 class UAIPerceptionStimuliSourceComponent;
 
 /*
-	ARootItem : ÇÃ·¹ÀÌ¾î°¡ »óÈ£ÀÛ¿ë ½Ã ¾ÆÀÌÅÛÀ» È¹µæÇÒ ¼ö ÀÖ´Â ¾×ÅÍ
+	í”Œë ˆì´ì–´ì™€ ìƒí˜¸ì‘ìš© ì‹œ ì•„ì´í…œì„ í™•ë“í•˜ëŠ” ì•¡í„°
 */
 
 UCLASS()
@@ -32,21 +32,27 @@ public:
 	virtual void UnNotify(TObjectPtr<AActor> player) override;
 	virtual void Interact(TObjectPtr<AActor> player) override;
 
+	void SetItem(const FGameItem& gi);
+	void SetResourceIndex(const int idx);
+
 protected:
-	// ÆÄÆ¼Å¬ ¿ÜÇüÀ» °¨½Î´Â ºí·Ï¿ë ÄÄÆ÷³ÍÆ®
+	// ì¶©ëŒ ì²˜ë¦¬ìš© ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UCapsuleComponent> mCapsuleComponent;
-	// ÆÄÆ¼Å¬ ÄÄÆ÷³ÍÆ®
+	// íŒŒí‹°í´ ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UNiagaraComponent> mNiagaraComponent;
-	// ÇÃ·¹ÀÌ¾îÀÇ »óÈ£ÀÛ¿ë °¨Áö ¹üÀ§¿¡ µé¾î¿ÔÀ» ¶§ Ç¥½ÃÇÒ ÀÌ¹ÌÁö
+	// ì•Œë¦¼ìš© ì´ë¯¸ì§€
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TObjectPtr<UBillboardComponent> mNotifyBillboard;
-	// ÇÃ·¹ÀÌ¾îÀÇ ÆÛ¼Á¼Ç¿¡ °¨ÁöµÇ±â À§ÇØ ÇÊ¿äÇÑ ÄÄÆ÷³ÍÆ®
+	// í”Œë ˆì´ì–´ì˜ í¼ì…‰ì…˜ì— ê°ì§€ë˜ê²Œë” í•˜ëŠ” ì»´í¬ë„ŒíŠ¸
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UAIPerceptionStimuliSourceComponent> mPerceptionStimuliSourceComponent;
 	
-	// »óÈ£ ÀÛ¿ë½Ã ÇÃ·¹ÀÌ¾î°¡ È¹µæÇÒ ¾ÆÀÌÅÛ
+	// ìƒí˜¸ì‘ìš© ì‹œ í”Œë ˆì´ì–´ê°€ íšë“í•  ì•„ì´í…œ
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Custom")
 	FGameItem Item;
+
+	// ë§µ ìƒì˜ ë¦¬ì†ŒìŠ¤ ì¸ë±ìŠ¤
+	uint64 mResIdx;
 };

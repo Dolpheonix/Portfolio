@@ -14,6 +14,8 @@ class PORTFOLIO_API UHpBar : public UUserWidget
 public:
 	UHpBar(const FObjectInitializer& objinit);
 
+	// HP바를 업데이트
+	// @param progress : hp 퍼센트
 	void SetHp(float progress);
 
 protected:
@@ -21,6 +23,7 @@ protected:
 	virtual void NativeConstruct() override;
 
 protected:
+	// HP 바
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UProgressBar> mProgressBar;
 };

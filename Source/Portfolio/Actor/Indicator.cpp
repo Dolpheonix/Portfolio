@@ -25,8 +25,8 @@ AIndicator::AIndicator()
 
 void AIndicator::OnOverlapped_CheckArrival(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	GEngine->AddOnScreenDebugMessage(-1,5,FColor::Red, "overlapped");
 	TObjectPtr<APlayerCharacter> player = Cast<APlayerCharacter>(OtherActor);
+	// 플레이어와 충돌했을 때 퀘스트 완료 처리 후 액터 삭제
 	if (player)
 	{
 		player->ReportArrival(mQuestIndex, mSubIndex);
