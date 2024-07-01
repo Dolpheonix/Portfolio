@@ -81,15 +81,15 @@ public:
 public:
 	unique_ptr<ProtoObject::GameService::Stub> mStub;	// 클라이언트 Stub
 
-	unique_ptr<ClientWriter<Location>> mLocationWriter;		// Location 정보 전송용 Writer
-	unique_ptr<ClientReader<Location>> mLocationReader;		// Location 정보 수신용 Reader
+	unique_ptr<ClientWriter<ProtoObject::Location>> mLocationWriter;		// Location 정보 전송용 Writer
+	unique_ptr<ClientReader<ProtoObject::Location>> mLocationReader;		// Location 정보 수신용 Reader
 
-	unique_ptr<ClientWriter<RepBoolean>> mRepBooleanWriter;	// RepBoolean 정보 전송용 Writer
-	unique_ptr<ClientReader<RepBoolean>> mRepBooleanReader;	// RepBoolean 정보 수신용 Reader
+	unique_ptr<ClientWriter<ProtoObject::RepBoolean>> mRepBooleanWriter;	// RepBoolean 정보 전송용 Writer
+	unique_ptr<ClientReader<ProtoObject::RepBoolean>> mRepBooleanReader;	// RepBoolean 정보 수신용 Reader
 	
-	unique_ptr<ClientReader<Equipment>> mEquipmentReader;			// Equipment 정보 수신용 Reader
-	unique_ptr<ClientReader<ResourceChange>> mResourceChangeReader;	// ResourceChange 정보 수신용 Reader
-	unique_ptr<ClientReader<MapTransition>> mMapTransitionReader;	// MapTransition 정보 수신용 Reader
+	unique_ptr<ClientReader<ProtoObject::Equipment>> mEquipmentReader;			// Equipment 정보 수신용 Reader
+	unique_ptr<ClientReader<ProtoObject::ResourceChange>> mResourceChangeReader;	// ResourceChange 정보 수신용 Reader
+	unique_ptr<ClientReader<ProtoObject::MapTransition>> mMapTransitionReader;	// MapTransition 정보 수신용 Reader
 
 	TObjectPtr<UCustomGameInstance> mGameInstance;	// 게임 인스턴스
 };
