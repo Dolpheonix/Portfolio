@@ -45,3 +45,15 @@
 /Source/UE4_MocapOnline_Tech_Notes.txt
 /Source/FBX
 /.vs
+absl
+grpc
+jsoncpp
+mysql-connector-c++
+Protobuf
+NatureBackground
+bin
+obj
+x64
+Saved
+GameServer
+ChattingServer

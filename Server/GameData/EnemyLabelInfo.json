@@ -1,0 +1,17 @@
+{
+    "LabelList" :
+    [
+        {
+            "Index" : 0,
+            "Name"  : "Tutorial Mobs"
+        },
+        {
+            "Index" : 1,
+            "Name"  : "Human"
+        },
+        {
+            "Index" : 2,
+            "Name"  : "Monster"
+        }
+    ]
+}

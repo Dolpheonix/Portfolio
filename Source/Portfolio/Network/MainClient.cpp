@@ -4,7 +4,7 @@
 #include "Async/Async.h"
 #include "../Core/CustomGameInstance.h"
 
-MainClient::MainClient()
+MainClient::MainClient() : bRunning(true)
 {
 }
 
@@ -263,9 +263,36 @@ void MainClient::RunClient(TObjectPtr<UCustomGameInstance> gi)
 	thread receiver_resourceChange(&MainClient::ReceiveMapResourceChange, this);
 	thread receiver_mapTransition(&MainClient::ReceiveMapTransition, this);
 
+	while (bRunning)
+	{
+		;
+	}
+
+	ctx_loc_r.TryCancel();
+	ctx_rep_r.TryCancel();
+	ctx_eq.TryCancel();
+	ctx_rc.TryCancel();
+	ctx_mt.TryCancel();
+
 	receiver_location.join();
 	receiver_repboolean.join();
 	receiver_equipment.join();
 	receiver_resourceChange.join();
 	receiver_mapTransition.join();
+
+	//thread test(&MainClient::Test, this);
+	//test.join();
+}
+
+void MainClient::SetRunning(bool isRunning)
+{
+	bRunning = isRunning;
+}
+
+void MainClient::Test()
+{
+	while (bRunning)
+	{
+		tVal = (tVal + 1) % 5;
+	}
 }

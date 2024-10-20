@@ -1,0 +1,156 @@
+// ItemInfo
+// ItemList 안에 작성
+{
+    "Index"         : -1,           // 아이템 인덱스 (들어가는 순서대로)
+    "Type"          : "Cloth",      // 아이템 종류 : Cloth(의상), Weapon(무기), Item(기타 아이템)
+    "Name"          : "Test",       // 아이템 이름
+    "IsSellable"    : true,         // 판매 가능 여부 : 상점에 팔 수 있는 아이템인가?
+    "Code"          : 0,            // 의상/무기 코드 : 메쉬 소켓에 적용할 인덱스(의상/무기에만 기술)
+    "Thumbnail"     :               // 썸네일 : 상점/인벤토리/퀵슬롯에 표시할 썸네일 이미지
+                                    // Content/Texture/Thumbnail/ 내부에 위치한 uasset의 레퍼런스 경로를 기술
+                                    // Normal : 일반 썸네일, Hovered : 커서가 위에 있을 때의 썸네일, Selected : 선택/장착한 아이템인 경우
+    [
+        "Test_Normal.Test_Normal",
+        "Test_Hovered.Test_Hovered",
+        "Test_Selected.Test_Selected",
+    ],
+    "Mesh"          : "Test.Test",  // 아이템 메쉬 : 인게임에 표시할 메시 에셋 (Contents/Mesh/ 내부에 위치)
+
+    "WeaponInfo"    :               // 무기 관련 정보(타입이 Weapon일때만)
+    {
+        "Type"      : "Rifle",      // 무기 타입
+        "Damage"    : 15.0          // 데미지
+    }
+}
+
+// QuestInfo
+// QuestList 안에 작성
+{
+    "Name"          : "Tutorial",       // 퀘스트 이름
+    "Explanation"   : "첫 퀘스트!",      // 퀘스트 설명 (퀘스트 창에서 표시되는 설명.)
+    "Type"          : "Serial",         // 퀘스트 타입 (Serial : 한개의 서브 퀘스트를 완료해야 다음 서브퀘로 넘어감. Parallel : 여러 서브퀘스트를 동시에 진행)
+    "SubQuests"     :                   // 서브퀘스트
+    [
+        {
+            "Type"          : "Arrival",        // 서브퀘스트 타입 : Arrival : 지정된 위치에 도착.
+            "Explanation"   : "위치에 도착!",    // 설명
+            "MapIndex"      : 0,                // 도착 위치의 맵 인덱스
+            "Destination"   : [0,0,0],          // 도착 위치
+            "FX"            : "portal.portal",  // 도착 위치에 표시할 파티클 에셋(Content/FX/에 표시)
+        },
+        {
+            "Type"          : "Collect",        // Collect : 아이템 수집
+            "Index"         : 0,                // 인덱스 : 아이템 번호
+            "Num"           : 1,                // 수집 개수
+        },
+        {
+            "Type"          : "Hunt",           // Hunt : 적 처치
+            "Index"         : 0,                // 인덱스 : 적 종류
+            "Num"           : 1,                // 처지 회수
+        },
+        {
+            "Type"          : "Action",         // Action : 특정 행동으로 완료되는 퀘스트
+            "Code"          : 0,                // Code : Action 퀘스트는 코드로 구분 (레벨 블루프린트 등에서 특정 행동을 실행하면 완료 코드를 전달함)
+        }
+    ],
+    "Rewards"       :                   // 퀘스트 보상
+    [
+        {
+            "Type" : "Exp",         // Exp : 경험치
+            "Exp" : 100, 
+        },
+        {
+            "Type" : "Item",        // Item : 아이템
+            "Item" :
+            {
+                "Index" : 0,
+                "Num" : 1,
+            }
+        },
+        {
+            "Type" : "Money",       // Money : 돈
+            "Money" : 1000,
+        }
+    ]
+}
+
+// NpcInfo
+// Content/Data/Level/맵 이름/Npc.json
+// NpcList 내부에 작성
+{
+    "Name" : "Test",    // NPC 이름
+    "Dialogues" :       // NPC 대화
+    [
+        {
+            "Index" : 0,            // 대화 인덱스(로딩되지는 않음. 작성 편의를 위해서만 사용)
+            "Speaker" : "Test",     // 대화에 표시될 이름
+            "Text" : "가나다라",     // 대화 내용
+            "Responses" :           // 응답 선택지
+            [
+                {
+                    "Text" : "마바사",
+                    "Events" :      // 해당 응답을 선택할 때 발생하는 이벤트 목록
+                    [
+                        {
+                            "Type" : "End", // 대화창을 닫음
+                        },
+                        {
+                            "Type" : "OpenShop" // 현재 대화중인 npc의 상점을 엶
+                        },
+                        {
+                            "Type" : "Jump", // 특정 인덱스로 대화를 이동
+                            "JumpIndex" : 10
+                        },
+                        {
+                            "Type" : "CommitQuest", // 퀘스트를 시작함
+                            "QuestIndex" : 0
+                        },
+                        {
+                            "Type" : "CompleteQuest", // 퀘스트를 완료시킴
+                            "QuestIndex" : 1
+                        },
+                        {
+                            "Type" : "GiveItem",        // 아이템을 줌
+                            "ItemIndex" : 0             // Note: iteminfo 상의 인덱스가 아닌, NPC의 rewardItem 배열에서의 인덱스를 지정
+                        },
+                        {
+                            "Type" : "SetBookmark",      // 북마크를 변경(다음 대화부터는 해당 지점에서 시작함)
+                            "BookmarkIndex" : 10
+                        }
+                    ]
+                }
+            ]
+        }
+    ],
+    "ShopItems" :
+    {
+        "Cloth" :
+        [
+            {
+                "Index" : 0,
+                "Num" : 10,
+            }
+        ],
+        "Weapon" : 
+        [
+            {
+                "Index" : 0,
+                "Num" : 10,
+            }
+        ],
+        "Item" :
+        [
+            {
+                "Index" : 0,
+                "Num" : 10,
+            }
+        ],
+    },
+    "RewardItems" :
+    [
+        {
+            "Index" : 1,
+            "Num" : 100
+        }
+    ]
+}

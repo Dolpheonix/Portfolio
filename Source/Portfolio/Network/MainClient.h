@@ -78,6 +78,10 @@ public:
 	// gRpc channel, stub 생성
 	void RunClient(TObjectPtr<UCustomGameInstance> gi);	
 
+	// Setter
+	void SetRunning(bool isRunning);
+	void Test();
+
 public:
 	unique_ptr<ProtoObject::GameService::Stub> mStub;	// 클라이언트 Stub
 
@@ -92,4 +96,7 @@ public:
 	unique_ptr<ClientReader<ProtoObject::MapTransition>> mMapTransitionReader;	// MapTransition 정보 수신용 Reader
 
 	TObjectPtr<UCustomGameInstance> mGameInstance;	// 게임 인스턴스
+
+	atomic<bool> bRunning; // Client가 동작중인가? (게임 종료 시 송신 스레드에 알리는 용도)
+	int tVal = 0;
 };

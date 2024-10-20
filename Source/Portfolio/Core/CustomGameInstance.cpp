@@ -76,6 +76,7 @@ void UCustomGameInstance::Shutdown()
 	}
 
 	// 메인 스레드 종료
+	mMainClient->SetRunning(false);
 	mMainThread.join();
 
 	// 채팅 스레드 종료
@@ -467,6 +468,7 @@ void UCustomGameInstance::SendRunning(bool isRunning)
 	req.UserIdx = mTempPlayerInfo.UserIdx;
 	req.Type = RUNNING;
 	req.Boolean = isRunning;
+
 
 	mMainClient->SendRepBoolean(req);
 }

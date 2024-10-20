@@ -86,7 +86,7 @@ void UIntroWidget::OnClicked_Register()
 		const char* pw = TCHAR_TO_ANSI(*mPwText->GetText().ToString());
 		
 		bool succeeded = gi->TryRegister(id, pw);
-		if (succeeded == true)
+		if (succeeded == false)
 		{
 			NotifyLoginFailed(true);
 		}

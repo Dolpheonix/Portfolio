@@ -1,0 +1,10 @@
+{
+    "EnemyList" :
+    [
+        {
+            "Index" : 0,
+            "SpawnLocation" : [-700, -1100, 188],
+            "InfoIndex" : 0
+        }
+    ]
+}

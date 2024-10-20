@@ -1,0 +1,197 @@
+syntax="proto3";
+
+import "google/protobuf/empty.proto";
+
+package ProtoObject;
+
+message LoginInfo
+{
+	string id = 1;
+	string password = 2;
+}
+
+message GameItem
+{
+	uint64 index = 1;
+	uint64 num = 2;
+}
+
+message TypeInventory
+{
+	uint32 type = 1;
+	repeated GameItem items = 2;
+}
+
+message Inventory
+{
+	enum ItemType
+	{
+		CLOTH=0;
+		WEAPON=1;
+		ITEM=2;
+	}
+
+	repeated TypeInventory typeInventory = 1;
+}
+
+message QuestStatus
+{
+	uint32 index = 1;
+	
+	enum QuestType
+	{
+		SERIAL = 0;
+		PARALLEL = 1;
+	}
+	QuestType type = 2;
+
+	enum QuestProgressType
+	{
+		UNAVAILABLE = 0;
+		AVAILABLE = 1;
+		INPROGRESS = 2;
+		COMPLETABLE = 3;
+		COMPLETED = 4;
+	}
+	QuestProgressType progressType = 3;
+
+	message SubQuestStatus
+	{
+		enum SubQuestType
+		{
+			ARRIVAL = 0;
+			HUNT = 1;
+			ITEM = 2;
+			ACTION = 3;
+		}
+		SubQuestType type = 1;
+
+		bool bStarted = 2;
+		bool bCompleted = 3;
+	
+		uint32 currAmount = 4;
+	}
+	repeated SubQuestStatus subStatus = 4;
+
+	uint32 currPhase = 5;
+	uint32 completed = 6;
+}
+
+message PlayerInfo
+{
+	string name = 1;
+	uint32 level = 2;
+	uint32 map = 3;
+
+	float loc_x = 4;
+	float loc_y = 5;
+	float loc_z = 6;
+
+	uint64 gold = 7;
+
+	Inventory inventory = 8;
+
+	repeated QuestStatus questStatus = 9;
+
+	uint64 userIdx = 10;
+}
+
+message Nickname
+{
+	string nickname = 1;
+}
+
+message Location
+{
+	// identifier
+	uint64 userIdx 	= 1;
+
+	// location
+	float x 		= 2;
+	float y			= 3;
+	float z			= 4;
+	// rotation
+	float pitch		= 5;
+	float yaw		= 6;
+}
+
+message RepBoolean
+{
+	uint64 userIdx = 1;
+
+	enum RepType
+	{
+		RUNNING = 0;
+		JUMPING = 1;
+		EQUIPPPED = 2;
+	}
+	RepType type	= 2;
+
+	bool boolean	= 3;
+}
+
+message Equipment
+{
+	uint64 userIdx = 1;
+
+	enum EquipmentType
+	{
+		CLOTH = 0;
+		WEAPON = 1;
+	}
+	EquipmentType equipType= 2;
+
+	uint64 itemIndex = 3;
+}
+
+message ResourceChange
+{
+	uint32 mapIdx = 1;
+
+	enum ResourceType
+	{
+		ENEMY = 0;
+		ITEM = 1;
+	}
+	ResourceType resType = 2;
+
+	enum ChangeType
+	{
+		REMOVE = 0;
+		SPAWN = 1;
+	}
+	ChangeType resChangeType = 3;
+
+	uint64 resIdx	= 4;
+}
+
+message MapTransition
+{
+	uint64 userIdx	= 1;
+	uint32 before	= 2;
+	uint32 after	= 3;
+}
+
+service GameService
+{
+	// Login/Save Service
+	rpc TryLogin (LoginInfo) returns (PlayerInfo) {}
+	rpc TryRegister (LoginInfo) returns (PlayerInfo) {}
+	rpc SetNickname (Nickname) returns (Nickname) {}
+	rpc Save (PlayerInfo) returns (google.protobuf.Empty) {}
+
+	// Runtime Service
+	// Sender 1:1
+	rpc SendLocation(stream Location) returns (google.protobuf.Empty) {}
+	rpc SendRepBoolean(stream RepBoolean) returns (google.protobuf.Empty) {}
+	rpc SendEquipmentChange(Equipment) returns (google.protobuf.Empty) {}
+	rpc SendMapResourceChange(ResourceChange) returns (google.protobuf.Empty) {}
+	rpc SendMapTransition(MapTransition) returns (google.protobuf.Empty) {}
+
+	// Broadcast 1:N
+	rpc BroadcastLocation(google.protobuf.Empty) returns (stream Location) {}
+	rpc BroadcastRepBoolean(google.protobuf.Empty) returns (stream RepBoolean) {}
+	rpc BroadcastEquipmentChange(google.protobuf.Empty) returns (stream Equipment) {}
+	rpc BroadcastMapResourceChange(google.protobuf.Empty) returns (stream ResourceChange) {}
+	rpc BroadcastMapTransition(google.protobuf.Empty) returns (stream MapTransition) {}
+}

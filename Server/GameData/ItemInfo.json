@@ -1,0 +1,52 @@
+{
+    "ItemList" : 
+    [
+        {
+            "Index" : 0,
+            "Name"  : "Rifle",
+            "Type"  : "Weapon",
+            "IsSellable" : true,
+            "Price" : 500,
+            "Thumbnail" : 
+            [
+                "Rifle_Normal.Rifle_Normal",
+                "Rifle_Hovered.Rifle_Hovered",
+                "Rifle_Selected.Rifle_Selected"
+            ],
+            "Mesh" : "Rifle.Rifle",
+            "WeaponInfo" : 
+            {
+                "Type" : "Rifle",
+                "Damage" : 15.0,
+                "Sound" : "Rifle_Fire.Rifle_Fire",
+                "Bullet" : "Bullet_Default.Bullet_Default_C"
+            }
+        },
+        {
+            "Index" : 1,
+            "Name"  : "Apple",
+            "Type"  : "Item",
+            "IsSellable" : true,
+            "Price" : 200,
+            "Thumbnail" : 
+            [
+                "Apple_Normal.Apple_Normal",
+                "Apple_Hovered.Apple_Hovered",
+                "Apple_Selected.Apple_Selected"
+            ]
+        },
+        {
+            "Index" : 2,
+            "Name"  : "Crystal",
+            "Type"  : "Item",
+            "IsSellable" : true,
+            "Price" : 1000,
+            "Thumbnail" : 
+            [
+                "Crystal_Normal.Crystal_Normal",
+                "Crystal_Hovered.Crystal_Hovered",
+                "Crystal_Selected.Crystal_Selected"
+            ]
+        }
+    ]
+}
